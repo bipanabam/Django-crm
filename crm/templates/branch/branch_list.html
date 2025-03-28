@@ -1,0 +1,10 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+{% for branch in branches %}
+<div class="">
+    <h1>{{ branch.name }}</h1>
+    <p>{{ branch.email }}</p>
+</div>
+{% endfor %}
+{% endblock content %}

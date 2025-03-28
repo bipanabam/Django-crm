@@ -1,0 +1,73 @@
+{% extends 'base/base.html' %}
+
+{% block head_title %}
+Branch
+{% endblock %}
+
+{% block content %}
+
+<form method="post" class="flex flex-col items-center mt-3">
+    {% csrf_token %}
+    <div class="grid md:grid-cols-2 md:gap-6">
+        <div class="relative z-0 w-full mb-5 group">
+            <label for="{{ form.company.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-black">
+                {{ form.company.label }}
+            </label>
+            {{ form.company }}
+        </div>
+        <div class="relative z-0 w-full mb-5 group">
+            <label for="{{ form.name.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-black">
+                {{ form.name.label }}
+            </label>
+            {{ form.name }}
+        </div>
+    </div>
+    <div class="grid md:grid-cols-2 md:gap-6">
+        <div class="relative z-0 w-full mb-5 group">
+            <label for="{{ form.email.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-black">
+                {{ form.email.label }}
+            </label>
+            {{ form.email }}
+        </div>
+        <div class="relative z-0 w-full mb-5 group">
+            <label for="{{ form.phone.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-black">
+                {{ form.phone.label }}
+            </label>
+            {{ form.phone }}
+        </div>
+    </div>
+    <div class="grid md:grid-cols-2 md:gap-6">
+        <div class="relative z-0 w-full mb-5 group">
+            <label for="{{ form.country.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-black">
+                {{ form.country.label }}
+            </label>
+            {{ form.country }}
+        </div>
+        <div class="relative z-0 w-full mb-5 group">
+            <label for="{{ form.city.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-black">
+                {{ form.city.label }}
+            </label>
+            {{ form.city }}
+        </div>
+    </div>
+    <div class="grid md:grid-cols-2 md:gap-6">
+        <div class="relative z-0 w-full mb-5 group">
+            <label for="{{ form.address.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-black">
+                {{ form.address.label }}
+            </label>
+            {{ form.address }}
+        </div>
+        <div class="relative z-0 w-full mb-5 group">
+            <label for="{{ form.postal_code.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-black">
+                {{ form.postal_code.label }}
+            </label>
+            {{ form.postal_code }}
+        </div>
+    </div>
+     {% if error in form.errors %}
+            <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+    {% endif %}
+    <input type="submit" value="Submit"
+     class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+</form>
+{% endblock %}

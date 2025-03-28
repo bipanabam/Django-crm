@@ -1,0 +1,11 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+  <div class="flex flex-col items-center w-full m-2">
+    <p>Branch Name: {{branch.name}}</p>
+    <p>Email: {{branch.email}}</p>
+    <p>Phone Number: {{branch.phone}}</p>
+    <p>Address: {{branch.address}}</p>
+  </div>
+
+{% endblock %}

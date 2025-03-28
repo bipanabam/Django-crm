@@ -1,0 +1,92 @@
+{% extends 'base/base.html' %}
+
+{% block head_title %}
+User
+{% endblock head_title %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0">Add User</h2>
+        </div>
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data" action="{% url 'add_user' %}">
+                {% csrf_token %}
+                <div class="flex flex-col items-center">
+                    <div class="grid md:grid-cols-2 md:gap-6">
+                        <div class="relative z-0 w-full mb-5 group">
+                            <label for="{{ form.username.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-black">
+                                {{ form.username.label }}
+                            </label>
+                            {{ form.username }}
+                        </div>
+                        <div class="relative z-0 w-full mb-5 group">
+                            <label for="{{ form.email.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-black">
+                                {{ form.email.label }}
+                            </label>
+                            {{ form.email }}
+                        </div>
+                    </div>
+                    <div class="grid md:grid-cols-2 md:gap-6">
+                        <div class="relative z-0 w-full mb-5 group">
+                            <label for="{{ form.first_name.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-black">
+                                {{ form.first_name.label }}
+                            </label>
+                            {{ form.first_name }}
+                        </div>
+                        <div class="relative z-0 w-full mb-5 group">
+                            <label for="{{ form.last_name.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-black">
+                                {{ form.last_name.label }}
+                            </label>
+                            {{ form.last_name }}
+                        </div>
+                    </div>
+                    <div class="grid md:grid-cols-2 md:gap-6">
+                        <div class="relative z-0 w-full mb-5 group">
+                            <label for="{{ form.password.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-black">
+                                {{ form.password.label }}
+                            </label>
+                            {{ form.password }}
+                        </div>
+                        <div class="relative z-0 w-full mb-5 group">
+                            <label for="{{ form.confirm_password.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-black">
+                                {{ form.confirm_password.label }}
+                            </label>
+                            {{ form.confirm_password }}
+                            {% for error in form.confirm_password.errors %}
+                                <div class="text-red-500 text-sm mt-1">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="grid md:grid-cols-2 md:gap-6">
+                        <div class="relative z-0 w-full mb-5 group">
+                            <label for="{{ form.branch.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-black">
+                                {{ form.branch.label }}
+                            </label>
+                            {{ form.branch }}
+                        </div>
+                        <div class="relative z-0 w-full mb-5 group">
+                            <label for="{{ form.role.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-black">
+                                {{ form.role.label }}
+                            </label>
+                            {{ form.role }}
+                            {% for error in form.role.errors %}
+                                <div class="text-red-500 text-sm mt-1">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% comment %} {% for field in form %}
+                    {% for error in field.errors %}
+                        <div class="text-red-500 text-sm mt-1">{{ error }}</div>
+                    {% endfor %}
+                    {% endfor %} {% endcomment %}
+                </div>
+                <button class="btn btn-secondary" type="button" onclick="window.history.back()">Back</button>
+                <button class="items-center text-white bg-blue-700 hover:bg-blue-800  focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="submit">Save</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
