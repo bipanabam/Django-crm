@@ -2,3 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 @import "flowbite/src/themes/default";
+
+:root{
+    --primary-color:  #9F6050;
+}

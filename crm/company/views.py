@@ -35,7 +35,10 @@ class UserCreateView(CreateView):
 
     def form_valid(self, form):
         branch = form.cleaned_data['branch']
-        print(f"Branch: {branch}")
+        password = form.cleaned_data['password'] 
+        # If the password is provided, we need to hash it before saving the user
+        if password:
+            form.instance.set_password(password)
         with transaction.atomic():
             try:
                 user = form.save(commit=False)
