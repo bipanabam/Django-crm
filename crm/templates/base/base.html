@@ -21,7 +21,7 @@
             {% include 'base/_partials/sidebar.html' %}
         </div>
         <!-- Main Content: Navbar and body -->
-        <div class="flex-grow p-4 bg-gray-100 justify-between">
+        <div class="flex-grow p-10 bg-gray-100 justify-between">
             <!--Navbar-->
             <div class="">
                 {% include 'base/_partials/navbar.html' %}
@@ -34,7 +34,7 @@
                 {% endfor %}
             {% endif %}
             <!-- Main body Content -->
-            <div>
+            <div class="flex flex-col">
                 {% block content %}
                 {% endblock content %}
             </div>

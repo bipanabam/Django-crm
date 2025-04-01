@@ -3,8 +3,8 @@ from django.contrib.auth import authenticate, login, logout
 from .forms import UserLoginForm
 
 # Create your views here.
-def home(request):
-    return render(request, 'base/base.html')
+def dashboard(request):
+    return render(request, 'base/dashboard.html')
 
 def user_login(request):
     if request.user.is_authenticated:
@@ -21,7 +21,7 @@ def user_login(request):
             print(user)
             if user is not None:
                 login(request, user)
-                return redirect('home')
+                return redirect('dashboard')
             else:
                 print("No user specified")
                 form.add_error(None, 'Invalid email or password')
