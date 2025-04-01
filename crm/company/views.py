@@ -1,31 +1,38 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.db import transaction
-from django.views.generic import (CreateView, DetailView, ListView)
+from django.views.generic import (CreateView, DetailView, UpdateView)
 
 from .models import Branch, User, Employee
 from .forms import BranchForm, UserForm
 
 # Create your views here.
-class BranchCreateView(CreateView):
+def branch_view(request, *args, **kwargs):
+    form = BranchForm(request.POST)
+    branches = Branch.objects.all()
+    context = {
+        'form': form,
+        'branches': branches,
+    }
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Branch created successfully.')
+            return redirect('branches')
+        else:
+            messages.error(request, 'Error occurred while adding branch.')
+            return render(request, 'branch/branches.html', context)
+    return render(request, 'branch/branches.html', context)
+
+class BranchUpdateView(UpdateView):
     model = Branch
     form_class = BranchForm
-    template_name = 'branch/create_branch.html'
-
-    def form_invalid(self, form):
-        print(form.errors)
-        return super().form_invalid(form)
-
-class BranchDetailView(DetailView):
-    model = Branch
     template_name = 'branch/branch_detail.html'
-    context_object_name = 'branch'
 
-class BranchListView(ListView):
-    model = Branch
-    template_name = 'branch/branch_list.html'
-    context_object_name = 'branches'
+    def form_valid(self, form):
+        messages.success(self.request, 'Branch details updated successfully')
+        return super().form_valid(form)
 
 class UserCreateView(CreateView):
     model = User

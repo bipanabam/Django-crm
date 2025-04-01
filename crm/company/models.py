@@ -28,12 +28,12 @@ class Company(models.Model):
 class Branch(models.Model):
   company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='branches')
   name = models.CharField(max_length=255)
-  email = models.EmailField(unique=True, blank=True, null=True)
-  phone = models.CharField(max_length=20, unique=True, blank=True, null=True)
+  # email = models.EmailField(unique=True, blank=True, null=True)
+  # phone = models.CharField(max_length=20, unique=True, blank=True, null=True)
   country = models.CharField(max_length=100)
-  city = models.CharField(max_length=100, blank=True, null=True)
-  address = models.TextField()
-  postal_code = models.CharField(max_length=20)
+  created_at = models.DateTimeField(auto_now_add=True)
+  updated_at = models.DateTimeField(auto_now=True)
+
 
   def get_absolute_url(self):
     return reverse("branch_detail", kwargs={"pk": self.pk})

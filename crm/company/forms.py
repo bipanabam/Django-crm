@@ -6,7 +6,12 @@ from .models import Branch, User, Employee
 class BranchForm(forms.ModelForm):
     class Meta:
         model = Branch
-        fields = ['company', 'name', 'email', 'phone', 'country', 'city', 'address', 'postal_code']
+        fields = ['company', 'name', 'country', ]
+
+    def __init__(self, *args, **kwargs):
+        super(BranchForm, self).__init__(*args, **kwargs)
+        self.fields['name'].widget.attrs['placeholder'] = 'Enter your Branch Name'
+        self.fields['country'].widget.attrs['placeholder'] = 'Enter the Country Name'
 
 class UserForm(forms.ModelForm):
     confirm_password = forms.CharField(widget=forms.PasswordInput)
