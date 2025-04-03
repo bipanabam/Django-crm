@@ -48,3 +48,11 @@ class UserForm(forms.ModelForm):
         if password != confirm_password:
             self.add_error('confirm_password', "Passwords do not match")
         return cleaned_data
+    
+class UserUpdateForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username','email', 'first_name', 'last_name', 'role']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)

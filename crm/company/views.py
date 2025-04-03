@@ -5,7 +5,7 @@ from django.db import transaction
 from django.views.generic import (CreateView, DetailView, UpdateView)
 
 from .models import Branch, User, Employee
-from .forms import BranchForm, UserForm
+from .forms import BranchForm, UserForm, UserUpdateForm
 from . import services
 
 # Create your views here.
@@ -35,7 +35,7 @@ class BranchUpdateView(UpdateView):
         messages.success(self.request, 'Branch details updated successfully')
         return super().form_valid(form)
 
-class UserCreateView(CreateView):
+class MemberCreateView(CreateView):
     model = User
     form_class = UserForm
     template_name = 'team_member/team.html'
@@ -65,4 +65,15 @@ class UserCreateView(CreateView):
                 return super().form_invalid(form)
         messages.success(self.request, 'User created successfully.')
         return super().form_valid(form)
+    
+class MemeberUpdateView(UpdateView):
+    model = User
+    form_class = UserUpdateForm
+    template_name = 'team_member/update_member.html'
+    success_url = reverse_lazy('team_member')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Member details updated successfully')
+        return super().form_valid(form)
+    
         
