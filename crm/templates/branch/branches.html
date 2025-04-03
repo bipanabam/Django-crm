@@ -36,10 +36,10 @@
 
 <div class="mt-6">
     <h1 class="font-semibold text-xl mb-5">Branch List</h1>
-    <div class="items-center justify-between border rounded-xl bg-white p-6">
-        <table class="w-full justify-between border-collapse">
+    <div class="border rounded-xl bg-white p-6">
+        <table class="w-full border-collapse">
             <thead>
-                <tr class="border-b border-gray-300 text-gray-400 font-normal">
+                <tr class="border-b border-gray-300 text-gray-400 font-normal ">
                     <th class="p-2 text-left">Name</th>
                     <th class="p-2 text-left">Country</th>
                     <th class="p-2 text-left">Action</th>
@@ -50,7 +50,7 @@
                 <tr class="border-b border-gray-300">
                     <td class="p-2">{{branch.name}}</td>
                     <td class="p-2">{{branch.country}}</td>
-                    <td class="p-2 flex">
+                    <td class="p-2">
                         <a href="{% url 'branch_detail' branch.id %}">
                             <button class="rounded-md px-7 py-1 bg-[--primary-color] font-normal text-white">View</button>                                      
                         </a>

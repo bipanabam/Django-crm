@@ -1,0 +1,117 @@
+{% extends 'base/base.html' %}
+{% load custom_filters %}
+
+{% block content %}
+<div class="mt-6">
+    <h1 class="font-semibold text-xl mb-5">Add Team Member</h1>
+    <div class="flex items-center justify-between border rounded-xl bg-white p-6 pb-10">
+        <form method="post" class="flex flex-col items-center w-9/12 mt-3 ml-3 gap-2">
+            {% csrf_token %}
+             <!-- Display non-field errors -->
+            {% if form.non_field_errors %}
+                <div class="text-red-500 text-sm mb-4">
+                    {% for error in form.non_field_errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <div class="w-full grid md:grid-cols-2 md:gap-6">
+                <div class="relative z-0 w-full mb-5 group">
+                    <label for="{{ form.username.id_for_label }}" class="block mb-3 text-xl font-medium ml-3">
+                        {{ form.username.label }}
+                    </label>                             
+                    {{ form.username|add_class:'block w-full h-14 px-4 py-2 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
+                </div>
+                <div class="relative z-0 w-full mb-5 group">
+                    <label for="{{ form.email.id_for_label }}" class="block mb-3 text-xl font-medium ml-3">
+                        {{ form.email.label }}
+                    </label>                             
+                    {{ form.email|add_class:'block w-full h-14 px-4 py-2 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
+                </div>
+            </div>
+            <div class="w-full grid md:grid-cols-2 md:gap-6">
+                <div class="relative z-0 w-full mb-5 group">
+                    <label for="{{ form.first_name.id_for_label }}" class="block mb-3 text-xl font-medium ml-3">
+                        {{ form.first_name.label }}
+                    </label>                             
+                    {{ form.first_name|add_class:'block w-full h-14 px-4 py-2 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
+                </div>
+                <div class="relative z-0 w-full mb-5 group">
+                    <label for="{{ form.last_name.id_for_label }}" class="block mb-3 text-xl font-medium ml-3">
+                        {{ form.last_name.label }}
+                    </label>                             
+                    {{ form.last_name|add_class:'block w-full h-14 px-4 py-2 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
+                </div>
+            </div>
+            <div class="w-full grid md:grid-cols-2 md:gap-6">
+                <div class="relative z-0 w-full mb-5 group">
+                    <label for="{{ form.password.id_for_label }}" class="block mb-3 text-xl font-medium ml-3">
+                        {{ form.password.label }}
+                    </label>                             
+                    {{ form.password|add_class:'block w-full h-14 px-4 py-2 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
+                </div>
+                <div class="relative z-0 w-full mb-5 group">
+                    <label for="{{ form.confirm_password.id_for_label }}" class="block mb-3 text-xl font-medium ml-3">
+                        {{ form.confirm_password.label }}
+                    </label>                             
+                    {{ form.confirm_password|add_class:'block w-full h-14 px-4 py-2 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
+                    {% for error in form.confirm_password.errors %}
+                        <div class="text-red-500 text-sm mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="relative z-0 w-full mb-5 group">
+                <label for="{{ form.branch.id_for_label }}" class="block mb-3 text-xl font-medium ml-3">
+                    {{ form.branch.label }}
+                </label>                             
+                {{ form.branch|add_class:'block w-full h-14 px-4 py-2 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
+            </div>
+            <div class="relative z-0 w-full mb-5 group">
+                <label for="{{ form.role.id_for_label }}" class="block mb-3 text-xl font-medium ml-3">
+                    {{ form.role.label }}
+                </label>                             
+                {{ form.role|add_class:'block w-full h-14 px-4 py-2 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
+                {% for error in form.role.errors %}
+                    <div class="text-red-500 text-sm mt-1">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <input type="submit" value="Submit"
+            class="w-full h-16 rounded-md px-7 py-1 bg-[--primary-color] font-normal text-white mt-3" />
+        </form>
+    </div>
+</div>
+
+<div class="mt-6">
+    <h1 class="font-semibold text-xl mb-5">Team Management</h1>
+    <div class="border rounded-xl bg-white p-6">
+        <h2 class="font-semibold text-lg mb-5">Team List</h2>
+        <table class="w-full border-collapse">
+            <thead>
+                <tr class="border-b border-gray-300 text-gray-400 font-normal">
+                    <th class="p-2 text-left">Name</th>
+                    <th class="p-2 text-left">Role</th>
+                    <th class="p-2 text-left">Email</th>
+                    <th class="p-2 text-left">Access Level</th>
+                    <th class="p-2 text-left">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr class="border-b border-gray-300">
+                    <td class="p-2">{{user.first_name}} {{user.last_name}}</td>
+                    <td class="p-2">{{user.role}}</td>
+                    <td class="p-2">{{user.email}}</td>
+                    <td class="p-2">{{user.role}}</td>
+                    <td class="p-2">
+                        <div class="flex gap-2">
+                            <button class='rounded-md bg-[--primary-color] text-white w-24 h-8'>Edit</button>
+                            <button class='rounded-md border border-[--primary-color] bg-gray-50 text-[--primary-color] w-24 h-8'>Remove</button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock content %}

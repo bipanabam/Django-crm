@@ -6,6 +6,7 @@ from django.views.generic import (CreateView, DetailView, UpdateView)
 
 from .models import Branch, User, Employee
 from .forms import BranchForm, UserForm
+from . import services
 
 # Create your views here.
 def branch_view(request, *args, **kwargs):
@@ -37,8 +38,13 @@ class BranchUpdateView(UpdateView):
 class UserCreateView(CreateView):
     model = User
     form_class = UserForm
-    template_name = 'user/add_user.html'
-    success_url = reverse_lazy('add_user')
+    template_name = 'team_member/team.html'
+    success_url = reverse_lazy('team_member')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['users'] = services.get_users(self.request)
+        return context
 
     def form_valid(self, form):
         branch = form.cleaned_data['branch']
@@ -57,6 +63,6 @@ class UserCreateView(CreateView):
                 print(e)
                 messages.error(self.request, 'An error occurred while creating user and employee profile.')
                 return super().form_invalid(form)
+        messages.success(self.request, 'User created successfully.')
         return super().form_valid(form)
         
-

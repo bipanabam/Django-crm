@@ -2,7 +2,6 @@ from django import forms
 
 from .models import Branch, User, Employee
 
-
 class BranchForm(forms.ModelForm):
     class Meta:
         model = Branch
@@ -15,10 +14,10 @@ class BranchForm(forms.ModelForm):
 
 class UserForm(forms.ModelForm):
     confirm_password = forms.CharField(widget=forms.PasswordInput)
-    branch = forms.ModelChoiceField(queryset=Branch.objects.none(), empty_label="Select Branch...", required=False)
+    branch = forms.ModelChoiceField(queryset=Branch.objects.none(), empty_label="Select your Branch", required=False)
     class Meta:
         model = User
-        fields = ['username', 'email', 'first_name', 'last_name', 'password', 'confirm_password', 'branch', 'role']
+        fields = ['username','email', 'first_name', 'last_name', 'password', 'confirm_password', 'branch', 'role']
         widgets = {
             'password': forms.PasswordInput(),
         }
@@ -26,6 +25,13 @@ class UserForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['branch'].queryset = Branch.objects.all()
+        self.fields['username'].widget.attrs['placeholder'] = 'Enter your Username'
+        self.fields['email'].widget.attrs['placeholder'] = 'Enter your Email'
+        self.fields['first_name'].widget.attrs['placeholder'] = 'Enter your First Name'
+        self.fields['last_name'].widget.attrs['placeholder'] = 'Enter your Last Name'
+        self.fields['password'].widget.attrs['placeholder'] = 'Enter your Password'
+        self.fields['confirm_password'].widget.attrs['placeholder'] = 'Confirm your Password'
+        # self.fields['role'].widget.attrs['empty_label'] = 'Select access level'
 
     def clean(self):
         cleaned_data = super().clean()
@@ -42,18 +48,3 @@ class UserForm(forms.ModelForm):
         if password != confirm_password:
             self.add_error('confirm_password', "Passwords do not match")
         return cleaned_data
-    
-    def get_branch_queryset(self, user):
-        """Returns queryset for the branch based on the given user"""
-        if not user or not user.is_authenticated:
-            return Branch.objects.none()
-
-        if user.role == 'admin':
-            return Branch.objects.all()
-
-        try:
-            employee = user.profile
-            if user.role == 'manager':
-                return Branch.objects.filter(id=employee.branch.id)
-        except AttributeError:
-            return Branch.objects.none()
