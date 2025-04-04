@@ -5,7 +5,7 @@ from django.db import transaction
 from django.views.generic import (CreateView, DetailView, UpdateView)
 
 from .models import Branch, User, Employee
-from .forms import BranchForm, UserForm, UserUpdateForm
+from .forms import BranchForm, UserForm, UserUpdateForm, EmployeeForm
 from . import services
 
 # Create your views here.
@@ -57,7 +57,12 @@ class MemberCreateView(CreateView):
                 user = form.save(commit=False)
                 user.save()
                 # Create a employee profile
-                employee = Employee(user=user, branch=branch)
+                employee = Employee(user=user, 
+                                    branch=branch, 
+                                    role=user.role,
+                                    name=f"{user.first_name} {user.last_name}",
+                                    email=user.email
+                                )
                 employee.save()
             except Exception as e:
                 print(e)
@@ -66,10 +71,20 @@ class MemberCreateView(CreateView):
         messages.success(self.request, 'User created successfully.')
         return super().form_valid(form)
     
-class MemeberUpdateView(UpdateView):
+class MemberUpdateView(UpdateView):
     model = User
     form_class = UserUpdateForm
     template_name = 'team_member/update_member.html'
+    success_url = reverse_lazy('team_member')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Member details updated successfully')
+        return super().form_valid(form)
+    
+class MemberDetailView(UpdateView):
+    model = Employee
+    form_class = EmployeeForm
+    template_name = 'team_member/member_detail.html'
     success_url = reverse_lazy('team_member')
 
     def form_valid(self, form):

@@ -1,0 +1,78 @@
+{% extends 'base/base.html' %}
+{% load custom_filters %}
+
+{% block content %}
+<div class="mt-6">
+    <div class="border rounded-xl bg-white p-6 pb-10 gap-5">
+        <div class="flex justify-between">
+            <h1 class="font-semibold text-xl mb-5">Member Profile</h1>
+            <div class="flex gap-6">
+                <a href="{% url 'update_member' object.user.id %}">
+                    <button class='rounded-md bg-[--primary-color] text-white w-40 h-12'>Edit Details</button>
+                </a>
+            </div>
+        </div>
+        <div class="flex items-center w-full justify-between mt-5">
+            <div class="w-1/3 p-10">
+                <svg class="w-32 h-32" viewBox="0 0 41 41" fill="none">
+                    <rect width="41" height="41" rx="20.5" fill="url(#pattern0_2_113)"/>
+                    <defs>
+                    <pattern id="pattern0_2_113" patternContentUnits="objectBoundingBox" width="1" height="1">
+                    <use xlink:href="#image0_2_113" transform="scale(0.00166667)"/>
+                    </pattern>
+                    </defs>
+                </svg> 
+            </div>
+            <div class="w-full flex-col">
+                <form method="post" class="flex flex-col items-center w-9/12 mt-3 ml-3 gap-2">
+                    {% csrf_token %}
+                        <!-- Display non-field errors -->
+                    {% if form.non_field_errors %}
+                        <div class="text-red-500 text-sm mb-4">
+                            {% for error in form.non_field_errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <div class="w-full grid md:grid-cols-2 md:gap-6">
+                        <div class="relative z-0 w-full mb-5 group">
+                            <label for="{{ form.name.id_for_label }}" class="block mb-3 text-xl font-medium ml-3">
+                                {{ form.name.label }}
+                            </label>                             
+                            {{ form.name|add_class:'block w-full h-14 px-4 py-2 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
+                        </div>
+                        <div class="relative z-0 w-full mb-5 group">
+                            <label for="{{ form.role.id_for_label }}" class="block mb-3 text-xl font-medium ml-3">
+                                {{ form.role.label }}
+                            </label>                             
+                            {{ form.role|add_class:'block w-full h-14 px-4 py-2 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
+                        </div>
+                    </div>
+                    <div class="w-full grid md:grid-cols-2 md:gap-6">
+                        <div class="relative z-0 w-full mb-5 group">
+                            <label for="{{ form.email.id_for_label }}" class="block mb-3 text-xl font-medium ml-3">
+                                {{ form.email.label }}
+                            </label>                             
+                            {{ form.email|add_class:'block w-full h-14 px-4 py-2 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
+                        </div>
+                        <div class="relative z-0 w-full mb-5 group">
+                            <label for="{{ form.phone_number.id_for_label }}" class="block mb-3 text-xl font-medium ml-3">
+                                {{ form.phone_number.label }}
+                            </label>                             
+                            {{ form.phone_number|add_class:'block w-full h-14 px-4 py-2 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
+                        </div>
+                    </div>
+                    <div class="relative z-0 w-full mb-5 group">
+                        <label for="{{ form.access_level.id_for_label }}" class="block mb-3 text-xl font-medium ml-3">
+                            {{ form.access_level.label }}
+                        </label>                             
+                        {{ form.access_level|add_class:'block w-full h-14 px-4 py-2 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
+                    </div>
+                    <input type="submit" value="Done"
+                    class="w-full h-16 rounded-md px-7 py-1 bg-[--primary-color] font-normal text-white mt-3" />
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

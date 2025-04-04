@@ -104,7 +104,7 @@
                     <td class="p-2">{{user.role}}</td>
                     <td class="p-2">
                         <div class="flex gap-2">
-                            <a href="{% url 'update_member' user.id %}">
+                            <a href="{% url 'member_detail' user.profile.id %}">
                                 <button class='rounded-md bg-[--primary-color] text-white w-24 h-8'>Edit</button>
                             </a>
                             <button class='rounded-md border border-[--primary-color] bg-gray-50 text-[--primary-color] w-24 h-8'>Remove</button>

@@ -6,5 +6,6 @@ urlpatterns = [
    path('branch/<int:pk>/', views.BranchUpdateView.as_view(), name='branch_detail'),
 
    path('team-member/', views.MemberCreateView.as_view(), name='team_member'),
-   path('team-member/<int:pk>/update/', views.MemeberUpdateView.as_view(), name='update_member'),
+   path('team-member/<int:pk>/update/', views.MemberUpdateView.as_view(), name='update_member'),
+   path('team-member/<int:pk>/', views.MemberDetailView.as_view(), name='member_detail'),
 ]

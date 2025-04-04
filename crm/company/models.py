@@ -59,6 +59,13 @@ class User(AbstractUser):
 class Employee(models.Model):
   branch = models.ForeignKey(Branch, on_delete=models.CASCADE, related_name='employees')
   user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+  name = models.CharField(max_length=50, null=True, blank=True)
+  email = models.EmailField(null=True, blank=True)
+  phone_number = models.CharField(max_length=14, null=True, blank=True)
+  role = models.CharField(max_length=15, null=True, blank=True)
+  access_level = models.CharField(max_length=25, null=True, blank=True) 
+  created_at = models.DateTimeField(auto_now_add=True)
+  updated_at = models.DateTimeField(auto_now=True)
 
   def __str__(self):
     return f"{self.branch.company.name} - {self.branch.name} - {self.user.username} ({self.user.role})"
