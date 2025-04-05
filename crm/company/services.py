@@ -12,6 +12,11 @@ def get_branches(request):
     else:
         return Branch.objects.none()
     
+def get_user_branch(request):
+    user = request.user
+    branch = user.profile.branch
+    return branch
+    
 def get_users(request):
     user = request.user
     company = user.profile.branch.company
