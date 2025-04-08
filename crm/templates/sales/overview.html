@@ -41,93 +41,52 @@ Sales
 <div class="mt-4">
     <div class="flex justify-between items-center mb-4">
         <h1 class="font-semibold text-xl">Client Inquires</h1>
-        <button class=" h-14 flex justify-center items-center rounded-md px-7 py-1 bg-[--primary-color] font-normal text-white mt-3">
-            <svg width="26" height="26" class="mr-3" viewBox="0 0 26 26" fill="none">
-                <path d="M11.917 14.0834H5.41699V11.9167H11.917V5.41675H14.0837V11.9167H20.5837V14.0834H14.0837V20.5834H11.917V14.0834Z" fill="white"/>
-            </svg>    
-            New Inquiry            
-        </button>
+        <a href="{% url 'inquiry_form' %}">
+            <button class=" h-14 flex justify-center items-center rounded-md px-7 py-1 bg-[--primary-color] font-normal text-white mt-3">
+                <svg width="26" height="26" class="mr-3" viewBox="0 0 26 26" fill="none">
+                    <path d="M11.917 14.0834H5.41699V11.9167H11.917V5.41675H14.0837V11.9167H20.5837V14.0834H14.0837V20.5834H11.917V14.0834Z" fill="white"/>
+                </svg>    
+                New Inquiry            
+            </button>
+        </a>
     </div>
 
     <div class="border rounded-lg bg-white p-6">
-        <table class="w-full border-collapse">
+        <table class="w-full table-auto border-collapse">
             <thead>
                 <tr class="border-b border-gray-300">
-                    <th class="p-2 text-left">Client Name</th>
-                    <th class="p-2 text-left">Inquiry Type</th>
-                    <th class="p-2 text-left">Status</th>
-                    <th class="p-2 text-left">Action</th>
+                    <th class="p-2 text-left w-1/4">Client Name</th>
+                    <th class="p-2 text-left w-1/4">Inquiry Type</th>
+                    <th class="p-2 text-left w-1/4">Status</th>
+                    <th class="p-2 text-left w-1/4">Action</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr class="border-b border-gray-300">
-                    <td class="p-2">John Doe</td>
-                    <td class="p-2">Study in UK</td>
-                    <td class="p-2">Pending</td>
-                    <td class="p-2 flex">
+            <tbody class="w-full">
+                {% for client in clients %}
+                <tr class="border-b border-gray-300 w-full">
+                    <td class="p-2">{{ client.name }}</td>
+                    <td class="p-2">{{ client.preferred_country }}</td>
+                    <td class="p-2">{{ client.status }}</td>
+                    <td class="p-2">
                         <div class="flex gap-2">
                             <a href="#">
-                                <button class='rounded-md bg-[--primary-color] text-white w-24 h-8'>Edit</button>
+                                <button class="rounded-md bg-[--primary-color] text-white w-24 h-8">Edit</button>
                             </a>
-                            <button class='rounded-md border border-[--primary-color] bg-gray-50 text-[--primary-color] w-24 h-8'>Remove</button>
-                        </div>                                     
+                            <button class="rounded-md border border-[--primary-color] bg-gray-50 text-[--primary-color] w-24 h-8">Remove</button>
+                        </div>
                     </td>
                 </tr>
-                <tr class="border-b border-gray-300">
-                    <td class="p-2">John Doe</td>
-                    <td class="p-2">Study in UK</td>
-                    <td class="p-2">Pending</td>
-                    <td class="p-2 flex">
-                        <div class="flex gap-2">
-                            <a href="#">
-                                <button class='rounded-md bg-[--primary-color] text-white w-24 h-8'>Edit</button>
-                            </a>
-                            <button class='rounded-md border border-[--primary-color] bg-gray-50 text-[--primary-color] w-24 h-8'>Remove</button>
-                        </div>                                     
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center py-3">
+                        No Clients yet.
                     </td>
                 </tr>
-                <tr class="border-b border-gray-300">
-                    <td class="p-2">John Doe</td>
-                    <td class="p-2">Study in UK</td>
-                    <td class="p-2">Pending</td>
-                    <td class="p-2 flex">
-                        <div class="flex gap-2">
-                            <a href="#">
-                                <button class='rounded-md bg-[--primary-color] text-white w-24 h-8'>Edit</button>
-                            </a>
-                            <button class='rounded-md border border-[--primary-color] bg-gray-50 text-[--primary-color] w-24 h-8'>Remove</button>
-                        </div>                                    
-                    </td>
-                </tr>
-                <tr class="border-b border-gray-300">
-                    <td class="p-2">John Doe</td>
-                    <td class="p-2">Study in UK</td>
-                    <td class="p-2">Pending</td>
-                    <td class="p-2 flex">
-                        <div class="flex gap-2">
-                            <a href="#">
-                                <button class='rounded-md bg-[--primary-color] text-white w-24 h-8'>Edit</button>
-                            </a>
-                            <button class='rounded-md border border-[--primary-color] bg-gray-50 text-[--primary-color] w-24 h-8'>Remove</button>
-                        </div>                                     
-                    </td>
-                </tr>
-                <tr class="border-b border-gray-300">
-                    <td class="p-2">John Doe</td>
-                    <td class="p-2">Study in UK</td>
-                    <td class="p-2">Pending</td>
-                    <td class="p-2 flex">
-                        <div class="flex gap-2">
-                            <a href="#">
-                                <button class='rounded-md bg-[--primary-color] text-white w-24 h-8'>Edit</button>
-                            </a>
-                            <button class='rounded-md border border-[--primary-color] bg-gray-50 text-[--primary-color] w-24 h-8'>Remove</button>
-                        </div>                                   
-                    </td>
-                </tr>
+                {% endfor %}
             </tbody>
         </table>           
     </div>
+    
 </div>
 
 <!--Recent Clients-->
