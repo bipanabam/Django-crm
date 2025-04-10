@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 
-from .forms import CountryForm, DocumentFormSet
-from .models import Country
+from .forms import CountryForm, DocumentFormSet, CountryWiseClientDocumentFormSet
+from .models import Country, CountryWiseClientDocument
 
 from company.services import get_user_branch
 
@@ -33,4 +33,50 @@ def country_wise_document_view(request):
         'country_wise_documents': country_wise_documents,
     })
 
+def documentation_overview(request):
+    branch = get_user_branch(request)
+    countrywise_documentation = Country.objects.filter(branch=branch)
+    countrywise_client_document = CountryWiseClientDocument.objects.filter(country__branch=branch)
 
+    # client document form
+    if request.method == 'POST':
+        formset = CountryWiseClientDocumentFormSet(request.POST, request.FILES, queryset=CountryWiseClientDocument.objects.none())
+        if formset.is_valid():
+            instances = formset.save(commit=False)
+            print(instances)
+            # for instance in instances:
+            #         instance.client = client
+            #         instance.country = country
+            #         instance.save()
+            return redirect('documentation_overview')
+        else:
+            formset = CountryWiseClientDocumentFormSet(queryset=CountryWiseClientDocument.objects.none())
+
+    context = {
+        'countries_documentation': countrywise_documentation,
+        'formset': formset,
+        'countrywise_client_document': countrywise_client_document,
+    }
+    return render(request, 'documentation/overview.html')
+
+# def upload_documents(request, client_id):
+#     client = Client.objects.get(id=client_id)
+#     country = client.country  # Assuming client has a related country
+
+#     if request.method == 'POST':
+#         formset = CountryWiseClientDocumentFormSet(request.POST, request.FILES, queryset=CountryWiseClientDocument.objects.none())
+#         if formset.is_valid():
+#             instances = formset.save(commit=False)
+#             for instance in instances:
+#                 instance.client = client
+#                 instance.country = country
+#                 instance.save()
+#             return redirect('some_success_page')
+#     else:
+#         formset = CountryWiseClientDocumentFormSet(queryset=CountryWiseClientDocument.objects.none())
+
+#     return render(request, 'upload_documents.html', {
+#         'formset': formset,
+#         'client': client,
+#         'country': country,
+#     })

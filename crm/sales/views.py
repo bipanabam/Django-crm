@@ -50,12 +50,10 @@ def inquiry_form_view(request):
                 client.branch = get_user_branch(request)
                 client.created_by = request.user
                 client.save()
-                print(client)
                 for form in document_formset:
                     document = form.save(commit=False)
                     document.client = client
                     document.save()
-                    print(document)
                 return redirect('sales')
         else:
             context['form'] = client_form
