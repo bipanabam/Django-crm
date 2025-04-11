@@ -5,7 +5,7 @@ from .models import Branch, User, Employee
 class BranchForm(forms.ModelForm):
     class Meta:
         model = Branch
-        fields = ['company', 'name', 'country', ]
+        fields = ['name', 'country', ]
 
     def __init__(self, *args, **kwargs):
         super(BranchForm, self).__init__(*args, **kwargs)

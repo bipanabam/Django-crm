@@ -1,36 +1,45 @@
+{% load custom_filters %}
+
 <div class="mt-6">
-    <h1 class="font-semibold text-xl mb-5">Upload User's New Document</h1>
+    <h1 class="font-semibold text-xl mb-5">Upload User's New Documents</h1>
     <div class="flex items-center justify-between border rounded-xl bg-white p-6 pb-10">
-        <form method="post" class="flex flex-col items-center w-9/12 mt-3 ml-3 gap-2" enctype="multipart/form-data">
+        <form method="post" class="flex flex-col items-center w-full w-mt-3 ml-3 gap-2" enctype="multipart/form-data">
             {% csrf_token %}
-            <div id="formset-container">
+            <div id="formset-container" class="w-11/12">
                 {{ formset.management_form }}
                 {% for form in formset %}
-                <div class="form-row">
+                <div class="form-row w-full">
                     {% if forloop.first %}
                         <!-- Show all fields for the first form -->
                         {% for field in form %}
-                            <div class="relative z-0 mb-5 group w-full">
-                                <label for="{{ field.id_for_label }}" class="block mb-3 text-xl font-medium ml-3">
-                                    {{ field.label }}
-                                </label>                             
-                                {{ field|add_class:'block w-full h-14 px-4 py-2 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
-                            </div>
-                        {% else %}
-                            <!-- Show only selected fields with delete option -->
-                            <div class="relative z-0 mb-5 group w-full">
-                                <label for="{{ form.document_type.id_for_label }}" class="block mb-3 text-xl font-medium ml-3">
-                                    {{ form.document_type.label }}
-                                </label>                             
-                                {{ form.document_type|add_class:'block w-full h-14 px-4 py-2 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
-                            </div>
-                            <div class="relative z-0 mb-5 group w-full">
-                                <label for="{{ form.document_file.id_for_label }}" class="block mb-3 text-xl font-medium ml-3">
-                                    {{ form.document_file.label }}
-                                </label>                             
-                                {{ form.document_file|add_class:'block w-full h-14 px-4 py-2 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
-                            </div>
-                            <button type="button" class="remove-form btn btn-sm btn-danger">❌ Remove</button>
+                            {% if field.name != 'id' and field.name != 'DELETE' %}
+                                <div class="relative z-0 mb-5 group w-full">
+                                    <label for="{{ field.id_for_label }}" class="block mb-3 text-xl font-medium">
+                                        {{ field.label }}
+                                    </label> 
+                                    {% if field.name == 'country'%}     
+                                    {{ field|add_class:'country-select block w-full h-14 px-4 py-4 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
+                                    {% else %}                       
+                                    {{ field|add_class:'block w-full h-14 px-4 py-4 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <!-- Show only selected fields with delete option -->
+                        <div class="relative z-0 mb-5 group w-full">
+                            <label for="{{ form.document_type.id_for_label }}" class="block mb-3 text-xl font-medium ml-3">
+                                {{ form.document_type.label }}
+                            </label>                             
+                            {{ form.document_type|add_class:'block w-full h-14 px-4 py-2 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
+                        </div>
+                        <div class="relative z-0 mb-5 group w-full">
+                            <label for="{{ form.document_file.id_for_label }}" class="block mb-3 text-xl font-medium ml-3">
+                                {{ form.document_file.label }}
+                            </label>                             
+                            {{ form.document_file|add_class:'block w-full h-14 px-4 py-2 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
+                        </div>
+                        <button type="button" class="remove-form btn btn-sm btn-danger">❌ Remove</button>
                     {% endif %}
                     <!-- Display field-specific errors -->
                     {% if field.errors %}
@@ -39,83 +48,113 @@
                 </div>
                 {% endfor %}
             </div>
+            
+            <button type="button" id="add-form-btn" class="flex items-center gap-1 mt-2">
+                <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                    <path d="M22.1668 15.1667H15.1668V22.1667H12.8335V15.1667H5.8335V12.8333H12.8335V5.83334H15.1668V12.8333H22.1668V15.1667Z" fill="#888888"/>
+                </svg>  
+                Add Document</button>
             <input type="submit" value="Submit"
             class="w-full h-16 rounded-md px-7 py-1 bg-[--primary-color] font-normal text-white mt-3" />
         </form>
     </div>
 </div>
 
-{% comment %} 
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    <div id="formset-container">
-        {{ formset.management_form }}
-
-        {% for form in formset %}
-            <div class="form-row">
-                {% if forloop.first %}
-                    <!-- Show all fields for the first form -->
-                    {% for field in form %}
-                        <div class="form-group">
-                            {{ field.label_tag }} {{ field }}
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <!-- Show only selected fields with delete option -->
-                    <div class="form-group">
-                        {{ form.document_type.label_tag }} {{ form.document_type }}
-                    </div>
-                    <div class="form-group">
-                        {{ form.document_file.label_tag }} {{ form.document_file }}
-                    </div>
-                    <button type="button" class="remove-form btn btn-sm btn-danger">❌ Remove</button>
-                {% endif %}
-            </div>
-        {% endfor %}
+<!--Extra form-->
+<div id="empty-form-template" class="hidden">
+    <div class="form-container">
+        {% comment %} <div class="relative z-0 mb-5 group w-full">
+            <label for="{{ formset.empty_form.country.id_for_label }}" class="block mb-3 text-xl font-medium ml-3">Select Country</label>
+            {{ formset.empty_form.country|add_class:"country-select block w-full h-14 px-4 py-2 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" }}
+        </div> {% endcomment %}
+        <div class="relative z-0 mb-5 group w-full">
+            <label for="{{ formset.empty_form.document_type.id_for_label }}" class="block mb-3 text-xl font-medium ml-3">Select Document type</label>
+            <select name="{{ formset.empty_form.document_type.html_name }}" id="{{ formset.empty_form.document_type.id_for_label }}" class="block w-full h-14 px-4 py-2 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                <option value="">---------</option>
+            </select>
+        </div>
+        <div class="relative z-0 mb-5 group w-full">
+            <label for="{{ formset.empty_form.document_file.id_for_label }}" class="block mb-3 text-xl font-medium ml-3">Choose Document file</label>
+            {{ formset.empty_form.document_file|add_class:"block w-full h-14 px-4 py-2 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" }}
+        </div>
+        <button type="button" class="remove-form btn btn-sm btn-danger mb-5">❌ Remove</button>
     </div>
-
-    <button type="button" id="add-form" class="btn btn-sm btn-primary mt-2">➕ Add Document</button>
-    <button type="submit" class="btn btn-success mt-2">Save</button>
-</form> {% endcomment %}
+</div>
 
 <script>
-    const addFormBtn = document.getElementById('add-form');
-    const formsetContainer = document.getElementById('formset-container');
-    const totalForms = document.getElementById('id_form-TOTAL_FORMS');
-
-    addFormBtn.addEventListener('click', function () {
-        const formCount = parseInt(totalForms.value);
-        const newForm = document.createElement('div');
-        newForm.classList.add('form-row');
-
-        const docType = document.getElementById('id_form-0-document_type');
-        const docTypeOptions = docType.innerHTML;
-
-        newForm.innerHTML = `
-            <div class="relative z-0 mb-5 group w-full">
-                <label for="id_form-${formCount}-document_type" class="block mb-3 text-xl font-medium ml-3">Document type:</label>
-                <select name="form-${formCount}-document_type" id="id_form-${formCount}-document_type" class="block w-full h-14 px-4 py-2 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                    ${docTypeOptions}
-                </select>
-            </div>
-            <div class="relative z-0 mb-5 group w-full">
-                <label for="id_form-${formCount}-document_file" class="block mb-3 text-xl font-medium ml-3">Document file:</label>
-                <input type="file" name="form-${formCount}-document_file" class="block w-full h-14 px-4 py-2 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50" id="id_form-${formCount}-document_file">
-            </div>
-            <button type="button" class="remove-form btn btn-sm btn-danger">❌ Remove</button>
-        `;
-
-        formsetContainer.appendChild(newForm);
-        totalForms.value = formCount + 1;
+    document.addEventListener("DOMContentLoaded", function () {
+        // Attach change event to all country selects
+        document.querySelectorAll(".country-select").forEach(function (countrySelect) {
+            countrySelect.addEventListener("change", function () {
+                const countryId = this.value;
+                const formRow = this.closest(".form-row");
+                const docTypeSelect = formRow.querySelector("select[name$='-document_type']");
+    
+                // Clear current options
+                docTypeSelect.innerHTML = '<option value="">---------</option>';
+    
+                // Fetch document types for selected country
+                if (countryId) {
+                    fetch(`/documentation/ajax/get-document-types/?country_id=${countryId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            data.document_types.forEach(doc => {
+                                const option = document.createElement("option");
+                                option.value = doc.id;
+                                option.text = doc.document_title;
+                                docTypeSelect.appendChild(option);
+                            });
+                        });
+                }
+            });
+        });
     });
 
-    // Delegate click event to remove buttons
-    formsetContainer.addEventListener('click', function (e) {
-        if (e.target.classList.contains('remove-form')) {
-            e.target.closest('.form-row').remove();
-            let forms = formsetContainer.querySelectorAll('.form-row');
-            totalForms.value = forms.length;
-            // Optional: renumber input names/ids here if necessary
-        }
+    document.addEventListener("DOMContentLoaded", function () {
+        const addFormBtn = document.getElementById("add-form-btn");
+        const formsetContainer = document.getElementById("formset-container");
+        const totalForms = document.getElementById("id_form-TOTAL_FORMS");
+        const emptyFormTemplate = document.getElementById("empty-form-template").innerHTML;
+    
+        addFormBtn.addEventListener("click", function () {
+            const formCount = parseInt(totalForms.value);
+            let newFormHtml = emptyFormTemplate.replace(/form-__prefix__/g, `form-${formCount}`)
+                                               .replace(/__prefix__/g, `${formCount}`);
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = newFormHtml;
+    
+            const newForm = tempDiv.firstElementChild;
+            formsetContainer.appendChild(newForm);
+            totalForms.value = formCount + 1;
+    
+            // Handle country -> document type fetch
+            const CountrySelect = document.querySelector('.country-select');
+            const docTypeSelect = newForm.querySelector("select[name$='-document_type']");
+    
+            if (CountrySelect) {
+                const selectedCountryId = CountrySelect.value;
+                if (selectedCountryId) {
+                    fetch(`/documentation/ajax/get-document-types/?country_id=${selectedCountryId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.document_types.forEach(doc => {
+                            const option = document.createElement("option");
+                            option.value = doc.id;
+                            option.text = doc.document_title;
+                            docTypeSelect.appendChild(option);
+                        });
+                    });
+                } else {
+                    newDocumentTypeSelect.innerHTML = '<option value="">---------</option>';
+                }
+            }
+    
+            // Remove form button
+            const removeBtn = newForm.querySelector(".remove-form");
+            removeBtn.addEventListener("click", function () {
+                newForm.remove();
+            });
+        });
     });
 </script>
+    

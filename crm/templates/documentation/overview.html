@@ -20,10 +20,16 @@
                 <tr class="border-b border-gray-300">
                     <td class="p-2">{{country.name}}</td>
                     <td class="p-2">
-                        <button class='rounded-md bg-[--primary-color] text-white w-24 h-8'>Edit</button>
+                        <button class='rounded-md bg-[--primary-color] text-white w-24 h-8'>View</button>
                     </td>
                     <td class="p-2">
-                        <button class='rounded-md border border-[--primary-color] bg-gray-50 text-[--primary-color] w-24 h-8'>Remove</button>
+                        <button class='rounded-md border border-[--primary-color] bg-gray-50 text-[--primary-color] w-24 h-8'>View</button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" class="text-center py-3">
+                        No Country-wise documents yet.
                     </td>
                 </tr>
                 {% endfor %}
@@ -61,6 +67,12 @@
                             <button class='rounded-md bg-[--primary-color] text-white w-24 h-8'>Edit</button>
                             <button class='rounded-md border border-[--primary-color] bg-gray-50 text-[--primary-color] w-24 h-8'>Remove</button>
                         </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-3">
+                        No Client documents yet.
                     </td>
                 </tr>
                 {% endfor %}

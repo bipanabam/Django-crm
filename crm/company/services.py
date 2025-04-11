@@ -18,6 +18,8 @@ def get_user_branch(request):
     return branch
     
 def get_users(request):
+    if request.user.is_superuser:
+        return User.objects.filter(is_superuser=False)
     user = request.user
     company = user.profile.branch.company
     branch = user.profile.branch

@@ -18,7 +18,9 @@ def branch_view(request, *args, **kwargs):
     }
     if request.method == 'POST':
         if form.is_valid():
-            form.save()
+            branch = form.save(commit=False)
+            branch.company = request.user.profile.branch.company
+            branch.save()
             messages.success(request, 'Branch created successfully.')
             return redirect('branches')
         else:

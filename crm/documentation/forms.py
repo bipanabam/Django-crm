@@ -3,6 +3,11 @@ from django.forms import inlineformset_factory, modelformset_factory
 
 from .models import Country, DocumentType, CountryWiseClientDocument
 
+from sales.models import Client
+
+from sales.services import get_all_clients
+from .services import get_all_countries
+
 class CountryForm(forms.ModelForm):
     class Meta:
         model = Country
@@ -30,9 +35,33 @@ class CountryWiseClientDocumentForm(forms.ModelForm):
     class Meta:
         model = CountryWiseClientDocument
         fields = ['country', 'client', 'document_type', 'document_file']
+        labels = {
+            'country': 'Select Country',
+            'client': 'Enter Client Name',
+            'document_type': 'Select Document Type',
+            'document_file': 'Choose Document file'
+        }
 
     def __init__(self, *args, **kwargs):
+        request = kwargs.pop('request', None)
         super(CountryWiseClientDocumentForm, self).__init__(*args, **kwargs)
+        self.fields['country'].queryset = get_all_countries(request)
+        self.fields['client'].queryset = get_all_clients(request)
+        self.fields['document_type'].queryset = DocumentType.objects.none()
+
+        # Check if this form is being submitted
+        if self.is_bound:
+            country_field_name = self.add_prefix('country')
+            document_type_field_name = self.add_prefix('country')
+            country_id = self.data.get(country_field_name)
+            if country_id:
+                try:
+                    country_id = int(country_id)
+                    self.fields['document_type'].queryset = DocumentType.objects.filter(country_id=country_id)
+                except (ValueError, TypeError):
+                    pass
+        elif self.instance.pk:
+            self.fields['document_type'].queryset = DocumentType.objects.filter(country=self.instance.country)
 
 
 CountryWiseClientDocumentFormSet = modelformset_factory(

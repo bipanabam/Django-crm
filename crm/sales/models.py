@@ -27,6 +27,9 @@ class Client(models.Model):
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now=True)
 
+  def __str__(self):
+    return f"{self.name}"
+
 class ClientDocument(models.Model):
   client = models.ForeignKey(Client, on_delete=models.CASCADE)
   document_type = models.CharField(max_length=250)

@@ -10,10 +10,7 @@ from company.services import get_user_branch
 
 # Create your views here.
 def sales_view(request):
-    if request.user.role == 'admin':
-        clients = services.get_all_clients(request)
-    else:
-        clients = services.get_branch_clients(request)
+    clients = services.get_all_clients(request)
 
     context = {
         'clients': clients

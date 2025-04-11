@@ -15,28 +15,28 @@
     <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
 </head>
 <body>
-    <div class="container w-full h-screen flex justify-center items-center bg-gray-100">
-        <div class="flex flex-col md:flex-row m-14 bg-white rounded-3xl shadow-2xl overflow-hidden lg:w-[1500px] lg:h-[1000px]">
+    <div class="w-full h-screen flex justify-center items-center bg-gray-100">
+        <div class="flex flex-col md:flex-row m-14 bg-white rounded-3xl shadow-2xl overflow-hidden lg:w-[1050px] lg:h-[600px]">
             <!-- Image -->
             <div class="w-1/2 flex items-center justify-center">
                 <img src="{% static '../media/assets/login-image.jpg' %}" class="w-full h-full"/>
             </div>
             <!-- Login Form -->
-            <div class="w-1/2 flex flex-col items-center bg-white gap-2">
+            <div class="w-1/2 flex flex-col items-center bg-white gap-1">
                 <div class="flex flex-col items-center">
-                    <div class="flex items-center ">
-                        <img src="{% static '../media/company_logos/company-logo.png' %}" alt="Logo" class="w-48 h-48" />
+                    <div class="flex items-center">
+                        <img src="{% static '../media/company_logos/company-logo.png' %}" alt="Logo" class="w-32 h-32" />
                     </div>
                     <div class="flex flex-col items-center">
-                        <h1 class="text-center font-semibold text-6xl mb-2">Login Page</h1>
-                        <svg width='76' height='76' viewBox="0 0 76 76" fill="none" >
+                        <h1 class="text-center font-semibold text-3xl mb-2">Login Page</h1>
+                        <svg width='44' height='44' viewBox="0 0 76 76" fill="none" >
                             <path d="M42.75 28.5C42.75 29.7598 42.2496 30.968 41.3588 31.8588C40.468 32.7496 39.2598 33.25 38 33.25V36.4167C39.0397 36.4167 40.0691 36.2119 41.0296 35.8141C41.9901 35.4162 42.8628 34.8331 43.598 34.0979C44.3331 33.3628 44.9162 32.4901 45.3141 31.5296C45.7119 30.5691 45.9167 29.5396 45.9167 28.5H42.75ZM38 33.25C36.7403 33.25 35.5321 32.7496 34.6413 31.8588C33.7505 30.968 33.25 29.7598 33.25 28.5H30.0834C30.0834 29.5396 30.2882 30.5691 30.686 31.5296C31.0839 32.4901 31.667 33.3628 32.4021 34.0979C33.8868 35.5826 35.9004 36.4167 38 36.4167V33.25ZM33.25 28.5C33.25 27.2402 33.7505 26.0321 34.6413 25.1413C35.5321 24.2505 36.7403 23.75 38 23.75V20.5833C35.9004 20.5833 33.8868 21.4174 32.4021 22.9021C30.9175 24.3867 30.0834 26.4004 30.0834 28.5H33.25ZM38 23.75C39.2598 23.75 40.468 24.2505 41.3588 25.1413C42.2496 26.0321 42.75 27.2402 42.75 28.5H45.9167C45.9167 26.4004 45.0826 24.3867 43.598 22.9021C42.1133 21.4174 40.0997 20.5833 38 20.5833V23.75ZM16.359 56.544L14.839 56.0943L14.5952 56.9208L15.1557 57.5763L16.359 56.544ZM59.641 56.544L60.8444 57.5763L61.4049 56.9208L61.1579 56.0943L59.641 56.544ZM28.5 49.0833H47.5V45.9167H28.5V49.0833ZM28.5 45.9167C25.4311 45.9162 22.444 46.9066 19.9832 48.7403C17.5223 50.5741 15.7161 53.1534 14.839 56.0943L17.8759 56.9968C18.5585 54.7097 19.9613 52.704 21.8755 51.2781C23.7898 49.8523 26.1132 49.0825 28.5 49.0833V45.9167ZM38 64.9167C34.1154 64.9208 30.2761 64.0821 26.7471 62.4584C23.218 60.8346 20.0833 58.4645 17.5592 55.5117L15.1557 57.5763C17.9774 60.8752 21.4809 63.5229 25.4248 65.3369C29.3687 67.1508 33.659 68.0878 38 68.0833V64.9167ZM47.5 49.0833C49.8873 49.0827 52.211 49.853 54.1253 51.2794C56.0396 52.7058 57.4421 54.7122 58.1242 57L61.1579 56.0943C60.2808 53.1534 58.4778 50.5741 56.0169 48.7403C53.5561 46.9066 50.569 45.9162 47.5 45.9167V49.0833ZM58.4409 55.5117C55.9168 58.4645 52.7821 60.8346 49.253 62.4584C45.724 64.0821 41.8847 64.9208 38 64.9167V68.0833C42.3411 68.0878 46.6314 67.1508 50.5753 65.3369C54.5192 63.5229 58.0227 60.8752 60.8444 57.5763L58.4409 55.5117Z" fill="black"/>
                         </svg>    
                     </div>
-                    <form method="POST" class="flex flex-col p-8 w-full">
+                    <form method="POST" class="flex flex-col p-5 w-[400px]">
                         {% csrf_token %}
-                            <div class="relative z-0 mb-5 group w-full">
-                                <label for="{{ form.email.id_for_label }}" class="block mb-3 text-xl font-medium text-gray-500 ">
+                            <div class="relative z-0 mb-4 group w-full">
+                                <label for="{{ form.email.id_for_label }}" class="block mb-3 text-md font-medium text-gray-500 ">
                                     {{ form.email.label }}
                                 </label>
                                 <div class="relative">
@@ -46,11 +46,11 @@
                                             <path d="M8.84733 36.8334C7.96439 36.8334 7.22775 36.5382 6.63742 35.9479C6.04708 35.3575 5.75128 34.6203 5.75 33.736V13.0974C5.75 12.2144 6.04581 11.4778 6.63742 10.8874C7.22903 10.2971 7.96503 10.0013 8.84542 10H37.1546C38.0363 10 38.7723 10.2958 39.3626 10.8874C39.9529 11.4791 40.2487 12.2157 40.25 13.0974V33.7379C40.25 34.6196 39.9542 35.3563 39.3626 35.9479C38.771 36.5395 38.035 36.8346 37.1546 36.8334H8.84733ZM23 23.639L7.66667 13.6129V33.7379C7.66667 34.0817 7.77719 34.3641 7.99825 34.5851C8.21931 34.8062 8.50233 34.9167 8.84733 34.9167H37.1546C37.4983 34.9167 37.7807 34.8062 38.0017 34.5851C38.2228 34.3641 38.3333 34.081 38.3333 33.736V13.611L23 23.639ZM23 21.5L37.743 11.9167H8.257L23 21.5ZM7.66667 13.6129V11.9167V33.7379C7.66667 34.0817 7.77719 34.3641 7.99825 34.5851C8.21931 34.8062 8.50233 34.9167 8.84733 34.9167H7.66667V13.6129Z" fill="black" fill-opacity="0.9"/>
                                         </svg>                                    
                                     </div>
-                                    {{ form.email|add_class:'block pl-20 w-[450px] h-20 px-4 py-2 text-gray-400 bg-white border border-black rounded-2xl focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
+                                    {{ form.email|add_class:'block pl-20 w-full h-14 px-4 py-2 text-gray-400 bg-white border border-black rounded-2xl focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
                                 </div>
                             </div>
-                            <div class="relative z-0 mb-5 group w-full">
-                                <label for="{{ form.password.id_for_label }}" class="block mb-3 text-xl font-medium text-gray-500">
+                            <div class="relative z-0 mb-4 group w-full">
+                                <label for="{{ form.password.id_for_label }}" class="block mb-3 text-md font-medium text-gray-500">
                                     {{ form.password.label }}
                                 </label>
                                 <div class="relative">
@@ -60,14 +60,14 @@
                                             <path d="M29.5625 16.125C31.0468 16.125 32.25 14.9218 32.25 13.4375C32.25 11.9532 31.0468 10.75 29.5625 10.75C28.0782 10.75 26.875 11.9532 26.875 13.4375C26.875 14.9218 28.0782 16.125 29.5625 16.125Z" fill="black" fill-opacity="0.7"/>
                                         </svg>                                    
                                     </div>                              
-                                    {{ form.password|add_class:'block w-[450px] h-20 pl-20 px-4 py-2 text-gray-400 bg-white border border-black rounded-2xl focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
+                                    {{ form.password|add_class:'block w-full h-14 pl-20 px-4 py-2 text-gray-400 bg-white border border-black rounded-2xl focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
                                 </div>
                             </div>
                             <div class="flex justify-end text-center font-semibold text-red-600">
                                 <a href="">Forgot Password?</a>
                             </div>
-                            <div class="flex flex-col items-center mt-20">
-                                <button type="submit" class="flex items-center justify-center w-[229px] h-[65px] px-4 py-2 text-2xl font-medium text-white bg-[--primary-color] rounded-md">
+                            <div class="flex flex-col items-center mt-4">
+                                <button type="submit" class="flex items-center justify-center w-[200px] h-11 px-4 py-2 text-2xl font-medium text-white bg-[--primary-color] rounded-md">
                                     Login
                                 </button>
                                 <div class="font-semibold mt-3">

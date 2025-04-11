@@ -53,7 +53,8 @@ Documentation
                                 <path d="M22.1668 15.1667H15.1668V22.1667H12.8335V15.1667H5.8335V12.8333H12.8335V5.83334H15.1668V12.8333H22.1668V15.1667Z" fill="#888888"/>
                             </svg>    
                         </div>  
-                    </div>              
+                    </div>   
+                    <button type="button" class="remove-form btn btn-sm btn-danger">❌ Remove</button>           
                 </div>
             </div>
 
@@ -113,6 +114,12 @@ Documentation
             formsetArea.appendChild(tempDiv.firstElementChild);
 
             totalForms.value = formIndex + 1;
+        }
+        if (e.target.classList.contains('remove-form')) {
+            e.target.closest('.add-document-type').remove();
+            let forms = formsetArea.querySelectorAll('.formset-area');
+            totalForms.value = forms.length;
+            // Optional: renumber input names/ids here if necessary
         }
     });
 });
