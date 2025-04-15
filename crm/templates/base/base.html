@@ -28,7 +28,7 @@
             </div>
             {% if messages %}
                 {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}{% if message.tags == 'error' %} alert-danger{% endif %}">
+                <div class="border w-7/12 h-6 text-black text-sm mt-2 mb-2 {% if message.tags == 'error' %} bg-red-400 {% elif message.tags == 'success' %} bg-green-400 {% endif %}">
                     {{ message }}
                 </div>        
                 {% endfor %}

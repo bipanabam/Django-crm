@@ -7,6 +7,16 @@
             {% csrf_token %}
             <div id="formset-container" class="w-11/12">
                 {{ formset.management_form }}
+                {% if formset.non_form_errors %}
+                    <div class="text-red-500 text-sm mb-3">
+                        {{ formset.non_form_errors }}
+                    </div>
+                {% endif %}
+                <!-- Display field-specific errors -->
+                {% if formset.errors %}
+                    <p class="text-red-500 text-sm mt-0">{{ field.errors|striptags }}</p>
+                {% endif %}
+
                 {% for form in formset %}
                 <div class="form-row w-full">
                     {% if forloop.first %}
@@ -31,19 +41,15 @@
                             <label for="{{ form.document_type.id_for_label }}" class="block mb-3 text-xl font-medium ml-3">
                                 {{ form.document_type.label }}
                             </label>                             
-                            {{ form.document_type|add_class:'block w-full h-14 px-4 py-2 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
+                            {{ form.document_type|add_class:'block w-full h-14 px-4 py-4 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
                         </div>
                         <div class="relative z-0 mb-5 group w-full">
                             <label for="{{ form.document_file.id_for_label }}" class="block mb-3 text-xl font-medium ml-3">
                                 {{ form.document_file.label }}
                             </label>                             
-                            {{ form.document_file|add_class:'block w-full h-14 px-4 py-2 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
+                            {{ form.document_file|add_class:'block w-full h-14 px-4 py-4 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
                         </div>
                         <button type="button" class="remove-form btn btn-sm btn-danger">❌ Remove</button>
-                    {% endif %}
-                    <!-- Display field-specific errors -->
-                    {% if field.errors %}
-                        <p class="text-red-500 text-sm mt-0">{{ field.errors|striptags }}</p>
                     {% endif %}
                 </div>
                 {% endfor %}
@@ -54,7 +60,7 @@
                     <path d="M22.1668 15.1667H15.1668V22.1667H12.8335V15.1667H5.8335V12.8333H12.8335V5.83334H15.1668V12.8333H22.1668V15.1667Z" fill="#888888"/>
                 </svg>  
                 Add Document</button>
-            <input type="submit" value="Submit"
+            <input type="submit" value="Upload Document"
             class="w-full h-16 rounded-md px-7 py-1 bg-[--primary-color] font-normal text-white mt-3" />
         </form>
     </div>
@@ -62,21 +68,20 @@
 
 <!--Extra form-->
 <div id="empty-form-template" class="hidden">
-    <div class="form-container">
-        {% comment %} <div class="relative z-0 mb-5 group w-full">
-            <label for="{{ formset.empty_form.country.id_for_label }}" class="block mb-3 text-xl font-medium ml-3">Select Country</label>
-            {{ formset.empty_form.country|add_class:"country-select block w-full h-14 px-4 py-2 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" }}
-        </div> {% endcomment %}
+    <div class="form-container items-center">
         <div class="relative z-0 mb-5 group w-full">
             <label for="{{ formset.empty_form.document_type.id_for_label }}" class="block mb-3 text-xl font-medium ml-3">Select Document type</label>
-            <select name="{{ formset.empty_form.document_type.html_name }}" id="{{ formset.empty_form.document_type.id_for_label }}" class="block w-full h-14 px-4 py-2 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+            <select name="{{ formset.empty_form.document_type.html_name }}" id="{{ formset.empty_form.document_type.id_for_label }}" class="block w-full h-14 px-4 py-4 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
                 <option value="">---------</option>
             </select>
         </div>
         <div class="relative z-0 mb-5 group w-full">
             <label for="{{ formset.empty_form.document_file.id_for_label }}" class="block mb-3 text-xl font-medium ml-3">Choose Document file</label>
-            {{ formset.empty_form.document_file|add_class:"block w-full h-14 px-4 py-2 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" }}
+            {{ formset.empty_form.document_file|add_class:"block w-full h-14 px-4 py-4 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" }}
         </div>
+        <input type="hidden" name="{{ formset.empty_form.country.html_name }}" class="hidden-country-input" />
+        <input type="hidden" name="{{ formset.empty_form.client.html_name }}" class="hidden-client-input" />
+
         <button type="button" class="remove-form btn btn-sm btn-danger mb-5">❌ Remove</button>
     </div>
 </div>
@@ -126,10 +131,19 @@
             const newForm = tempDiv.firstElementChild;
             formsetContainer.appendChild(newForm);
             totalForms.value = formCount + 1;
-    
+
             // Handle country -> document type fetch
             const CountrySelect = document.querySelector('.country-select');
             const docTypeSelect = newForm.querySelector("select[name$='-document_type']");
+            // Get values from the first form
+            const selectedCountry = CountrySelect ? CountrySelect.value : "";
+            const selectedClient = document.querySelector("[name$='-client']")?.value || "";
+
+            // Fill hidden inputs in new form
+            const countryInput = newForm.querySelector(".hidden-country-input");
+            const clientInput = newForm.querySelector(".hidden-client-input");
+            if (countryInput) countryInput.value = selectedCountry;
+            if (clientInput) clientInput.value = selectedClient;
     
             if (CountrySelect) {
                 const selectedCountryId = CountrySelect.value;

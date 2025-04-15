@@ -6,7 +6,6 @@
 <div class="mt-6">
     <h1 class="font-semibold text-xl mb-5">Country Wise Document</h1>
     <div class="border rounded-xl bg-white p-6">
-        <h2 class="font-semibold text-lg mb-5">Team List</h2>
         <table class="w-full border-collapse">
             <thead>
                 <tr class="border-b border-gray-300 text-gray-400 font-normal">
@@ -52,7 +51,7 @@
                     <th class="p-2 text-left">Document Type</th>
                     <th class="p-2 text-left">Country</th>
                     <th class="p-2 text-left">Uploaded Date</th>
-                    <th class="p-2 text-left">Action</th>
+                    <th class="p-2 text-center">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -63,7 +62,7 @@
                     <td class="p-2">{{document.country}}</td>
                     <td class="p-2">{{document.uploaded_date}}</td>
                     <td class="p-2">
-                        <div class="flex gap-2">
+                        <div class="flex gap-2 items-center justify-center">
                             <button class='rounded-md bg-[--primary-color] text-white w-24 h-8'>Edit</button>
                             <button class='rounded-md border border-[--primary-color] bg-gray-50 text-[--primary-color] w-24 h-8'>Remove</button>
                         </div>

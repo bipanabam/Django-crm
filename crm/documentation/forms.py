@@ -1,5 +1,6 @@
 from django import forms
-from django.forms import inlineformset_factory, modelformset_factory
+from django.forms import inlineformset_factory, modelformset_factory, BaseModelFormSet
+from django.core.exceptions import ValidationError
 
 from .models import Country, DocumentType, CountryWiseClientDocument
 
@@ -52,7 +53,7 @@ class CountryWiseClientDocumentForm(forms.ModelForm):
         # Check if this form is being submitted
         if self.is_bound:
             country_field_name = self.add_prefix('country')
-            document_type_field_name = self.add_prefix('country')
+            document_type_field_name = self.add_prefix('document_type')
             country_id = self.data.get(country_field_name)
             if country_id:
                 try:
@@ -63,10 +64,28 @@ class CountryWiseClientDocumentForm(forms.ModelForm):
         elif self.instance.pk:
             self.fields['document_type'].queryset = DocumentType.objects.filter(country=self.instance.country)
 
+class BaseCountryWiseClientDocumentFormSet(BaseModelFormSet):
+    def clean(self):
+        super(BaseCountryWiseClientDocumentFormSet, self).clean()
+        seen = set()
+        for form in self.forms:
+            if form.cleaned_data.get('DELETE'):
+                continue  # Skip deleted forms
+
+            country = form.cleaned_data.get('country')
+            client = form.cleaned_data.get('client')
+            document_type = form.cleaned_data.get('document_type')
+
+            if country and client and document_type:
+                key = (country.id, client.id, document_type.id)
+                if key in seen:
+                    raise ValidationError("Each document type must be unique per country and client.")
+                seen.add(key)
 
 CountryWiseClientDocumentFormSet = modelformset_factory(
     CountryWiseClientDocument,
     form=CountryWiseClientDocumentForm,
+    formset=BaseCountryWiseClientDocumentFormSet,
     extra=1,  # number of empty forms shown by default
     can_delete=True  # allows deletion of entries
 )

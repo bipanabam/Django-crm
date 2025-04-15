@@ -92,7 +92,7 @@
                     <th class="p-2 text-left">Role</th>
                     <th class="p-2 text-left">Email</th>
                     <th class="p-2 text-left">Access Level</th>
-                    <th class="p-2 text-left">Action</th>
+                    <th class="p-2 text-center">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -103,7 +103,7 @@
                     <td class="p-2">{{user.email}}</td>
                     <td class="p-2">{{user.role}}</td>
                     <td class="p-2">
-                        <div class="flex gap-2">
+                        <div class="flex gap-2 items-center justify-center">
                             <a href="{% url 'member_detail' user.profile.id %}">
                                 <button class='rounded-md bg-[--primary-color] text-white w-24 h-8'>Edit</button>
                             </a>
