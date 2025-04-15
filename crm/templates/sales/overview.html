@@ -65,7 +65,7 @@ Sales
                 {% for client in clients %}
                 <tr class="border-b border-gray-300 w-full">
                     <td class="p-2">{{ client.name }}</td>
-                    <td class="p-2">{{ client.preferred_country }}</td>
+                    <td class="p-2">{{ client.visa_type }} in {{client.preferred_country}}</td>
                     <td class="p-2">{{ client.status }}</td>
                     <td class="p-2">
                         <div class="flex gap-2 items-center justify-center">

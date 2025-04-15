@@ -70,3 +70,13 @@ def documentation_overview(request):
         'countrywise_client_document': countrywise_client_document,
     }
     return render(request, 'documentation/overview.html', context=context)
+
+def country_wise_applicant_view(request, country_id):
+    applicants = CountryWiseClientDocument.objects.filter(
+        country_id=country_id
+        )
+    context = {
+        'applicants': applicants,
+        'country': Country.objects.get(id=country_id),
+    }
+    return render(request, 'documentation/country_wise_applicant.html', context=context)

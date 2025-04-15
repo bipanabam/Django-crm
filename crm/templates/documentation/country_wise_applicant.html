@@ -1,0 +1,50 @@
+{% extends 'base/base.html' %}
+{% load custom_filters %}
+
+{% block content %}
+
+<div class="mt-6">
+    <h1 class="font-semibold text-xl mb-5">Country Wise Applicant List</h1>
+    <div class="border rounded-xl bg-white p-6">
+        <h2 class="font-semibold text-lg mb-1 p-2">{{country.name}}</h2>
+        <p class="text-[--primary-color] text-sm p-2 mb-2">Applied Candidates<p>
+        <table class="w-full border-collapse">
+            <thead>
+                <tr class="border-b border-gray-300 text-gray-400 font-normal">
+                    <th class="p-2 text-left">Name</th>
+                    <th class="p-2 text-left">Visa Type</th>
+                    <th class="p-2 text-left">Phone Number</th>
+                    <th class="p-2 text-left">Email</th>
+                    <th class="p-2 text-left">Documentation</th>
+                    <th class="p-2 text-left">Visa Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for applicant in applicants %}
+                <tr class="border-b border-gray-300">
+                    <td class="p-2">{{applicant.client.name}}</td>
+                    <td class="p-2">{{applicant.client.visa_type}}</td>
+                    <td class="p-2">{{applicant.client.contact_number}}</td>
+                    <td class="p-2">{{applicant.client.email_address}}</td>
+                    <td class="p-2">
+                        <a href="">View</a>
+                    </td>
+                    <td class="p-2">
+                        <button class='rounded-md border {% if applicant.status == "Approved" %} border-green-800 bg-green-400 text-green-800 {% else %} border-blue-800 bg-blue-400 text-blue-800 {% endif %} w-24 h-8'>
+                            {{applicant.status}}
+                        </button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center py-3">
+                        No Country-wise Applicants yet.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock content %}

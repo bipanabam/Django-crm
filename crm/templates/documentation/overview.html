@@ -19,7 +19,9 @@
                 <tr class="border-b border-gray-300">
                     <td class="p-2">{{country.name}}</td>
                     <td class="p-2">
-                        <button class='rounded-md bg-[--primary-color] text-white w-24 h-8'>View</button>
+                        <a href="{% url 'country_wise_applicants' country.id %}">
+                            <button class='rounded-md bg-[--primary-color] text-white w-24 h-8'>View</button>
+                        </a>
                     </td>
                     <td class="p-2">
                         <button class='rounded-md border border-[--primary-color] bg-gray-50 text-[--primary-color] w-24 h-8'>View</button>

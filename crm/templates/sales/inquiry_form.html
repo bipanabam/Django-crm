@@ -62,6 +62,12 @@ Inquiry Form
                     {{ form.preferred_country|add_class:'block w-full h-14 px-4 py-2 pl-8 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
                 </div>
                 <div class="relative z-0 mb-5 w-full">
+                    <label for="{{ form.visa_type.id_for_label }}" class="block mb-3 text-xl font-medium ml-3">
+                        {{ form.visa_type.label }}
+                    </label>                             
+                    {{ form.visa_type|add_class:'block w-full h-14 px-4 py-2 pl-8 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
+                </div>
+                <div class="relative z-0 mb-5 w-full">
                     <label for="{{ form.package_amount.id_for_label }}" class="block mb-3 text-xl font-medium ml-3">
                         {{ form.package_amount.label }}
                     </label>                             

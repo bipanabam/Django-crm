@@ -6,7 +6,7 @@ from .models import Client, ClientDocument
 class ClientForm(forms.ModelForm):
     class Meta:
         model = Client
-        fields = ['name', 'address', 'contact_number', 'email_address', 'nationality', 'father_name', 'mother_name', 'preferred_country', 'package_amount', 'advance_paid', 'due_amount', 'more_remarks']
+        fields = ['name', 'address', 'contact_number', 'email_address', 'nationality', 'father_name', 'mother_name', 'preferred_country', 'visa_type', 'package_amount', 'advance_paid', 'due_amount', 'more_remarks']
 
 
 class ClientDocumentForm(forms.ModelForm):

@@ -18,6 +18,7 @@ class Client(models.Model):
   father_name = models.CharField(max_length=50)
   mother_name = models.CharField(max_length=50)
   preferred_country = models.CharField(max_length=150)
+  visa_type = models.CharField(max_length=50)
   package_amount = models.DecimalField(max_digits=10, decimal_places=2)
   advance_paid = models.DecimalField(max_digits=10, decimal_places=2)
   due_amount = models.DecimalField(max_digits=10, decimal_places=2)
