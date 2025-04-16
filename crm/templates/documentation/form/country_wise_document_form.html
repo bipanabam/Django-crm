@@ -1,0 +1,94 @@
+{% load custom_filters %}
+
+<div class="mt-6">
+    <h1 class="font-semibold text-2xl mb-5">Add Documents</h1>
+    <div class="flex items-center justify-between border rounded-xl bg-white p-6 pb-10">
+        <form method="post" class="flex flex-col items-center w-9/12 mt-3 ml-3 gap-2">
+            {% csrf_token %}
+            {{ formset.management_form }}
+            <div class="relative z-0 mb-5 group w-full">
+                <label for="{{ country_form.name.id_for_label }}" class="block mb-3 text-xl font-medium ml-3">
+                    {{ country_form.name.label }}
+                </label>                             
+                {{ country_form.name|add_class:'block w-full h-14 px-4 py-2 pl-8 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
+            </div>
+            <div id="formset-area" class="w-full">
+                {% for form in formset %}
+                <div class="relative z-0 mb-5 group w-full">
+                    <label for="{{ form.document_title.id_for_label }}" class="block mb-3 text-xl font-medium ml-3">
+                        {{ form.document_title.label }}
+                    </label>    
+                    <div class="flex gap-4">                       
+                        {{ form.document_title|add_class:'block w-full h-14 px-4 py-2 pl-8 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
+                        <div class="flex items-center justify-center border border-gray-300 rounded-md bg-gray-50 w-14 h-14 add-document-type">
+                            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                                <path d="M22.1668 15.1667H15.1668V22.1667H12.8335V15.1667H5.8335V12.8333H12.8335V5.83334H15.1668V12.8333H22.1668V15.1667Z" fill="#888888"/>
+                            </svg>    
+                        </div>  
+                    </div>              
+                </div>
+                {% endfor %}
+            </div>
+
+            {% if error in formset.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+            {% endif %}
+
+            <!-- Hidden empty form template -->
+            <div id="empty-form" class="hidden">
+                <div class="relative z-0 mb-5 group w-full new-form">
+                    <label class="block mb-3 text-xl font-medium ml-3">
+                        Document Title
+                    </label>    
+                    <div class="flex gap-4">                       
+                        <input type="text" name="documents-__prefix__-document_title" class="block w-full h-14 px-4 py-2 pl-8 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" placeholder="Add document title" />
+                        <div class="flex items-center justify-center border border-gray-300 rounded-md bg-gray-50 w-14 h-14 add-document-type">
+                            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                                <path d="M22.1668 15.1667H15.1668V22.1667H12.8335V15.1667H5.8335V12.8333H12.8335V5.83334H15.1668V12.8333H22.1668V15.1667Z" fill="#888888"/>
+                            </svg>    
+                        </div>  
+                    </div>   
+                    <button type="button" class="remove-form btn btn-sm btn-danger">❌ Remove</button>           
+                </div>
+            </div>
+
+            <input type="submit" value="Submit"
+            class="w-10/12 h-16 rounded-md px-7 py-1 bg-[--primary-color] font-normal text-white mt-3" />
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const formsetArea = document.getElementById('formset-area');
+        const totalForms = document.querySelector('#id_documents-TOTAL_FORMS');
+        const emptyFormTemplate = document.getElementById('empty-form').innerHTML;
+
+        
+    if (!formsetArea || !totalForms) {
+        console.error('Required elements are missing.');
+        return;
+    }
+
+    // Delegate the click event
+    formsetArea.addEventListener('click', function (e) {
+        if (e.target.closest('.add-document-type')) {
+            e.preventDefault();
+
+            const formIndex = parseInt(totalForms.value);
+            const newFormHtml = emptyFormTemplate.replace(/__prefix__/g, formIndex);
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = newFormHtml;
+            formsetArea.appendChild(tempDiv.firstElementChild);
+
+            totalForms.value = formIndex + 1;
+        }
+        if (e.target.classList.contains('remove-form')) {
+            e.target.closest('.add-document-type').remove();
+            let forms = formsetArea.querySelectorAll('.formset-area');
+            totalForms.value = forms.length;
+            // Optional: renumber input names/ids here if necessary
+        }
+    });
+});
+</script>

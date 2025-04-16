@@ -80,3 +80,14 @@ def country_wise_applicant_view(request, country_id):
         'country': Country.objects.get(id=country_id),
     }
     return render(request, 'documentation/country_wise_applicant.html', context=context)
+
+def country_wise_required_documents(request, country_id):
+    branch = get_user_branch(request)
+    selected_country = Country.objects.get(id=country_id, branch=branch)
+    documents = selected_country.documents.all()
+
+    context = {
+        'country': selected_country,
+        'documents': documents,
+    }
+    return render(request, 'documentation/country_wise_required_documents.html', context=context)

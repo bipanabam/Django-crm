@@ -1,5 +1,4 @@
 {% extends 'base/base.html' %}
-{% load custom_filters %}
 
 {% block content %}
 
@@ -30,7 +29,7 @@
                         <a href="">View</a>
                     </td>
                     <td class="p-2">
-                        <button class='rounded-md border {% if applicant.status == "Approved" %} border-green-800 bg-green-400 text-green-800 {% else %} border-blue-800 bg-blue-400 text-blue-800 {% endif %} w-24 h-8'>
+                        <button class="rounded-md border {% if applicant.status == 'Approved' %} border-green-800 bg-green-400 text-green-800 {% else %} border-blue-800 bg-blue-400 text-blue-800 {% endif %} w-24 h-8">
                             {{applicant.status}}
                         </button>
                     </td>

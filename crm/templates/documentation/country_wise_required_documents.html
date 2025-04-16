@@ -1,0 +1,18 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+
+<div class="mt-6">
+    <h1 class="font-semibold text-xl mb-5">Country Wise Required Documents</h1>
+    <div class="border rounded-xl bg-white p-6">
+        <h2 class="font-semibold text-lg mb-4">{{country.name}}</h2>
+        <p class="text-[--primary-color] text-sm mb-2">Required Documents<p>
+        <ul>
+            {% for document in documents%}
+            <li>{{document.document_title}}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+{% endblock content %}

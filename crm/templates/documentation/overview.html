@@ -24,7 +24,9 @@
                         </a>
                     </td>
                     <td class="p-2">
-                        <button class='rounded-md border border-[--primary-color] bg-gray-50 text-[--primary-color] w-24 h-8'>View</button>
+                        <a href="{% url 'countries_required_documents' country.id %}">
+                            <button class='rounded-md border border-[--primary-color] bg-gray-50 text-[--primary-color] w-24 h-8'>View</button>
+                        </a>
                     </td>
                 </tr>
                 {% empty %}
@@ -40,7 +42,7 @@
 </div>
 
 <!--client document form-->
-{% include 'documentation/client_document_form.html' %}
+{% include 'documentation/form/client_document_form.html' %}
 
 <!--client document list-->
 <div class="mt-6">
