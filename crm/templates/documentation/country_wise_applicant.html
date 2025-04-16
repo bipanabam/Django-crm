@@ -26,7 +26,7 @@
                     <td class="p-2">{{applicant.client.contact_number}}</td>
                     <td class="p-2">{{applicant.client.email_address}}</td>
                     <td class="p-2">
-                        <a href="">View</a>
+                        <a href="{% url 'applicant_document' applicant.client.id %}" class="underline text-blue-500">View</a>
                     </td>
                     <td class="p-2">
                         <button class="rounded-md border {% if applicant.status == 'Approved' %} border-green-800 bg-green-400 text-green-800 {% else %} border-blue-800 bg-blue-400 text-blue-800 {% endif %} w-24 h-8">

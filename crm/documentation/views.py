@@ -91,3 +91,12 @@ def country_wise_required_documents(request, country_id):
         'documents': documents,
     }
     return render(request, 'documentation/country_wise_required_documents.html', context=context)
+
+def applicant_document(request, client_id):
+    documents = CountryWiseClientDocument.objects.filter(client_id=client_id)
+    context = {
+        'documents': documents,
+        'country': documents[0].country
+    }
+
+    return render(request, "documentation/applicant_documents.html", context=context)
