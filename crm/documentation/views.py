@@ -100,6 +100,16 @@ def edit_countrywise_client_document(request, country_id, document_id):
         'country': country,
     })
 
+def delete_countrywise_client_document(request, country_id, document_id):
+    document = get_object_or_404(CountryWiseClientDocument, id=document_id, country_id=country_id)
+    
+    if request.method == 'POST':
+        document.delete()
+        messages.success(request, "Document deleted successfully.")
+        return redirect('documentation_overview') 
+    
+    return redirect('documentation_overview')
+
 # def edit_countrywise_client_document(request, country_id, client_id):
 #     branch = get_user_branch(request)
 #     country = get_object_or_404(Country, id=country_id, branch=branch)
