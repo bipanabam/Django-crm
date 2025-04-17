@@ -67,7 +67,9 @@
                     <td class="p-2">{{document.uploaded_date}}</td>
                     <td class="p-2">
                         <div class="flex gap-2 items-center justify-center">
-                            <button class='rounded-md bg-[--primary-color] text-white w-24 h-8'>Edit</button>
+                            <a href="{% url 'edit_countrywise_client_document' document.country.id document.id %}">
+                                <button class='rounded-md bg-[--primary-color] text-white w-24 h-8'>Edit</button>
+                            </a>
                             <button class='rounded-md border border-[--primary-color] bg-gray-50 text-[--primary-color] w-24 h-8'>Remove</button>
                         </div>
                     </td>

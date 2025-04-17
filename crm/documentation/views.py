@@ -2,11 +2,14 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.http import JsonResponse
 from django.db import transaction
+from django.shortcuts import get_object_or_404
+from django.forms import modelformset_factory
 
-from .forms import CountryForm, DocumentFormSet, CountryWiseClientDocumentFormSet
+from .forms import CountryForm, DocumentFormSet, CountryWiseClientDocumentForm, CountryWiseClientDocumentFormSet, BaseCountryWiseClientDocumentFormSet
 from .models import Country, CountryWiseClientDocument, DocumentType
 
 from company.services import get_user_branch
+from .services import document_distinct_by_client
 
 # Create your views here.
 def country_wise_document_view(request):
@@ -71,10 +74,79 @@ def documentation_overview(request):
     }
     return render(request, 'documentation/overview.html', context=context)
 
-def country_wise_applicant_view(request, country_id):
-    applicants = CountryWiseClientDocument.objects.filter(
+def edit_countrywise_client_document(request, country_id, document_id):
+    branch = get_user_branch(request)
+    country = get_object_or_404(Country, id=country_id, branch=branch)
+
+    instance = CountryWiseClientDocument.objects.get(
+        country=country, id=document_id
+    )
+
+    if request.method == 'POST':
+        form = CountryWiseClientDocumentForm(request.POST, request.FILES, instance=instance, request=request)
+        if form.is_valid():
+            updated_document = form.save(commit=False)
+            updated_document.save()
+            messages.success(request, 'Document updated successfully.')
+            return redirect('documentation_overview')
+        else:
+            print(form.errors)
+            messages.error(request, 'There were errors in the form.')
+    else:
+        form = CountryWiseClientDocumentForm(instance=instance, request=request)
+
+    return render(request, 'documentation/form/edit_countrywise_client_document.html', {
+        'form': form,
+        'country': country,
+    })
+
+# def edit_countrywise_client_document(request, country_id, client_id):
+#     branch = get_user_branch(request)
+#     country = get_object_or_404(Country, id=country_id, branch=branch)
+
+#     queryset = CountryWiseClientDocument.objects.filter(
+#         country=country, client_id=client_id
+#     )
+
+#     formset_class =  modelformset_factory(
+#         CountryWiseClientDocument,
+#         form=CountryWiseClientDocumentForm,
+#         formset=BaseCountryWiseClientDocumentFormSet,
+#         extra=0,  # number of empty forms shown by default
+#         can_delete=True  # allows deletion of entries
+#     )
+
+#     if request.method == 'POST':
+#         formset = formset_class(request.POST, request.FILES, queryset=queryset, form_kwargs={'request': request})
+#         if formset.is_valid():
+#             with transaction.atomic():
+#                 instances = formset.save(commit=False)
+#                 for instance in instances:
+#                     instance.uploaded_by = request.user
+#                     instance.country = country
+#                     instance.client_id = client_id
+#                     instance.save()
+#                 for obj in formset.deleted_objects:
+#                     obj.delete()
+#             messages.success(request, 'Documents updated successfully.')
+#             return redirect('documentation_overview')
+#         else:
+#             print(formset.errors)
+#             messages.error(request, 'There were errors in the form.')
+#     else:
+#         formset = formset_class(queryset=queryset, form_kwargs={'request': request})
+
+#     return render(request, 'documentation/form/edit_countrywise_client_document.html', {
+#         'formset': formset,
+#         'country': country,
+#         'client_id': client_id,
+#     })
+
+def country_wise_applicant_list(request, country_id):
+    docs = CountryWiseClientDocument.objects.filter(
         country_id=country_id
-        )
+        ).order_by('client') 
+    applicants = document_distinct_by_client(docs)
     context = {
         'applicants': applicants,
         'country': Country.objects.get(id=country_id),
@@ -92,8 +164,8 @@ def country_wise_required_documents(request, country_id):
     }
     return render(request, 'documentation/country_wise_required_documents.html', context=context)
 
-def applicant_document(request, client_id):
-    documents = CountryWiseClientDocument.objects.filter(client_id=client_id)
+def applicant_document(request, country_id, client_id):
+    documents = CountryWiseClientDocument.objects.filter(client_id=client_id, country_id=country_id)
     context = {
         'documents': documents,
         'country': documents[0].country

@@ -1,0 +1,62 @@
+{% extends 'base/base.html' %}
+{% load custom_filters %}
+
+{% block content %}
+
+<div class="mt-6">
+    <h1 class="font-semibold text-xl mb-5">Edit User's Documents</h1>
+    <div class="flex items-center justify-between border rounded-xl bg-white p-6 pb-10">
+        <form method="post" class="flex flex-col items-center w-full w-mt-3 ml-3 gap-2" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-row w-11/12">
+                {% for field in form %}
+                <div class="relative z-0 mb-5 group w-full">
+                    <label for="{{ field.id_for_label }}" class="block mb-3 text-xl font-medium">
+                        {{ field.label }}
+                    </label>                             
+                    {% if field.name == 'country'%}     
+                        {{ field|add_class:'country-select block w-full h-14 px-4 py-4 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
+                    {% else %}                       
+                        {{ field|add_class:'block w-full h-14 px-4 py-4 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            <input type="submit" value="Update Document"
+            class="w-full h-16 rounded-md px-7 py-1 bg-[--primary-color] font-normal text-white mt-3" />
+        </form>
+    </div>
+</div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Attach change event to all country selects
+        document.querySelectorAll(".country-select").forEach(function (countrySelect) {
+            countrySelect.addEventListener("change", function () {
+                const countryId = this.value;
+                const formRow = this.closest(".form-row");
+                const docTypeSelect = formRow.querySelector("select[name='document_type']");
+    
+                // Clear current options
+                docTypeSelect.innerHTML = '<option value="">---------</option>';
+    
+                // Fetch document types for selected country
+                if (countryId) {
+                    fetch(`/documentation/ajax/get-document-types/?country_id=${countryId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            data.document_types.forEach(doc => {
+                                const option = document.createElement("option");
+                                option.value = doc.id;
+                                option.text = doc.document_title;
+                                docTypeSelect.appendChild(option);
+                            });
+                        });
+                }
+            });
+        });
+    });
+</script>
+
+{% endblock content %}

@@ -10,3 +10,12 @@ def get_all_countries(request):
         branch = get_user_branch(request)
         return Country.objects.filter(branch=branch)
     
+def document_distinct_by_client(docs):
+    applicants = []
+    seen_clients = set()
+    for doc in docs:
+        if doc.client_id not in seen_clients:
+            seen_clients.add(doc.client_id)
+            applicants.append(doc)
+    return applicants
+    
