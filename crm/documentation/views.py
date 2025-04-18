@@ -44,7 +44,6 @@ def country_wise_document_view(request):
 def edit_countrywise_document(request, country_id):
     branch = get_user_branch(request)
     country = get_object_or_404(Country, id=country_id, branch=branch)
-    document_types = DocumentType.objects.filter(country_id=country_id)
     country_form = CountryForm(instance=country)
     formset_class = inlineformset_factory(
         Country, DocumentType, form=DocumentTypeForm,

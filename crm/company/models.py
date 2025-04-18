@@ -45,10 +45,11 @@ class RoleChoices(models.TextChoices):
   ADMIN = 'admin', 'Admin'
   MANAGER = 'manager', 'Manager'
   ACCOUNTANT = 'accountant', 'Accountant'
+  SALES_REPRESENTATIVE = 'sales representative', 'Sales Representative'
    
 class User(AbstractUser):
   email = models.EmailField(unique=True)
-  role = models.CharField(max_length=10, choices=RoleChoices, default=RoleChoices.ACCOUNTANT)
+  role = models.CharField(max_length=20, choices=RoleChoices, default=RoleChoices.ACCOUNTANT)
 
   USERNAME_FIELD = 'email'  # Use email as the unique identifier for authentication
   REQUIRED_FIELDS = ['username'] 

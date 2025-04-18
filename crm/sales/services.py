@@ -9,3 +9,7 @@ def get_all_clients(request):
     else:
         branch = get_user_branch(request)
         return Client.objects.filter(branch=branch)
+    
+def get_client(request, client_id):
+    branch = get_user_branch(request)
+    return Client.objects.get(branch=branch, id=client_id)

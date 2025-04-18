@@ -2,14 +2,13 @@
 {% load custom_filters %}
 
 {% block head_title %}
-Inquiry Form
+Edit Client
 {% endblock head_title %}
 
 {% block content %}
 <div class="mt-6">
-    <h1 class="font-semibold text-2xl mb-5">Inquiry Form</h1>
+    <h1 class="font-semibold text-2xl mb-5">Edit Client</h1>
     <div class="justify-between border rounded-xl bg-white p-6 pb-10">
-        <p class="text-gray-400 text-lg font-bold ml-3 p-2">Leave your details below:</p>
         <form method="post" enctype="multipart/form-data" class="flex flex-col w-full mt-3 ml-3 mr-3 gap-2">
             {% csrf_token %}
             <div class="grid md:grid-cols-3 md:gap-6 w-full">
@@ -98,7 +97,7 @@ Inquiry Form
             {{ document_formset.management_form }}
             <div class="grid grid-cols-1 md:grid-cols-2 w-full gap-7">
                 {% for doc_form in document_formset %}
-                    {{ doc_form.document_type }}
+                    {{ doc_form.id }} 
                     <div class="relative z-0 mb-5 group w-full">
                         <label class="flex gap-2 mb-3">
                             <svg width="24" height="23" viewBox="0 0 24 23" fill="none">
@@ -111,7 +110,7 @@ Inquiry Form
                                 </clipPath>
                                 </defs>
                             </svg>
-                            Your {{doc_form.document_type.value}}
+                            Your {{doc_form.instance.document_type}}
                         </label>
                         <div class="relative w-1/2">
                             <div class="absolute inset-y-0 left-48 flex items-center pr-5 pointer-events-none">
@@ -125,32 +124,20 @@ Inquiry Form
                         </div>
 
                         <div id="preview{{ forloop.counter }}" class="w-full h-28 flex items-center justify-center rounded-xl border border-gray-400 mt-2">
-                            <svg width="41" height="41" viewBox="0 0 41 41" fill="none">
-                                <path d="M24.5981 18.1796C25.3466 18.1796 26.0783 17.9576 26.7007 17.5418C27.3231 17.1259 27.8082 16.5348 28.0946 15.8433C28.3811 15.1517 28.456 14.3908 28.31 13.6566C28.164 12.9225 27.8035 12.2481 27.2742 11.7188C26.7449 11.1896 26.0706 10.8291 25.3364 10.6831C24.6023 10.537 23.8413 10.612 23.1498 10.8984C22.4582 11.1849 21.8672 11.67 21.4513 12.2923C21.0354 12.9147 20.8135 13.6464 20.8135 14.395C20.8135 15.3987 21.2122 16.3613 21.922 17.0711C22.6317 17.7808 23.5943 18.1796 24.5981 18.1796ZM24.5981 13.1334C24.8476 13.1334 25.0915 13.2074 25.299 13.346C25.5064 13.4847 25.6681 13.6817 25.7636 13.9122C25.8591 14.1427 25.8841 14.3964 25.8354 14.6411C25.7867 14.8858 25.6666 15.1106 25.4901 15.287C25.3137 15.4634 25.0889 15.5836 24.8442 15.6323C24.5995 15.6809 24.3458 15.656 24.1153 15.5605C23.8848 15.465 23.6878 15.3033 23.5492 15.0958C23.4105 14.8884 23.3366 14.6445 23.3366 14.395C23.3366 14.0604 23.4695 13.7395 23.706 13.5029C23.9426 13.2663 24.2635 13.1334 24.5981 13.1334Z" fill="black"/>
-                                <path d="M33.4296 5.56396H8.19708C7.52787 5.56396 6.88607 5.82981 6.41287 6.30301C5.93967 6.77621 5.67383 7.41801 5.67383 8.08722V33.3198C5.67383 33.989 5.93967 34.6308 6.41287 35.104C6.88607 35.5772 7.52787 35.843 8.19708 35.843H33.4296C34.0989 35.843 34.7407 35.5772 35.2139 35.104C35.6871 34.6308 35.9529 33.989 35.9529 33.3198V8.08722C35.9529 7.41801 35.6871 6.77621 35.2139 6.30301C34.7407 5.82981 34.0989 5.56396 33.4296 5.56396ZM33.4296 33.3198H8.19708V25.75L14.5052 19.4419L21.5577 26.4944C22.0305 26.9643 22.67 27.2281 23.3366 27.2281C24.0032 27.2281 24.6427 26.9643 25.1155 26.4944L27.1215 24.4884L33.4296 30.7965V33.3198ZM33.4296 27.2261L28.9004 22.6969C28.4276 22.2269 27.7881 21.9631 27.1215 21.9631C26.4549 21.9631 25.8154 22.2269 25.3426 22.6969L23.3366 24.7029L16.2841 17.6504C15.8114 17.1804 15.1718 16.9166 14.5052 16.9166C13.8386 16.9166 13.1991 17.1804 12.7263 17.6504L8.19708 22.1796V8.08722H33.4296V27.2261Z" fill="black"/>
-                            </svg>                                                               
+                            {% if doc_form.instance.document %}
+                                <img src="{{ doc_form.instance.document.url }}" alt="Document" class="h-full object-contain" />
+                            {% else %}
+                                <svg width="41" height="41" viewBox="0 0 41 41" fill="none">
+                                    <path d="M24.5981 18.1796C25.3466 18.1796 26.0783 17.9576 26.7007 17.5418C27.3231 17.1259 27.8082 16.5348 28.0946 15.8433C28.3811 15.1517 28.456 14.3908 28.31 13.6566C28.164 12.9225 27.8035 12.2481 27.2742 11.7188C26.7449 11.1896 26.0706 10.8291 25.3364 10.6831C24.6023 10.537 23.8413 10.612 23.1498 10.8984C22.4582 11.1849 21.8672 11.67 21.4513 12.2923C21.0354 12.9147 20.8135 13.6464 20.8135 14.395C20.8135 15.3987 21.2122 16.3613 21.922 17.0711C22.6317 17.7808 23.5943 18.1796 24.5981 18.1796ZM24.5981 13.1334C24.8476 13.1334 25.0915 13.2074 25.299 13.346C25.5064 13.4847 25.6681 13.6817 25.7636 13.9122C25.8591 14.1427 25.8841 14.3964 25.8354 14.6411C25.7867 14.8858 25.6666 15.1106 25.4901 15.287C25.3137 15.4634 25.0889 15.5836 24.8442 15.6323C24.5995 15.6809 24.3458 15.656 24.1153 15.5605C23.8848 15.465 23.6878 15.3033 23.5492 15.0958C23.4105 14.8884 23.3366 14.6445 23.3366 14.395C23.3366 14.0604 23.4695 13.7395 23.706 13.5029C23.9426 13.2663 24.2635 13.1334 24.5981 13.1334Z" fill="black"/>
+                                    <path d="M33.4296 5.56396H8.19708C7.52787 5.56396 6.88607 5.82981 6.41287 6.30301C5.93967 6.77621 5.67383 7.41801 5.67383 8.08722V33.3198C5.67383 33.989 5.93967 34.6308 6.41287 35.104C6.88607 35.5772 7.52787 35.843 8.19708 35.843H33.4296C34.0989 35.843 34.7407 35.5772 35.2139 35.104C35.6871 34.6308 35.9529 33.989 35.9529 33.3198V8.08722C35.9529 7.41801 35.6871 6.77621 35.2139 6.30301C34.7407 5.82981 34.0989 5.56396 33.4296 5.56396ZM33.4296 33.3198H8.19708V25.75L14.5052 19.4419L21.5577 26.4944C22.0305 26.9643 22.67 27.2281 23.3366 27.2281C24.0032 27.2281 24.6427 26.9643 25.1155 26.4944L27.1215 24.4884L33.4296 30.7965V33.3198ZM33.4296 27.2261L28.9004 22.6969C28.4276 22.2269 27.7881 21.9631 27.1215 21.9631C26.4549 21.9631 25.8154 22.2269 25.3426 22.6969L23.3366 24.7029L16.2841 17.6504C15.8114 17.1804 15.1718 16.9166 14.5052 16.9166C13.8386 16.9166 13.1991 17.1804 12.7263 17.6504L8.19708 22.1796V8.08722H33.4296V27.2261Z" fill="black"/>
+                                </svg>  
+                            {% endif %}                                                             
                         </div>
                     </div>
                 {% endfor %}
             </div>
 
-            {% comment %} <div id="empty-form" class="hidden">
-                <div class="relative z-0 mb-5 group w-full new-form">
-                    <label class="block mb-3 text-xl font-medium ml-3">
-                        Document Title
-                    </label>    
-                    <div class="flex gap-4">                       
-                        <input type="text" name="documents-__prefix__-document_title" class="block w-full h-14 px-4 py-2 pl-8 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" placeholder="Add document title" />
-                        <div class="flex items-center justify-center border border-gray-300 rounded-md bg-gray-50 w-14 h-14 add-document-type">
-                            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                                <path d="M22.1668 15.1667H15.1668V22.1667H12.8335V15.1667H5.8335V12.8333H12.8335V5.83334H15.1668V12.8333H22.1668V15.1667Z" fill="#888888"/>
-                            </svg>    
-                        </div>  
-                    </div>              
-                </div>
-            </div> {% endcomment %}
-
-            <input type="submit" value="Submit"
+            <input type="submit" value="Update"
             class="w-10/12 h-16 rounded-md px-7 py-1 bg-[--primary-color] font-normal text-white mt-3 ml-16" />
         </form>
     </div>
@@ -174,6 +161,7 @@ Inquiry Form
         }
       });
     });
+
 
     document.addEventListener("DOMContentLoaded", function () {
         const packageAmountInput = document.getElementById("id_package_amount");
