@@ -4,7 +4,10 @@ from . import views
 
 urlpatterns = [
     path('', views.documentation_overview, name='documentation_overview'),
+
     path("country-wise-document/add/", views.country_wise_document_view, name="country_wise_documents"),
+    path("country-wise-document/edit/<int:country_id>/", views.edit_countrywise_document, name="edit_countrywise_document"),
+    path('country/delete/<int:country_id>/', views.delete_country, name='delete_country'),
     path("applicant-document/edit/<int:country_id>/<int:document_id>/", views.edit_countrywise_client_document, name="edit_countrywise_client_document"),
     path("applicant-document/delete/<int:country_id>/<int:document_id>/", views.delete_countrywise_client_document, name="delete_countrywise_client_document"),
     path("country-wise-applicants/<int:country_id>/", views.country_wise_applicant_list, name="country_wise_applicants"),

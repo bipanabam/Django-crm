@@ -1,11 +1,27 @@
+{% extends 'base/base.html' %}
 {% load custom_filters %}
 
+{% block head_title %}
+Documentation
+{% endblock head_title %}
+
+{% block content %}
 <div class="mt-6">
-    <h1 class="font-semibold text-2xl mb-5">Add Documents</h1>
+    <h1 class="font-semibold text-2xl mb-5">Edit Documents</h1>
     <div class="flex items-center justify-between border rounded-xl bg-white p-6 pb-10">
         <form method="post" class="flex flex-col items-center w-9/12 mt-3 ml-3 gap-2">
             {% csrf_token %}
             {{ formset.management_form }}
+            {% if formset.non_form_errors %}
+                <div class="text-red-500">
+                    {{ formset.non_form_errors }}
+                </div>
+            {% endif %}
+            {% if error in formset.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+            {% endif %}
+
+
             <div class="relative z-0 mb-5 group w-full">
                 <label for="{{ country_form.name.id_for_label }}" class="block mb-3 text-xl font-medium ml-3">
                     {{ country_form.name.label }}
@@ -14,25 +30,25 @@
             </div>
             <div id="formset-area" class="w-full">
                 {% for form in formset %}
+                {{ form.id }}
+
                 <div class="relative z-0 mb-5 group w-full">
                     <label for="{{ form.document_title.id_for_label }}" class="block mb-3 text-xl font-medium ml-3">
                         {{ form.document_title.label }}
                     </label>    
                     <div class="flex gap-4">                       
                         {{ form.document_title|add_class:'block w-full h-14 px-4 py-2 pl-8 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
-                        <div class="flex items-center justify-center border border-gray-300 rounded-md bg-gray-50 w-14 h-14 add-document-type">
-                            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                                <path d="M22.1668 15.1667H15.1668V22.1667H12.8335V15.1667H5.8335V12.8333H12.8335V5.83334H15.1668V12.8333H22.1668V15.1667Z" fill="#888888"/>
-                            </svg>    
-                        </div>  
+                        {% if forloop.last %}
+                            <div class="flex items-center justify-center border border-gray-300 rounded-md bg-gray-50 w-14 h-14 add-document-type">
+                                <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                                    <path d="M22.1668 15.1667H15.1668V22.1667H12.8335V15.1667H5.8335V12.8333H12.8335V5.83334H15.1668V12.8333H22.1668V15.1667Z" fill="#888888"/>
+                                </svg>    
+                            </div>
+                        {% endif %}
                     </div>              
                 </div>
                 {% endfor %}
             </div>
-
-            {% if error in formset.errors %}
-                    <p class="text-red-500 text-sm mt-1">{{ error }}</p>
-            {% endif %}
 
             <!-- Hidden empty form template -->
             <div id="empty-form" class="hidden">
@@ -42,17 +58,12 @@
                     </label>    
                     <div class="flex gap-4">                       
                         <input type="text" name="documents-__prefix__-document_title" class="block w-full h-14 px-4 py-2 pl-8 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" placeholder="Add document title" />
-                        <div class="flex items-center justify-center border border-gray-300 rounded-md bg-gray-50 w-14 h-14 add-document-type">
-                            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                                <path d="M22.1668 15.1667H15.1668V22.1667H12.8335V15.1667H5.8335V12.8333H12.8335V5.83334H15.1668V12.8333H22.1668V15.1667Z" fill="#888888"/>
-                            </svg>    
-                        </div>  
                     </div>   
                     <button type="button" class="remove-form btn btn-sm btn-danger">❌ Remove</button>           
                 </div>
             </div>
 
-            <input type="submit" value="Submit"
+            <input type="submit" value="Update"
             class="w-10/12 h-16 rounded-md px-7 py-1 bg-[--primary-color] font-normal text-white mt-3" />
         </form>
     </div>
@@ -87,6 +98,7 @@
             formsetArea.appendChild(tempDiv.firstElementChild);
 
             totalForms.value = currentForms + 1;
+            addPlusButtonToLastForm(); 
         }
         
     if (e.target.classList.contains('remove-form')) {
@@ -101,32 +113,29 @@
             totalForms.value = forms.length;
             console.log(totalForms)
 
-            if (hadAddBtn) {
-                let targetForm;
-                if (forms.length > 0) {
-                    // Restore to last new form
-                    targetForm = forms[forms.length - 1];
-                } else {
-                    // Fallback to default form
-                    const defaultForm = document.getElementById('formset-area');
-                    if (defaultForm) {
-                        targetForm = defaultForm;
-                    }
-                }
+            addPlusButtonToLastForm();
 
-                if (targetForm) {
-                    const iconHtml = `
-                        <div class="flex items-center justify-center border border-gray-300 rounded-md bg-gray-50 w-14 h-14 add-document-type">
-                            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                                <path d="M22.1668 15.1667H15.1668V22.1667H12.8335V15.1667H5.8335V12.8333H12.8335V5.83334H15.1668V12.8333H22.1668V15.1667Z" fill="#888888"/>
-                            </svg>    
-                        </div>`;
-                    targetForm.querySelector('.flex.gap-4').insertAdjacentHTML('beforeend', iconHtml);
-                }
-            }
         }
-    }
-        
+    }  
     });
+
+    function addPlusButtonToLastForm() {
+        const allForms = formsetArea.querySelectorAll('.group.w-full');
+        if (allForms.length === 0) return;
+    
+        const lastForm = allForms[allForms.length - 1];
+        const container = lastForm.querySelector('.flex.gap-4');
+        if (container) {
+            const iconHtml = `
+                <div class="flex items-center justify-center border border-gray-300 rounded-md bg-gray-50 w-14 h-14 add-document-type">
+                    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                        <path d="M22.1668 15.1667H15.1668V22.1667H12.8335V15.1667H5.8335V12.8333H12.8335V5.83334H15.1668V12.8333H22.1668V15.1667Z" fill="#888888"/>
+                    </svg>    
+                </div>`;
+            container.insertAdjacentHTML('beforeend', iconHtml);
+        }
+    }    
 });
 </script>
+
+{% endblock content %}

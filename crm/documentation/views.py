@@ -3,9 +3,9 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.db import transaction
 from django.shortcuts import get_object_or_404
-from django.forms import modelformset_factory
+from django.forms import inlineformset_factory
 
-from .forms import CountryForm, DocumentFormSet, CountryWiseClientDocumentForm, CountryWiseClientDocumentFormSet, BaseCountryWiseClientDocumentFormSet
+from .forms import CountryForm, DocumentTypeForm,DocumentFormSet, CountryWiseClientDocumentForm, CountryWiseClientDocumentFormSet, BaseCountryWiseClientDocumentFormSet
 from .models import Country, CountryWiseClientDocument, DocumentType
 
 from company.services import get_user_branch
@@ -17,11 +17,14 @@ def country_wise_document_view(request):
     formset = DocumentFormSet()
 
     # Country wise document queryset
-    country_wise_documents = Country.objects.all()
+    branch = get_user_branch(request)
+    countries = Country.objects.filter(branch=branch)
 
     if request.method == 'POST':
         country_form = CountryForm(request.POST)
         formset = DocumentFormSet(request.POST)
+
+        print(formset.cleaned_data)
 
         if country_form.is_valid() and formset.is_valid():
             country = country_form.save(commit=False)
@@ -29,14 +32,53 @@ def country_wise_document_view(request):
             country.save()
             formset.instance = country
             formset.save()
-            messages.success(request, 'Document added successfully')
+            messages.success(request, 'Country and document added successfully')
             return redirect('country_wise_documents')
         
     return render(request, 'documentation/country_wise_documents.html', {
         'country_form': country_form,
         'formset': formset,
-        'country_wise_documents': country_wise_documents,
+        'countries': countries,
     })
+
+def edit_countrywise_document(request, country_id):
+    branch = get_user_branch(request)
+    country = get_object_or_404(Country, id=country_id, branch=branch)
+    document_types = DocumentType.objects.filter(country_id=country_id)
+    country_form = CountryForm(instance=country)
+    formset_class = inlineformset_factory(
+        Country, DocumentType, form=DocumentTypeForm,
+        extra=0, can_delete=True
+    )
+    formset = formset_class(instance=country)
+
+    if request.method == 'POST':
+        country_form = CountryForm(request.POST, instance=country)
+        formset = formset_class(request.POST, instance=country)
+
+        if country_form.is_valid() and formset.is_valid():
+            country_form.save()
+            formset.save()
+            messages.success(request, 'Country and document updated successfully')
+            return redirect('country_wise_documents')
+        else:
+            print(country_form.errors)
+            print(formset.errors)
+
+    return render(request, 'documentation/form/edit_countrywise_document.html', {
+        'country_form': country_form,    
+        'formset': formset,
+    })
+
+def delete_country(request, country_id):
+    branch = get_user_branch(request)
+    country = get_object_or_404(Country, id=country_id, branch=branch)
+    
+    if request.method == 'POST':
+        country.delete()
+        messages.success(request, "Country removed successfully.")
+        return redirect('country_wise_documents') 
+    return redirect('country_wise_documents')
 
 def get_document_types(request):
     country_id = request.GET.get('country_id')

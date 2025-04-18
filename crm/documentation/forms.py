@@ -13,6 +13,9 @@ class CountryForm(forms.ModelForm):
     class Meta:
         model = Country
         fields = ['name']
+        labels = {
+            'name': 'Country Name'
+        }
 
     def __init__(self, *args, **kwargs):
         super(CountryForm, self).__init__(*args, **kwargs)

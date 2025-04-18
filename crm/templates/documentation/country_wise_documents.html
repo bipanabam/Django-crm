@@ -9,7 +9,7 @@ Documentation
 <!--Country wise documents form-->
 {% include 'documentation/form/country_wise_document_form.html' %}
 
-<!--Country Wise Document List-->
+<!--Country List-->
 <div class="mt-6">
     <h1 class="font-semibold text-2xl mb-5">Countries Wise Document</h1>
     <div class="border rounded-xl bg-white p-6">
@@ -18,10 +18,11 @@ Documentation
                 <tr class="border-b border-gray-300 text-gray-400 font-normal ">
                     <th class="p-2 text-left">Name of the Country</th>
                     <th class="p-2 text-left">Documents</th>
+                    <th class="p-2 text-center">Action</th>
                 </tr>
             </thead>
             <tbody>
-                {% for country in country_wise_documents %}
+                {% for country in countries %}
                 <tr class="border-b border-gray-300">
                     <td class="p-2">{{country.name}}</td>
                     <td class="p-2">
@@ -29,12 +30,52 @@ Documentation
                             <button class="rounded-md px-7 py-1 bg-[--primary-color] font-normal text-white">View</button>                                      
                         </a>
                     </td>
+                    <td class="p-2">
+                        <div class="flex gap-2 items-center justify-center">
+                            <a href="{% url 'edit_countrywise_document' country.id %}">
+                                <button class='rounded-md bg-[--primary-color] text-white w-24 h-8'>Edit</button>
+                            </a>
+                            <button
+                                onclick="openModal('{% url 'delete_country' country.id %}')"
+                                class='rounded-md border border-[--primary-color] bg-gray-50 text-[--primary-color] w-24 h-8'>
+                                Remove
+                            </button>
+                        </div>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 </div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="fixed inset-0 items-center justify-center bg-black bg-opacity-50 hidden z-50">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md mx-auto text-center shadow-lg">
+        <h2 class="text-lg font-semibold mb-4">Are you sure you want to remove this country? All data related to it will be lost!</h2>
+        <div class="flex justify-center gap-4">
+            <form id="deleteForm" method="post">
+                {% csrf_token %}
+                <button type="submit" class="bg-red-500 text-white px-5 py-2 rounded-md">Yes</button>
+            </form>
+            <button onclick="closeModal()" class="bg-gray-300 px-5 py-2 rounded-md">No</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openModal(deleteUrl) {
+        const modal = document.getElementById('deleteModal');
+        const form = document.getElementById('deleteForm');
+        form.action = deleteUrl;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex')
+    }
+
+    function closeModal() {
+        document.getElementById('deleteModal').classList.add('hidden');
+    }
+</script>
 
 
 {% endblock content %}
