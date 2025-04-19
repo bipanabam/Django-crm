@@ -28,6 +28,15 @@ class Client(models.Model):
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now=True)
 
+  assigned_to = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='assigned_client')
+  assigned_date = models.DateTimeField(null=True, blank=True)
+
+  @property
+  def is_assigned(self):
+    if self.assigned_to is not None:
+      return True
+    return False
+
   def __str__(self):
     return f"{self.name}"
 

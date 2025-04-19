@@ -39,10 +39,10 @@ Sales
 
 <!--Client Inquires-->
 <div class="mt-4">
-    <div class="flex justify-between items-center mb-4">
+    <div class="flex justify-between items-center mb-2">
         <h1 class="font-semibold text-xl">Client Inquires</h1>
         <a href="{% url 'inquiry_form' %}">
-            <button class=" h-14 flex justify-center items-center rounded-md px-7 py-1 bg-[--primary-color] font-normal text-white mt-3">
+            <button class=" h-12 flex justify-center items-center rounded-md px-7 py-1 bg-[--primary-color] font-normal text-white mt-3">
                 <svg width="26" height="26" class="mr-3" viewBox="0 0 26 26" fill="none">
                     <path d="M11.917 14.0834H5.41699V11.9167H11.917V5.41675H14.0837V11.9167H20.5837V14.0834H14.0837V20.5834H11.917V14.0834Z" fill="white"/>
                 </svg>    
@@ -67,7 +67,7 @@ Sales
                     <td class="p-2">{{ client.name }}</td>
                     <td class="p-2">{{ client.visa_type }} in {{client.preferred_country}}</td>
                     <td class="p-2">
-                        <button class="rounded-md border {% if client.status == 'Paid' %} border-green-800 bg-green-400 text-green-800 {% elif client.status == "Pending" %} border-blue-800 bg-blue-400 text-blue-800 {% else %} border-yellow-800 bg-yellow-400 text-yellow-800 {% endif %} w-24 h-8">
+                        <button class="rounded-md border{% if client.status == 'Paid' %} border-green-300 bg-green-300 {% elif client.status == "Pending" %} border-orange-300 bg-orange-300{% else %} border-blue-300  bg-blue-300 {% endif %} w-24 h-8 text-white">
                             {{client.status}}
                         </button>
                     </td>
@@ -93,27 +93,22 @@ Sales
     
 </div>
 
-<!--Recent Clients-->
-<div class="mt-4">
-    <h1 class="font-semibold text-xl mb-5">Assign Leads</h1>
-    <div class="flex items-center justify-between border rounded-xl bg-white p-6 pb-10">
-        <form method="post" class="flex flex-col items-center w-9/12 mt-3 ml-3 gap-2">
-            {% comment %} {% csrf_token %}
-            <div class="relative z-0 mb-5 group w-full">
-                <label for="{{ country_form.name.id_for_label }}" class="block mb-3 text-xl font-medium ml-3">
-                    {{ country_form.name.label }}
-                </label>                             
-                {{ country_form.name|add_class:'block w-full h-14 px-4 py-2 pl-8 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
-            </div>
-            <input type="submit" value="Submit"
-            class="w-10/12 h-16 rounded-md px-7 py-1 bg-[--primary-color] font-normal text-white mt-3" /> {% endcomment %}
-        </form>
-    </div>
-</div>
+<!--Assign Clients-->
+{% include 'sales/assign_client_form.html' %}
 
 <!--Invoice Raised-->
 <div class="mt-4">
-    <h1 class="font-semibold text-xl mb-5">Invoice Raised</h1>
+    <div class="flex justify-between items-center mb-2">
+        <h1 class="font-semibold text-xl">Invoice Raised</h1>
+        <a href="#">
+            <button class=" h-12 flex justify-center items-center rounded-md px-7 py-1 bg-[--primary-color] font-normal text-white mt-3">
+                <svg width="26" height="26" class="mr-3" viewBox="0 0 26 26" fill="none">
+                    <path d="M11.917 14.0834H5.41699V11.9167H11.917V5.41675H14.0837V11.9167H20.5837V14.0834H14.0837V20.5834H11.917V14.0834Z" fill="white"/>
+                </svg>    
+                New Invoice            
+            </button>
+        </a>
+    </div>
     <div class="grid grid-cols-1 mt-2 gap-7">
         <div class="grid">
             <div class="border rounded-lg bg-white p-6">
@@ -210,6 +205,43 @@ Sales
                                 </svg>                                      
                             </td>
                         </tr>
+                    </tbody>
+                </table>           
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Sales Report-->
+<div class="mt-4">
+    <h1 class="font-semibold text-xl mb-5">Sales Report</h1>
+    <div class="grid grid-cols-1 mt-2 gap-7">
+        <div class="grid">
+            <div class="border rounded-lg bg-white p-6">
+                <table class="w-full border-collapse">
+                    <thead>
+                        <tr class="border-b border-gray-300">
+                            <th class="p-2 text-left">Client Name</th>
+                            <th class="p-2 text-left">Total Amount</th>
+                            <th class="p-2 text-left">Advance Paid</th>
+                            <th class="p-2 text-left">Due Remaining</th>
+                            <th class="p-2 text-left">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for client in sales %}
+                        <tr class="border-b border-gray-300">
+                            <td class="p-2">{{client.name}}</td>
+                            <td class="p-2">{{client.package_amount}}</td>
+                            <td class="p-2">{{client.advance_paid}}</td>
+                            <td class="p-2">{{client.due_amount}}</td>
+                            <td class="p-2">
+                                <button class="rounded-md border{% if client.status == 'Paid' %} border-green-300 bg-green-300 {% elif client.status == "Pending" %} border-orange-300 bg-orange-300{% else %} border-blue-300  bg-blue-300 {% endif %} w-24 h-8 text-white">
+                                    {{client.status}}
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
                     </tbody>
                 </table>           
             </div>
