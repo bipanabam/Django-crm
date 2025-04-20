@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import modelformset_factory
 
-from .models import Client, ClientDocument
+from .models import Client, ClientDocument, Voucher
 
 from . import services
 
@@ -51,3 +51,35 @@ class AssignClientForm(forms.Form):
         if branch is not None:
             self.fields['client'].queryset = services.get_unassigned_clients(branch=branch)
             self.fields['sales_representative'].queryset = User.objects.filter(profile__branch=branch, role='sales representative').distinct()
+
+class VoucherForm(forms.ModelForm):
+    class Meta:
+        model = Voucher
+        fields = ['client', 'amount', 'payment_method', 'narration']
+
+    def __init__(self, *args, **kwargs):
+        request = kwargs.pop('request', None)
+        super(VoucherForm, self).__init__(*args, **kwargs)
+
+        if request:
+            self.fields['client'].queryset = services.get_client_with_remaining_dues(request)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        client = cleaned_data.get('client')
+        amount = cleaned_data.get('amount')
+
+        if client and amount is not None:
+            due_amount = client.due_amount
+
+            if self.instance.pk:  # While editing an existing voucher
+                old_amount = self.instance.amount if self.instance.amount else 0
+                allowed_amount = due_amount + old_amount
+            else:
+                allowed_amount = due_amount
+
+            if amount > allowed_amount:
+                self.add_error(
+                    'amount',
+                    f"The entered amount exceeds the allowed amount of {allowed_amount:.2f}."
+                )
