@@ -85,6 +85,7 @@ def inquiry_form_view(request):
                         amount = client.advance_paid,
                         narration = "Advance paid while inquiry.",
                         created_by = request.user,
+                        status = "Paid",
                     )
                     
                 client.created_by = request.user
@@ -148,14 +149,6 @@ def create_invoice(request):
         if form.is_valid():
             with transaction.atomic():
                 voucher = form.save(commit=False)
-                #update client 
-                client = voucher.client
-                client.due_amount -= voucher.amount
-                client.advance_paid += voucher.amount
-                if client.due_amount == 0:
-                    client.status = "Paid"
-                client.save()
-
                 voucher.branch = branch
                 voucher.type = "Receipt"
                 voucher.category = "Sales"
@@ -173,7 +166,7 @@ def create_invoice(request):
 def edit_invoice(request, voucher_id):
     branch = services.get_user_branch(request)
     instance = get_object_or_404(Voucher, id=voucher_id, branch=branch)
-    previous_amount = instance.amount\
+    previous_amount = instance.amount
     
     form = VoucherForm(request=request, instance=instance)
     if request.method == 'POST':
