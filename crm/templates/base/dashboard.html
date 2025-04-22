@@ -264,7 +264,6 @@ Dashboard
 </div>
 
 <!--Quick links-->
-{% if request.user.role == 'admin' %}
 <div class="mt-4">
     <h1 class="font-semibold text-xl mb-5">Quick Links</h1>
     <div class="flex items-center justify-between border rounded-lg bg-white p-6">
@@ -321,5 +320,4 @@ Dashboard
         </div>
     </div>
 </div>
-{% endif %}
 {% endblock content %}

@@ -49,12 +49,32 @@
                         {{ form.password.label }}
                     </label>                             
                     {{ form.password|add_class:'block w-full h-14 px-4 py-2 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
+                    <!-- Eye Icon -->
+                    <button type="button" onclick="togglePassword('id_password')" class="absolute inset-y-0 top-1/2 right-3 flex items-center text-gray-500">
+                        <svg id="eye-id_password" class="h-6 w-6" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-.006.02-.006.042 0 .063C20.268 16.057 16.477 19 12 19c-4.478 0-8.268-2.943-9.542-7a.979.979 0 010-.063z"/>
+                        </svg>
+                    </button>
                 </div>
                 <div class="relative z-0 w-full mb-5 group">
                     <label for="{{ form.confirm_password.id_for_label }}" class="block mb-3 text-xl font-medium ml-3">
                         {{ form.confirm_password.label }}
                     </label>                             
                     {{ form.confirm_password|add_class:'block w-full h-14 px-4 py-2 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
+                     <!-- Eye Icon -->
+                    <button type="button" onclick="togglePassword('id_confirm_password')" class="absolute inset-y-0 top-1/2 right-3 flex items-center text-gray-500">
+                        <svg id="eye-id_confirm_password" class="h-6 w-6" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-.006.02-.006.042 0 .063C20.268 16.057 16.477 19 12 19c-4.478 0-8.268-2.943-9.542-7a.979.979 0 010-.063z"/>
+                        </svg>
+                    </button>
                     {% for error in form.confirm_password.errors %}
                         <div class="text-red-500 text-sm mt-1">{{ error }}</div>
                     {% endfor %}
@@ -75,6 +95,27 @@
                     <div class="text-red-500 text-sm mt-1">{{ error }}</div>
                 {% endfor %}
             </div>
+            <div class="relative z-0 w-full mb-5 group">
+                <label for="{{ form.access_level.id_for_label }}" class="block mb-3 text-xl font-medium ml-3">
+                    {{ form.access_level.label }}
+                </label>
+            
+                <div class="grid grid-cols-3 gap-2 ml-3">
+                    {% for checkbox in form.access_level %}
+                        <label class="flex items-center space-x-2 text-gray-700">
+                            {{ checkbox.tag }}
+                            <span class="text-base">{{ checkbox.choice_label }}</span>
+                        </label>
+                    {% endfor %}
+                </div>
+            
+                {% if form.access_level.errors %}
+                    <div class="text-red-500 text-sm mt-2 ml-3">
+                        {{ form.access_level.errors.as_text }}
+                    </div>
+                {% endif %}
+            </div>
+            
             <input type="submit" value="Submit"
             class="w-full h-16 rounded-md px-7 py-1 bg-[--primary-color] font-normal text-white mt-3" />
         </form>
@@ -143,6 +184,20 @@
     function closeModal() {
         document.getElementById('deleteModal').classList.add('hidden');
     }
+
+    function togglePassword(fieldId) {
+        const input = document.getElementById(fieldId);
+        const eyeIcon = document.getElementById(`eye-${fieldId}`);
+    
+        if (input.type === "password") {
+            input.type = "text";
+            eyeIcon.classList.add("text-blue-500"); // optional style change
+        } else {
+            input.type = "password";
+            eyeIcon.classList.remove("text-blue-500");
+        }
+    }
+        
 </script>
 
 {% endblock content %}

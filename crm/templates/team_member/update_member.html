@@ -52,6 +52,27 @@
                     <div class="text-red-500 text-sm mt-1">{{ error }}</div>
                 {% endfor %}
             </div>
+            <div class="relative z-0 w-full mb-5 group">
+                <label for="{{ form.access_level.id_for_label }}" class="block mb-3 text-xl font-medium ml-3">
+                    {{ form.access_level.label }}
+                </label>
+            
+                <div class="grid grid-cols-3 gap-2 ml-3">
+                    {% for checkbox in form.access_level %}
+                        <label class="flex items-center space-x-2 text-gray-700">
+                            {{ checkbox.tag }}
+                            <span class="text-base">{{ checkbox.choice_label }}</span>
+                        </label>
+                    {% endfor %}
+                </div>
+            
+                {% if form.access_level.errors %}
+                    <div class="text-red-500 text-sm mt-2 ml-3">
+                        {{ form.access_level.errors.as_text }}
+                    </div>
+                {% endif %}
+            </div>
+            
             <input type="submit" value="Update Member"
             class="w-full h-16 rounded-md px-7 py-1 bg-[--primary-color] font-normal text-white mt-3" />
         </form>

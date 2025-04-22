@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.auth.models import Group
 
 from .models import Branch, User, Employee
 
@@ -15,9 +16,14 @@ class BranchForm(forms.ModelForm):
 class UserForm(forms.ModelForm):
     confirm_password = forms.CharField(widget=forms.PasswordInput)
     branch = forms.ModelChoiceField(queryset=Branch.objects.none(), empty_label="Select your Branch", required=False)
+    access_level = forms.ModelMultipleChoiceField(
+        queryset=Group.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False
+    )
     class Meta:
         model = User
-        fields = ['username','email', 'first_name', 'last_name', 'password', 'confirm_password', 'branch', 'role']
+        fields = ['username','email', 'first_name', 'last_name', 'password', 'confirm_password', 'branch', 'role', 'access_level']
         widgets = {
             'password': forms.PasswordInput(),
         }
@@ -31,7 +37,7 @@ class UserForm(forms.ModelForm):
         self.fields['last_name'].widget.attrs['placeholder'] = 'Enter your Last Name'
         self.fields['password'].widget.attrs['placeholder'] = 'Enter your Password'
         self.fields['confirm_password'].widget.attrs['placeholder'] = 'Confirm your Password'
-        # self.fields['role'].widget.attrs['empty_label'] = 'Select access level'
+        self.fields['access_level'].queryset = Group.objects.all()
 
     def clean(self):
         cleaned_data = super().clean()
@@ -50,9 +56,14 @@ class UserForm(forms.ModelForm):
         return cleaned_data
     
 class UserUpdateForm(forms.ModelForm):
+    access_level = forms.ModelMultipleChoiceField(
+        queryset=Group.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False
+    )
     class Meta:
         model = User
-        fields = ['username','email', 'first_name', 'last_name', 'role']
+        fields = ['username','email', 'first_name', 'last_name', 'role', 'access_level']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -60,4 +71,4 @@ class UserUpdateForm(forms.ModelForm):
 class EmployeeForm(forms.ModelForm):
     class Meta:
         model = Employee
-        fields = ['name', 'email', 'phone_number', 'role', 'access_level']
+        fields = ['name', 'email', 'phone_number', 'role',]

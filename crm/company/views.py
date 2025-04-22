@@ -4,11 +4,16 @@ from django.contrib import messages
 from django.db import transaction
 from django.views.generic import (CreateView, DetailView, UpdateView)
 
+from django.contrib.auth.decorators import login_required
+from .decorators import access_level_required
+
 from .models import Branch, User, Employee
 from .forms import BranchForm, UserForm, UserUpdateForm, EmployeeForm
 from . import services
 
 # Create your views here.
+@login_required
+@access_level_required(['Admin'])
 def branch_view(request, *args, **kwargs):
     form = BranchForm(request.POST)
     branches = Branch.objects.all()

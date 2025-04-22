@@ -62,12 +62,12 @@
                             {{ form.phone_number|add_class:'block w-full h-14 px-4 py-2 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
                         </div>
                     </div>
-                    <div class="relative z-0 w-full mb-5 group">
+                    {% comment %} <div class="relative z-0 w-full mb-5 group">
                         <label for="{{ form.access_level.id_for_label }}" class="block mb-3 text-xl font-medium ml-3">
                             {{ form.access_level.label }}
                         </label>                             
                         {{ form.access_level|add_class:'block w-full h-14 px-4 py-2 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
-                    </div>
+                    </div> {% endcomment %}
                     <input type="submit" value="Done"
                     class="w-full h-16 rounded-md px-7 py-1 bg-[--primary-color] font-normal text-white mt-3" />
                 </form>

@@ -28,8 +28,8 @@
             </div>
             {% if messages %}
                 {% for message in messages %}
-                <div class="border w-7/12 h-6 text-black text-sm mt-2 mb-2 {% if message.tags == 'error' %} bg-red-400 {% elif message.tags == 'success' %} bg-green-400 {% endif %}">
-                    {{ message }}
+                <div class="border rounded-md w-7/12 h-6 text-black text-sm mt-2 mb-2 {% if message.tags == 'error' %} bg-red-400 {% elif message.tags == 'success' %} bg-green-400 {% endif %}">
+                    <p class="ml-3">{{ message }}</p>
                 </div>        
                 {% endfor %}
             {% endif %}

@@ -61,8 +61,25 @@
                                         </svg>                                    
                                     </div>                              
                                     {{ form.password|add_class:'block w-full h-14 pl-20 px-4 py-2 text-gray-400 bg-white border border-black rounded-2xl focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
+                                     <!-- Eye Icon -->
+                                    <button type="button" onclick="togglePassword('id_password')" class="absolute inset-y-0 right-3 flex items-center text-gray-500">
+                                        <svg id="eye-id_password" class="h-6 w-6" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-.006.02-.006.042 0 .063C20.268 16.057 16.477 19 12 19c-4.478 0-8.268-2.943-9.542-7a.979.979 0 010-.063z"/>
+                                        </svg>
+                                    </button>
                                 </div>
                             </div>
+                            {% if form.non_field_errors %}
+                                <div class="text-center text-red-500 text-sm mb-2">
+                                    {% for error in form.non_field_errors %}
+                                        <p>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
                             <div class="flex justify-end text-center font-semibold text-red-600">
                                 <a href="">Forgot Password?</a>
                             </div>
@@ -71,7 +88,7 @@
                                     Login
                                 </button>
                                 <div class="font-semibold mt-3">
-                                    Don't have an account? <a href="" class="text-[--primary-color]">Register Now</a>
+                                    Don't have an account? <a href="" class="text-[--primary-color]">Contact Admin</a>
                                 </div>
                             </div>
                     </form>
@@ -80,4 +97,21 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function togglePassword(fieldId) {
+            const input = document.getElementById(fieldId);
+            const eyeIcon = document.getElementById(`eye-${fieldId}`);
+        
+            if (input.type === "password") {
+                input.type = "text";
+                eyeIcon.classList.add("text-blue-500"); // optional style change
+            } else {
+                input.type = "password";
+                eyeIcon.classList.remove("text-blue-500");
+            }
+        }
+    </script>
+
 </body>
+
