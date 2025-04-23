@@ -1,4 +1,5 @@
 from .models import Branch, User
+from django.contrib.auth.models import Group
 
 
 def get_branches(request):
@@ -25,7 +26,21 @@ def get_users(request):
     branch = user.profile.branch
     if user.role == 'admin':
         return User.objects.filter(profile__branch__company=company)
-    elif user.role in ['manager', 'accountant']:
+    elif user.role == 'manager':
         return User.objects.filter(profile__branch=branch)
     else:
-        return User.objects.none()
+        return User.objects.filter(profile__branch=branch).exclude(role="manager")
+
+
+def get_all_access_levels(request):
+    user = request.user
+    if user.is_superuser:
+        return Group.objects.all()
+
+    if user.role == 'admin' or user.role == 'manager':
+        return Group.objects.exclude(name='Admin')
+    elif user.role == 'team manager':
+        return Group.objects.exclude(name__in=['Admin', 'Manager'])
+    else:
+        return Group.objects.none()
+    

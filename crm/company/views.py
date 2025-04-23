@@ -33,69 +33,107 @@ def branch_view(request, *args, **kwargs):
             return render(request, 'branch/branches.html', context)
     return render(request, 'branch/branches.html', context)
 
-class BranchUpdateView(UpdateView):
-    model = Branch
-    form_class = BranchForm
-    template_name = 'branch/branch_detail.html'
+@login_required
+@access_level_required(['Admin'])
+def update_branch(request, branch_id):
+    branch = Branch.objects.get(id=branch_id)
+    form = BranchForm(instance=branch)
+    if request.method == 'POST':
+        form = BranchForm(request.POST, instance=branch)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Branch details updated successfully')
+            return redirect('branches')
+    context = {
+        'form': form
+    }
+    return render(request, 'branch/branch_detail.html', context)
 
-    def form_valid(self, form):
-        messages.success(self.request, 'Branch details updated successfully')
-        return super().form_valid(form)
 
-class MemberCreateView(CreateView):
-    model = User
-    form_class = UserForm
-    template_name = 'team_member/team.html'
-    success_url = reverse_lazy('team_member')
+@login_required
+@access_level_required(['Admin', 'Manager', 'Team Manager'])
+def team_overview(request):
+    users = services.get_users(request)
+    form = UserForm(request=request)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['users'] = services.get_users(self.request)
-        return context
+    if request.method == 'POST':
+        form = UserForm(request.POST, request=request)
+        branch_id = request.POST['branch']
+        branch = Branch.objects.get(id=branch_id)
+        if form.is_valid():
+            user = form.save(commit=False)
+            password = user.password
+            # If the password is provided, we need to hash it before saving the user
+            if password:
+                user.set_password(password)
+            with transaction.atomic():
+                try:
+                    user.save()
+                    # Create a employee profile
+                    employee = Employee(user=user, 
+                                        branch=branch, 
+                                        role=user.role,
+                                        name=f"{user.first_name} {user.last_name}",
+                                        email=user.email,
+                                        created_by=request.user
+                                    )
+                    employee.save()
+                except Exception as e:
+                    print(e)
+                    messages.error(request, 'An error occurred while creating user and employee profile.')
+            messages.success(request, 'User created successfully.')
+            return redirect('team_member')
+    context = {
+        'users': users,
+        'form': form
+    }
+    return render(request, 'team_member/team.html', context=context)
 
-    def form_valid(self, form):
-        branch = form.cleaned_data['branch']
-        password = form.cleaned_data['password'] 
-        # If the password is provided, we need to hash it before saving the user
-        if password:
-            form.instance.set_password(password)
-        with transaction.atomic():
-            try:
-                user = form.save(commit=False)
-                user.save()
-                # Create a employee profile
-                employee = Employee(user=user, 
-                                    branch=branch, 
-                                    role=user.role,
-                                    name=f"{user.first_name} {user.last_name}",
-                                    email=user.email
-                                )
-                employee.save()
-            except Exception as e:
-                print(e)
-                messages.error(self.request, 'An error occurred while creating user and employee profile.')
-                return super().form_invalid(form)
-        messages.success(self.request, 'User created successfully.')
-        return super().form_valid(form)
+@login_required
+@access_level_required(['Admin', 'Manager', 'Team Manager'])
+def update_user(request, user_id):
+    user = User.objects.get(id=user_id)
+
+    if request.method == 'POST':
+        form = UserUpdateForm(request.POST, instance=user, request=request)
+        if form.is_valid():
+            user = form.save()
+            messages.success(request, 'Member details updated successfully')
+            return redirect('team_member')
+    else:
+        form = UserUpdateForm(instance=user, request=request)
+    context = {
+        'form': form    
+    }
+    return render(request, 'team_member/update_member.html', context=context)
+
+@login_required
+@access_level_required(['Admin', 'Manager', 'Team Manager'])  
+def edit_userprofile(request, employee_id):
+    employee = Employee.objects.get(id=employee_id)
+
+    if request.method == 'POST':
+        form = EmployeeForm(request.POST, instance=employee)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Member details updated successfully')
+            return redirect('team_member')
+    else:
+        form = EmployeeForm(instance=employee)
+    context = {
+        'form': form,
+        'employee': employee
+    }
+    return render(request, 'team_member/member_detail.html', context=context)
+
     
-class MemberUpdateView(UpdateView):
-    model = User
-    form_class = UserUpdateForm
-    template_name = 'team_member/update_member.html'
-    success_url = reverse_lazy('team_member')
-
-    def form_valid(self, form):
-        messages.success(self.request, 'Member details updated successfully')
-        return super().form_valid(form)
-    
-class MemberDetailView(UpdateView):
-    model = Employee
-    form_class = EmployeeForm
-    template_name = 'team_member/member_detail.html'
-    success_url = reverse_lazy('team_member')
-
-    def form_valid(self, form):
-        messages.success(self.request, 'Member details updated successfully')
-        return super().form_valid(form)
-    
-        
+@login_required
+@access_level_required(['Admin', 'Manager', 'Team Manager'])
+def delete_user(request, user_id):
+    user = User.objects.get(id=user_id)
+    if user is not None:
+        user.delete()
+        messages.success(request, 'User deleted successfully.')
+    else:
+        messages.error(request, 'User not found.')
+    return redirect('team_member') 

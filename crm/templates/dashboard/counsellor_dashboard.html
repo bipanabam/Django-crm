@@ -1,0 +1,81 @@
+{% extends "base/base.html" %}
+{% block head_title %}
+Dashboard
+{% endblock head_title %}
+
+{% block content %}
+<div class="mt-4">
+    <h1 class="font-semibold text-xl mb-5">Documentation Overview</h1>
+    <div class="grid grid-cols-3 mt-2 gap-7">
+        <div class="grid h-[150px]">
+            <div class="border rounded-lg bg-white p-6">
+                <p>Total Clients</p>
+                <p class="font-bold text-4xl text-[--primary-color] mt-2">12</p>
+            </div>
+        </div>
+        <div class="grid h-[150px]">
+            <div class="border rounded-lg bg-white p-6">
+                <p>Document Uploaded</p>
+                <p class="font-bold text-4xl text-[--primary-color] mt-2">12</p>
+            </div>
+        </div>
+        <div class="grid h-[150px]">
+            <div class="border rounded-lg bg-white p-6">
+                <p>Countries Recorded</p>
+                <p class="font-bold text-4xl text-[--primary-color] mt-2">$12</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Recent Document Upload-->
+<div class="mt-4">
+    <div class="grid grid-cols-1 lg:grid-cols-2 mt-2 gap-7 h-auto">
+        <div class="grid">
+            <h1 class="font-semibold text-xl mb-5">Recent Document Upload</h1>
+            <div class="border rounded-lg bg-white p-6">
+                <table class="w-full border-collapse">
+                    <thead>
+                        <tr class="border-b border-gray-300 text-gray-400 font-normal">
+                            <th class="p-2 text-left">Client Name</th>
+                            <th class="p-2 text-left">Document Type</th>
+                            <th class="p-2 text-left">Country</th>
+                            <th class="p-2 text-left">Uploaded Date</th>
+                            <th class="p-2 text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for document in countrywise_client_document %}
+                        <tr class="border-b border-gray-300">
+                            <td class="p-2">{{document.client.name}}</td>
+                            <td class="p-2">{{document.document_type}}</td>
+                            <td class="p-2">{{document.country}}</td>
+                            <td class="p-2">{{document.uploaded_date}}</td>
+                            <td class="p-2">
+                                <div class="flex gap-2 items-center justify-center">
+                                    <a href="{% url 'edit_countrywise_client_document' document.country.id document.id %}">
+                                        <button class='rounded-md bg-[--primary-color] text-white w-24 h-8'>Edit</button>
+                                    </a>
+                                    <button
+                                        onclick="openModal('{% url 'delete_countrywise_client_document' document.country.id document.id %}')"
+                                        class='rounded-md border border-[--primary-color] bg-gray-50 text-[--primary-color] w-24 h-8'>
+                                        Remove
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-3">
+                                No Client documents yet.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

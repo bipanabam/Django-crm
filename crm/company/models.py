@@ -44,10 +44,12 @@ class Branch(models.Model):
 class RoleChoices(models.TextChoices):
   # ADMIN = 'admin', 'Admin'
   MANAGER = 'manager', 'Manager'
+  TEAM_MANAGER = 'team manager', 'Team Manager'
+  SALES_REPRESENTATIVE = 'sales representative', 'Sales Representative'
   COUNSELLOR = 'counsellor', 'Counsellor'
   MARKETING = 'marketing', 'Marketing'
   ACCOUNTANT = 'accountant', 'Accountant'
-  SALES_REPRESENTATIVE = 'sales representative', 'Sales Representative'
+ 
    
 class User(AbstractUser):
   email = models.EmailField(unique=True)
@@ -68,7 +70,7 @@ class Employee(models.Model):
   email = models.EmailField(null=True, blank=True)
   phone_number = models.CharField(max_length=14, null=True, blank=True)
   role = models.CharField(max_length=15, null=True, blank=True)
-  # access_level = models.CharField(max_length=25, null=True, blank=True) 
+  created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now=True)
 

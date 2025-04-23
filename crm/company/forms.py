@@ -1,7 +1,9 @@
 from django import forms
 from django.contrib.auth.models import Group
 
-from .models import Branch, User, Employee
+from .models import Branch, User, Employee, RoleChoices
+
+from .services import get_branches, get_all_access_levels
 
 class BranchForm(forms.ModelForm):
     class Meta:
@@ -29,15 +31,31 @@ class UserForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        request = kwargs.pop('request', None)
         super().__init__(*args, **kwargs)
-        self.fields['branch'].queryset = Branch.objects.all()
         self.fields['username'].widget.attrs['placeholder'] = 'Enter your Username'
         self.fields['email'].widget.attrs['placeholder'] = 'Enter your Email'
         self.fields['first_name'].widget.attrs['placeholder'] = 'Enter your First Name'
         self.fields['last_name'].widget.attrs['placeholder'] = 'Enter your Last Name'
         self.fields['password'].widget.attrs['placeholder'] = 'Enter your Password'
         self.fields['confirm_password'].widget.attrs['placeholder'] = 'Confirm your Password'
-        self.fields['access_level'].queryset = Group.objects.all()
+        self.fields['branch'].queryset = get_branches(request)
+        self.fields['access_level'].queryset = get_all_access_levels(request)
+
+        # Role filtering
+        if request and hasattr(request.user, 'role'):
+            current_role = request.user.role
+
+            if current_role == 'admin':
+                self.fields['role'].choices = [
+                    (key, label) for key, label in RoleChoices.choices if key != 'admin'
+                ]
+            elif current_role == 'manager' or current_role == 'team manager':
+                self.fields['role'].choices = [
+                    (key, label) for key, label in RoleChoices.choices if key not in ['admin', 'manager']
+                ]
+            else:
+                self.fields['role'].choices = None
 
     def clean(self):
         cleaned_data = super().clean()
@@ -66,7 +84,26 @@ class UserUpdateForm(forms.ModelForm):
         fields = ['username','email', 'first_name', 'last_name', 'role', 'access_level']
 
     def __init__(self, *args, **kwargs):
+        request = kwargs.pop('request', None)
         super().__init__(*args, **kwargs)
+
+        if request:
+            self.fields['access_level'].queryset = get_all_access_levels(request)
+
+        # Role filtering
+        if request and hasattr(request.user, 'role'):
+            current_role = request.user.role
+
+            if current_role == 'admin':
+                self.fields['role'].choices = [
+                    (key, label) for key, label in RoleChoices.choices if key != 'admin'
+                ]
+            elif current_role == 'manager' or current_role == 'team manager':
+                self.fields['role'].choices = [
+                    (key, label) for key, label in RoleChoices.choices if key not in ['admin', 'manager']
+                ]
+            else:
+                self.fields['role'].choices = None
 
 class EmployeeForm(forms.ModelForm):
     class Meta:

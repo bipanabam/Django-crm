@@ -1,0 +1,205 @@
+{% extends "base/base.html" %}
+{% block head_title %}
+Dashboard
+{% endblock head_title %}
+
+{% block content %}
+<div class="mt-4">
+    <h1 class="font-semibold text-xl mb-5">Team Overview</h1>
+    <div class="grid grid-cols-3 mt-2 gap-7">
+        <div class="grid h-[150px]">
+            <div class="border rounded-lg bg-white p-6">
+                <p>Total Team Member</p>
+                <p class="font-bold text-4xl text-[--primary-color] mt-2">12</p>
+            </div>
+        </div>
+        <div class="grid h-[150px]">
+            <div class="border rounded-lg bg-white p-6">
+                <p>Account Manager</p>
+                <p class="font-bold text-4xl text-[--primary-color] mt-2">12</p>
+            </div>
+        </div>
+        <div class="grid h-[150px]">
+            <div class="border rounded-lg bg-white p-6">
+                <p>Sales Manager</p>
+                <p class="font-bold text-4xl text-[--primary-color] mt-2">12</p>
+            </div>
+        </div>
+        <div class="grid h-[150px]">
+            <div class="border rounded-lg bg-white p-6">
+                <p>Marketing Manager</p>
+                <p class="font-bold text-4xl text-[--primary-color] mt-2">12</p>
+            </div>
+        </div>
+        <div class="grid h-[150px]">
+            <div class="border rounded-lg bg-white p-6">
+                <p>Document Manager</p>
+                <p class="font-bold text-4xl text-[--primary-color] mt-2">2</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Team Management-->
+<div class="mt-6">
+    <h1 class="font-semibold text-xl mb-5">Team Management</h1>
+    <div class="border rounded-xl bg-white p-6">
+        <table class="w-full border-collapse">
+            <thead>
+                <tr class="border-b border-gray-300 text-gray-400 font-normal">
+                    <th class="p-2 text-left">Name</th>
+                    <th class="p-2 text-left">Role</th>
+                    <th class="p-2 text-left">Email</th>
+                    <th class="p-2 text-left">Access Level</th>
+                    <th class="p-2 text-center">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr class="border-b border-gray-300">
+                    <td class="p-2">{{user.first_name}} {{user.last_name}}</td>
+                    <td class="p-2">{{user.role}}</td>
+                    <td class="p-2">{{user.email}}</td>
+                    <td class="p-2">
+                        {% for group in user.access_level.all %}
+                            <li>{{ group.name }}</li>
+                        {% empty %}
+                            <li>No access levels assigned</li>
+                        {% endfor %}
+                    </td>
+                    <td class="p-2">
+                        <div class="flex gap-2 items-center justify-center">
+                            <a href="{% url 'member_detail' user.profile.id %}">
+                                <button class='rounded-md bg-[--primary-color] text-white w-24 h-8'>Edit</button>
+                            </a>
+                            <button class='rounded-md border border-[--primary-color] bg-gray-50 text-[--primary-color] w-24 h-8'
+                            onclick="openModal('{% url 'delete_member' user.id %}')">
+                            Remove</button>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-3">
+                        No team members yet.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<!--Team Status-->
+<div class="mt-6">
+    <h1 class="font-semibold text-xl mb-5">Team Status</h1>
+    <div class="border rounded-xl bg-white p-6">
+        <table class="w-full border-collapse">
+            <thead>
+                <tr class="border-b border-gray-300 text-gray-400 font-normal">
+                    <th class="p-2 text-left">Name</th>
+                    <th class="p-2 text-left">Role</th>
+                    <th class="p-2 text-left">Email</th>
+                    <th class="p-2 text-left">Status</th>
+                    <th class="p-2 text-center">Last Active</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr class="border-b border-gray-300">
+                    <td class="p-2">{{user.first_name}} {{user.last_name}}</td>
+                    <td class="p-2">{{user.role}}</td>
+                    <td class="p-2">{{user.email}}</td>
+                    <td class="p-2"></td>
+                    <td class="p-2">
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-3">
+                        Nothing to show yet.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!--Task Assigned-->
+<div class="mt-6">
+    <h1 class="font-semibold text-xl mb-5">Task Assigned</h1>
+    <div class="border rounded-xl bg-white p-6">
+        <table class="w-full border-collapse">
+            <thead>
+                <tr class="border-b border-gray-300 text-gray-400 font-normal">
+                    <th class="p-2 text-left">Client</th>
+                    <th class="p-2 text-left">Task</th>
+                    <th class="p-2 text-left">Assigned By</th>
+                    <th class="p-2 text-left">Assigned Date</th>
+                    <th class="p-2 text-center">Deadline</th>
+                    <th class="p-2 text-center">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for task in tasks %}
+                <tr class="border-b border-gray-300">
+                    <td class="p-2">{{task.client}}</td>
+                    <td class="p-2">{{task.task}}</td>
+                    <td class="p-2">{{task.assigned_by}}</td>
+                    <td class="p-2">{{task.assigned_date}}</td>
+                    <td class="p-2">{{task.deadline}}</td>
+                    <td class="p-2">
+                        <div class="flex gap-2 items-center justify-center">
+                            <a href="{% url 'member_detail' user.profile.id %}">
+                                <button class='rounded-md bg-[--primary-color] text-white w-24 h-8'>Edit</button>
+                            </a>
+                            <button class='rounded-md border border-[--primary-color] bg-gray-50 text-[--primary-color] w-24 h-8'>Remove</button>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center py-3">
+                        No task assigned yet.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="fixed inset-0 items-center justify-center bg-black bg-opacity-50 hidden z-50">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md mx-auto text-center shadow-lg">
+        <h2 class="text-lg font-semibold mb-4">Are you sure you want to delete this member?</h2>
+        <div class="flex justify-center gap-4">
+            <form id="deleteForm" method="post">
+                {% csrf_token %}
+                <button type="submit" class="bg-red-500 text-white px-5 py-2 rounded-md">Yes</button>
+            </form>
+            <button onclick="closeModal()" class="bg-gray-300 px-5 py-2 rounded-md">No</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openModal(deleteUrl) {
+        const modal = document.getElementById('deleteModal');
+        const form = document.getElementById('deleteForm');
+        form.action = deleteUrl;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex')
+    }
+
+    function closeModal() {
+        document.getElementById('deleteModal').classList.add('hidden');
+    }
+        
+</script>
+
+
+{% endblock content %}
