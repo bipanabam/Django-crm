@@ -9,7 +9,7 @@ from django.utils import timezone
 
 from .models import ClientDocument, Client, Voucher
 
-from .forms import ClientForm, ClientDocumentForm,ClientDocumentFormset, AssignClientForm, VoucherForm
+from .forms import ClientForm, ClientDocumentForm,ClientDocumentFormset, AssignClientForm, InvoiceForm
 
 from . import services
 from company.services import get_user_branch
@@ -135,7 +135,6 @@ def get_due_amount(request):
     branch = services.get_user_branch(request)
     try:
         client = Client.objects.get(id=client_id, branch=branch)
-        print(client.due_amount)
         return JsonResponse({'due_amount': client.due_amount})
     except Client.DoesNotExist:
         return JsonResponse({'error': 'Client not found'}, status=404)
@@ -143,9 +142,9 @@ def get_due_amount(request):
 @login_required
 def create_invoice(request):
     branch = services.get_user_branch(request)
-    form = VoucherForm(request=request)
+    form = InvoiceForm(request=request)
     if request.method == 'POST':
-        form = VoucherForm(request.POST)
+        form = InvoiceForm(request.POST, request=request)
         if form.is_valid():
             with transaction.atomic():
                 voucher = form.save(commit=False)
@@ -156,6 +155,8 @@ def create_invoice(request):
                 voucher.save()
             messages.success(request, 'Invoice created successfully')
             return redirect('sales')
+        else:
+            print(form.errors)
     context = {
         'form': form
     }
@@ -168,9 +169,9 @@ def edit_invoice(request, voucher_id):
     instance = get_object_or_404(Voucher, id=voucher_id, branch=branch)
     previous_amount = instance.amount
     
-    form = VoucherForm(request=request, instance=instance)
+    form = InvoiceForm(request=request, instance=instance)
     if request.method == 'POST':
-        form = VoucherForm(request.POST, request=request, instance=instance)
+        form = InvoiceForm(request.POST, request=request, instance=instance)
         if form.is_valid():
             with transaction.atomic():
                 voucher = form.save(commit=False)
@@ -198,7 +199,9 @@ def delete_invoice(request, voucher_id):
     
     if request.method == 'POST':
         # update client
-        client = voucher.client
+        print(voucher)
+        client = voucher.account
+        print(client)
         client.advance_paid -= voucher.amount
         client.due_amount += voucher.amount
         if client.due_amount > 0:

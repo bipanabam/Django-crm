@@ -1,0 +1,67 @@
+{% extends 'base/base.html' %}
+{% load custom_filters %}
+
+{% block head_title %}
+Voucher
+{% endblock head_title %}
+
+{% block content %}
+<div class="mt-6">
+    <h1 class="font-semibold text-2xl mb-5">New Voucher</h1>
+    <div class="justify-between border rounded-xl bg-white p-6 pb-10">
+        <form method="post" class="flex flex-col w-10/12 mt-3 ml-3 mr-3 gap-2">
+            {% csrf_token %}
+            <div class="grid grid-cols-1 md:gap-6 w-full">
+                {% for field in form %}
+                <div class="relative z-0 mb-5 w-full">
+                    <label for="{{ field.id_for_label }}" class="block mb-3 text-xl font-medium ml-3">
+                        {{ field.label }}
+                    </label>   
+                    {% if field.name == "narration" %} 
+                    {{ form.narration|add_class:'block w-full h-28 px-4 py-2 pl-8 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
+                    {% else %}                         
+                    {{ field|add_class:'block w-full h-14 px-4 py-2 pl-8 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
+                    {% endif %}
+                </div>
+                {% endfor %}
+                {% comment %} <div class="relative z-0 mb-5 w-full">
+                    <label for="{{ form.amount.id_for_label }}" class="block mb-3 text-xl font-medium ml-3">
+                        {{ form.amount.label }}
+                    </label>                             
+                    {{ form.amount|add_class:'block w-full h-14 px-4 py-2 pl-8 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
+                    {% for error in form.amount.errors %}
+                        <div class="text-red-500 text-sm mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div> {% endcomment %}
+            </div>
+            
+            <input type="submit" value="Submit"
+            class="w-10/12 h-16 rounded-md px-7 py-1 bg-[--primary-color] font-normal text-white mt-3 ml-16" />
+        </form>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#id_account_type').change(function () {
+            var accountType = $(this).val();
+            $.ajax({
+                url: "{% url 'get_accounts_by_type' %}",  // Make sure the URL is correct
+                data: {
+                    'account_type': accountType  // Send the selected account_type to the server
+                },
+                success: function (data) {
+                    var options = '<option value="">Select Account</option>';  // Default empty option
+                    data.accounts.forEach(function (account) {
+                        options += '<option value="' + account.id + '">' + account.name + '</option>';
+                    });
+                    $('#id_accounts').html(options);  // Populate the accounts field with options
+                }
+            });
+        });
+    });
+</script>
+  
+{% endblock content %}

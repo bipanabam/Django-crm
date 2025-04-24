@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.contenttypes.models import ContentType
 from django.forms import modelformset_factory
 
 from .models import Client, ClientDocument, Voucher
@@ -52,17 +53,28 @@ class AssignClientForm(forms.Form):
             self.fields['client'].queryset = services.get_unassigned_clients(branch=branch)
             self.fields['sales_representative'].queryset = User.objects.filter(profile__branch=branch, role='sales representative').distinct()
 
-class VoucherForm(forms.ModelForm):
+class InvoiceForm(forms.ModelForm):
+    client = forms.ModelChoiceField(queryset=Client.objects.none())
+
     class Meta:
         model = Voucher
         fields = ['client', 'amount', 'payment_method', 'narration']
 
     def __init__(self, *args, **kwargs):
         request = kwargs.pop('request', None)
-        super(VoucherForm, self).__init__(*args, **kwargs)
+        super(InvoiceForm, self).__init__(*args, **kwargs)
 
         if request:
             self.fields['client'].queryset = services.get_client_with_remaining_dues(request)
+
+        # Set initial value for client field if editing
+        if self.instance.pk and self.instance.account_type and self.instance.account_id:
+            if self.instance.account_type.model_class() == Client:
+                try:
+                    self.fields['client'].initial = self.instance.account_type.get_object_for_this_type(id=self.instance.account_id)
+                    self.fields['client'].disabled = True
+                except Client.DoesNotExist:
+                    pass
 
     def clean(self):
         cleaned_data = super().clean()
@@ -83,3 +95,17 @@ class VoucherForm(forms.ModelForm):
                     'amount',
                     f"The entered amount exceeds the allowed amount of {allowed_amount:.2f}."
                 )
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+
+        if not instance.pk: 
+            client = self.cleaned_data['client']
+            instance.account_type = ContentType.objects.get_for_model(Client)
+            instance.account_id = client.id
+
+        if commit:
+            instance.save()
+        return instance
+
+

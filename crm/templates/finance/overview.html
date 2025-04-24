@@ -35,7 +35,7 @@ Finance
 <div class="mt-4">
     <div class="flex justify-between items-center mb-2">
         <h1 class="font-semibold text-xl">Client Payment and Invoices</h1>
-        <a href="{% url 'create_invoice' %}">
+        <a href="{% url 'create_voucher' %}">
             <button class=" h-12 flex justify-center items-center rounded-md px-7 py-1 bg-[--primary-color] font-normal text-white mt-3">
                 <svg width="26" height="26" class="mr-3" viewBox="0 0 26 26" fill="none">
                     <path d="M11.917 14.0834H5.41699V11.9167H11.917V5.41675H14.0837V11.9167H20.5837V14.0834H14.0837V20.5834H11.917V14.0834Z" fill="white"/>
@@ -59,7 +59,7 @@ Finance
             <tbody class="w-full">
                 {% for voucher in vouchers %}
                 <tr class="border-b border-gray-300 w-full">
-                    <td class="p-2">{{ voucher.client.name }}</td>
+                    <td class="p-2">{{ voucher.account.name }}</td>
                     <td class="p-2">#{{ voucher.invoice_number }}</td>
                     <td class="p-2">{{ voucher.amount }}</td>
                     <td class="p-2">
@@ -105,7 +105,7 @@ Finance
                 <table class="w-full border-collapse">
                     <thead>
                         <tr class="border-b border-gray-300 text-gray-400 ">
-                            <th class="p-2 text-left">Client Name</th>
+                            <th class="p-2 text-left">Name</th>
                             <th class="p-2 text-left">Total Amount</th>
                             <th class="p-2 text-left">Advance Paid</th>
                             <th class="p-2 text-left">Due Remaining</th>

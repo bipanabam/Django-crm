@@ -42,7 +42,7 @@ class Branch(models.Model):
     return f"{self.company.name} - {self.name}"
 
 class RoleChoices(models.TextChoices):
-  # ADMIN = 'admin', 'Admin'
+  ADMIN = 'admin', 'Admin'
   MANAGER = 'manager', 'Manager'
   TEAM_MANAGER = 'team manager', 'Team Manager'
   SALES_REPRESENTATIVE = 'sales representative', 'Sales Representative'
@@ -53,7 +53,7 @@ class RoleChoices(models.TextChoices):
    
 class User(AbstractUser):
   email = models.EmailField(unique=True)
-  role = models.CharField(max_length=20, choices=RoleChoices, default=RoleChoices.ACCOUNTANT)
+  role = models.CharField(max_length=20, choices=RoleChoices, default=RoleChoices.ADMIN)
 
   access_level = models.ManyToManyField(Group, blank=True, related_name='users')
 

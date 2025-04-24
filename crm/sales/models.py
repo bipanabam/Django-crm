@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 
 from company.models import User, Branch
 from company.services import get_user_branch
@@ -70,6 +72,8 @@ class Voucher(models.Model):
 
   VOUCHER_CATEGORY_CHOICES = [
       ('Sales', 'Sales'),
+      ('Service', 'Service'),
+      ('Salary', 'Salary'),
       ('Manual', 'Manual'),
   ]
 
@@ -92,11 +96,15 @@ class Voucher(models.Model):
   type = models.CharField(max_length=50, choices=VOUCHER_TYPE_CHOICES)
   category = models.CharField(max_length=50, choices=VOUCHER_CATEGORY_CHOICES)
 
-  client = models.ForeignKey(Client, on_delete=models.CASCADE)
+  # generic foreign key fields
+  account_type = models.ForeignKey(ContentType, on_delete=models.SET_NULL, null=True)
+  account_id = models.PositiveIntegerField(null=True)
+  account = GenericForeignKey('account_type', 'account_id')
+
   amount = models.DecimalField(max_digits=10, decimal_places=2)
   narration = models.TextField(null=True, blank=True)
   payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES, null=True, blank=True)
-  # linked_voucher = models.OneToOneField("self", null=True, blank=True, on_delete=models.SET_NULL, related_name='linked_vouchers')
+
   created_at = models.DateTimeField(auto_now_add=True)
   created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="created_vouchers")
   updated_at = models.DateTimeField(auto_now=True)
@@ -124,13 +132,3 @@ class Voucher(models.Model):
   def __str__(self):
     return f"{self.type.capitalize()} : {self.category} #{self.invoice_number}"
 
-# class JournalEntry(models.Model):
-#   voucher = models.ForeignKey('Voucher', on_delete=models.CASCADE, related_name='journal_entries')
-#   account_type = models.CharField(max_length=20, choices=(('company', 'Company'), ('client', 'Client')))
-#   company = models.ForeignKey('Company', on_delete=models.CASCADE, null=True, blank=True)
-#   client = models.ForeignKey('Client', on_delete=models.CASCADE, null=True, blank=True)
-#   debit = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-#   credit = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-
-#   def __str__(self):
-#       return f"{self.account_type.capitalize()} - Dr: {self.debit} Cr: {self.credit}"x
