@@ -43,9 +43,11 @@ class UserForm(forms.ModelForm):
         self.fields['access_level'].queryset = get_all_access_levels(request)
 
         # Role filtering
-        if request and hasattr(request.user, 'role'):
-            current_role = request.user.role
+        if request:
+            if request.user.is_superuser:
+                self.fields['role'].choices = RoleChoices.choices
 
+            current_role = request.user.role
             if current_role == 'admin':
                 self.fields['role'].choices = [
                     (key, label) for key, label in RoleChoices.choices if key != 'admin'
@@ -91,9 +93,11 @@ class UserUpdateForm(forms.ModelForm):
             self.fields['access_level'].queryset = get_all_access_levels(request)
 
         # Role filtering
-        if request and hasattr(request.user, 'role'):
-            current_role = request.user.role
+        if request:
+            if request.user.is_superuser:
+                self.fields['role'].choices = RoleChoices.choices
 
+            current_role = request.user.role
             if current_role == 'admin':
                 self.fields['role'].choices = [
                     (key, label) for key, label in RoleChoices.choices if key != 'admin'

@@ -95,3 +95,36 @@ def create_voucher(request):
         'form': form
     }
     return render(request, 'finance/create_voucher.html', context=context)
+
+def edit_voucher(request, voucher_id):
+    branch = get_user_branch(request)
+    instance = get_object_or_404(Voucher, id=voucher_id, branch=branch)
+    if request.method == 'POST':
+        form = VoucherForm(request.POST, request=request, instance=instance)
+        if form.is_valid():
+            with transaction.atomic():
+                voucher = form.save(commit=False)
+                
+                voucher.account_type = form.cleaned_data['account_type']
+                voucher.account_id = form.cleaned_data['accounts'].id if form.cleaned_data['accounts'] else None
+                voucher.save()
+            messages.success(request, 'Voucher updated successfully')
+            return redirect('account_overview')
+        else:
+            print(form.errors)
+    else:
+        form = VoucherForm(request=request, instance=instance)
+    context = {
+        'form': form
+    }
+    return render(request, 'finance/edit_voucher.html', context=context)
+
+def delete_voucher(request, voucher_id):
+    branch = get_user_branch(request)
+    voucher = get_object_or_404(Voucher, id=voucher_id, branch=branch)
+    
+    if request.method == 'POST':
+        voucher.delete()
+        messages.success(request, "Voucher deleted successfully.")
+        return redirect('sales') 
+    return redirect('sales')

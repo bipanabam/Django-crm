@@ -1,3 +1,5 @@
+from django.contrib.contenttypes.models import ContentType
+
 from .models import Client, Voucher
 from company.services import get_user_branch, get_branches
 
@@ -33,11 +35,26 @@ def get_client_with_remaining_dues(request):
 
 def get_all_vouchers(request):
     user = request.user
+    if user.is_superuser:
+        return Voucher.objects.all()
     if user.role == "admin":
         branches =  get_branches(request)
         vouchers = Voucher.objects.filter(branch__in=branches)
     else:
         branch = get_user_branch(request)
         vouchers = Voucher.objects.filter(branch=branch)
+    return vouchers
+
+def get_all_client_vouchers(request):
+    client_type = ContentType.objects.get_for_model(Client)
+    user = request.user
+    if user.is_superuser:
+        return Voucher.objects.all(account_type=client_type)
+    if user.role == "admin":
+        branches =  get_branches(request)
+        vouchers = Voucher.objects.filter(branch__in=branches, account_type=client_type)
+    else:
+        branch = get_user_branch(request)
+        vouchers = Voucher.objects.filter(branch=branch, account_type=client_type)
     return vouchers
     

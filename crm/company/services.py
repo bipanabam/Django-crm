@@ -4,14 +4,14 @@ from django.contrib.auth.models import Group
 
 def get_branches(request):
     user = request.user
+    if user.is_superuser:
+        return Branch.objects.all()
     company = user.profile.branch.company
     branches = Branch.objects.filter(company=company)
     if user.role == 'admin':
         return branches
-    elif user.role in ['manager', 'accountant']:
-        return branches.filter(id=user.profile.branch.id)
     else:
-        return Branch.objects.none()
+        return branches.filter(id=user.profile.branch.id)
     
 def get_user_branch(request):
     user = request.user

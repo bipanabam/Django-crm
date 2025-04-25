@@ -21,7 +21,7 @@ def sales_view(request):
     branch = get_user_branch(request)
     sales = clients.filter(status="Pending")
 
-    vouchers = services.get_all_vouchers(request)
+    vouchers = services.get_all_client_vouchers(request)
 
     assign_client_form = AssignClientForm(branch=branch)
     if request.method == 'POST':
@@ -200,14 +200,15 @@ def delete_invoice(request, voucher_id):
     if request.method == 'POST':
         # update client
         print(voucher)
-        client = voucher.account
-        print(client)
-        client.advance_paid -= voucher.amount
-        client.due_amount += voucher.amount
-        if client.due_amount > 0:
-            client.status = "Pending"
-        client.save()
-
+        if voucher.account_type == "client":
+            client = voucher.account
+            print(client)
+            client.advance_paid -= voucher.amount
+            client.due_amount += voucher.amount
+            if client.due_amount > 0:
+                client.status = "Pending"
+            client.save()
+        
         voucher.delete()
         messages.success(request, "Invoice deleted successfully.")
         return redirect('sales') 

@@ -2,13 +2,17 @@
 <nav class="w-full flex items-center justify-between gap-7 mt-4">
     <!--Branch filter-->
     <div class="w-8/12">
-        <select class="w-full h-[59px] rounded-lg border-gray-300">
-            <option value="">All Branch</option>
-            <option value="branch1">Branch 1</option>
-            <option value="branch2">Branch 2</option>
-            <option value="branch3">Branch 3</option>
-            <option value="branch4">Branch 4</option>
-            <option value="branch5">Branch 5</option>
+        <select class="w-full h-[59px] rounded-lg border-gray-300" {% if not is_admin %}disabled{% endif %}>
+            {% if is_admin %}
+                <option value="">All Branch</option>
+                {% for branch in branches %}
+                    <option value="{{ branch.id }}" {% if branch.id == selected_branch.id %}selected{% endif %}>
+                        {{ branch.name }}
+                    </option>
+                {% endfor %}
+            {% else %}
+                <option value="{{ selected_branch.id }}" selected>{{ selected_branch.name }}</option>
+            {% endif %}
         </select>
     </div>
     <!-- Notifications -->

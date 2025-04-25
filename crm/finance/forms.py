@@ -29,14 +29,23 @@ class VoucherForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['accounts'].queryset = Client.objects.none()
 
-        account_type = self.data.get('account_type')
-        if account_type == 'client':
-            self.fields['accounts'].queryset = get_all_clients(request)
-        elif account_type == 'employee':
-            self.fields['accounts'].queryset = get_employees(request)
-        else:
-            self.fields['accounts'].queryset = Client.objects.none()
+        if self.instance and self.instance.pk:
+            model_name = self.instance.account_type.model if self.instance.account_type else None
+            self.initial['account_type'] = model_name
 
+            # Set appropriate queryset for 'accounts' field based on model
+            if model_name == 'client':
+                self.fields['accounts'].queryset = get_all_clients(request)
+                self.initial['accounts'] = self.instance.account
+            elif model_name == 'employee':
+                self.fields['accounts'].queryset = get_employees(request)
+                self.initial['accounts'] = self.instance.account
+        else:
+            account_type = self.data.get('account_type')
+            if account_type == 'client':
+                self.fields['accounts'].queryset = get_all_clients(request)
+            elif account_type == 'employee':
+                self.fields['accounts'].queryset = get_employees(request)
 
     def clean(self):
         cleaned_data = super().clean()

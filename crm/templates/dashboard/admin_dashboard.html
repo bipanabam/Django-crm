@@ -10,19 +10,19 @@ Dashboard
         <div class="grid h-[150px]">
             <div class="border rounded-lg bg-white p-6">
                 <p>Total Clients</p>
-                <p class="font-bold text-4xl text-[--primary-color] mt-2">12</p>
+                <p class="font-bold text-4xl text-[--primary-color] mt-2">{{total_clients}}</p>
             </div>
         </div>
         <div class="grid h-[150px]">
             <div class="border rounded-lg bg-white p-6">
                 <p>New Clients</p>
-                <p class="font-bold text-4xl text-[--primary-color] mt-2">12</p>
+                <p class="font-bold text-4xl text-[--primary-color] mt-2">{{new_clients}}</p>
             </div>
         </div>
         <div class="grid h-[150px]">
             <div class="border rounded-lg bg-white p-6">
                 <p>Total Revenue</p>
-                <p class="font-bold text-4xl text-[--primary-color] mt-2">$12</p>
+                <p class="font-bold text-4xl text-[--primary-color] mt-2">${{total_revenue}}</p>
             </div>
         </div>
         <div class="grid h-[150px]">
@@ -34,13 +34,13 @@ Dashboard
         <div class="grid h-[150px]">
             <div class="border rounded-lg bg-white p-6">
                 <p>Total Profit</p>
-                <p class="font-bold text-4xl text-[--primary-color] mt-2">$892</p>
+                <p class="font-bold text-4xl text-[--primary-color] mt-2">${{total_profit}}</p>
             </div>
         </div>
         <div class="grid h-[150px]">
             <div class="border rounded-lg bg-white p-6">
                 <p>Total Expenses</p>
-                <p class="font-bold text-4xl text-[--primary-color] mt-2">$8640</p>
+                <p class="font-bold text-4xl text-[--primary-color] mt-2">${{total_expenses}}</p>
             </div>
         </div>
     </div>
@@ -50,28 +50,28 @@ Dashboard
 <div class="mt-4">
     <h1 class="font-semibold text-xl mb-5">Sales Performance</h1>
     <div class="grid grid-cols-2 mt-2 gap-7">
-        <div class="grid h-[150px]">
+        <div class="grid">
             <div class="border rounded-lg bg-white p-6">
                 <div class="flex justify-between">
                     <p class='font-bold'>Sales Statistics</p>
-                    <select class="rounded-lg border-gray-300">
-                        <option value="">Select Interval</option>
-                        <option value="branch1">Last 7 days</option>
-                        <option value="branch2">Last month</option>
+                    <select id="sales-interval" class="rounded-lg border-gray-300">
+                        <option value="7">Last 7 days</option>
+                        <option value="30">Last month</option>
                     </select>
                 </div>
+                <canvas id="salesChart" class="w-full h-full mt-4"></canvas>
             </div>
         </div>
-        <div class="grid h-[150px]">
+        <div class="grid">
             <div class="border rounded-lg bg-white p-6">
                 <div class="flex justify-between">
-                    <p class="font-bold">Revenue Statistics</p>
-                    <select class="rounded-lg border-gray-300">
-                        <option value="">Select Interval</option>
-                        <option value="branch1">Last 7 days</option>
-                        <option value="branch2">Last month</option>
+                    <p class='font-bold'>Revenue Statistics</p>
+                    <select id="revenue-interval" class="rounded-lg border-gray-300">
+                        <option value="7">Last 7 days</option>
+                        <option value="30">Last month</option>
                     </select>
                 </div>
+                <canvas id="revenueChart" class="w-full h-full mt-4"></canvas>
             </div>
         </div>
     </div>
@@ -87,42 +87,30 @@ Dashboard
                     <thead>
                         <tr class="border-b border-gray-300">
                             <th class="p-2 text-left">Client Name</th>
-                            <th class="p-2 text-left">Industry</th>
-                            <th class="p-2 text-left">Location</th>
+                            <th class="p-2 text-left">Visa Type</th>
+                            <th class="p-2 text-left">Preferred Country</th>
                             <th class="p-2 text-left">Status</th>
                         </tr>
                     </thead>
                     <tbody>
+                        {% for client in clients %}
                         <tr class="border-b border-gray-300">
-                            <td class="p-2">John Doe</td>
-                            <td class="p-2">Technology</td>
-                            <td class="p-2">New York</td>
-                            <td class="p-2">Active</td>
+                            <td class="p-2">{{client.name}}</td>
+                            <td class="p-2">{{client.visa_type}}</td>
+                            <td class="p-2">{{client.preferred_country}}</td>
+                            <td class="p-2">
+                                <button class="rounded-md border{% if client.status == 'Paid' %} border-green-300 bg-green-300 {% elif client.status == "Pending" %} border-orange-300 bg-orange-300{% else %} border-blue-300  bg-blue-300 {% endif %} w-20 h-8 text-white">
+                                    {{client.status}}
+                                </button>
+                            </td>
                         </tr>
-                        <tr class="border-b border-gray-300">
-                            <td class="p-2">John Doe</td>
-                            <td class="p-2">Technology</td>
-                            <td class="p-2">New York</td>
-                            <td class="p-2">Active</td>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-3">
+                                No Clients yet.
+                            </td>
                         </tr>
-                        <tr class="border-b border-gray-300">
-                            <td class="p-2">John Doe</td>
-                            <td class="p-2">Technology</td>
-                            <td class="p-2">New York</td>
-                            <td class="p-2">Active</td>
-                        </tr>
-                        <tr class="border-b border-gray-300">
-                            <td class="p-2">John Doe</td>
-                            <td class="p-2">Technology</td>
-                            <td class="p-2">New York</td>
-                            <td class="p-2">Active</td>
-                        </tr>
-                        <tr class="border-b border-gray-300">
-                            <td class="p-2">John Doe</td>
-                            <td class="p-2">Technology</td>
-                            <td class="p-2">New York</td>
-                            <td class="p-2">Active</td>
-                        </tr>
+                        {% endfor %}
                     </tbody>
                 </table>                
             </div>
@@ -167,95 +155,56 @@ Dashboard
                     <thead>
                         <tr class="border-b border-gray-300">
                             <th class="p-2 text-left">Invoice Number</th>
-                            <th class="p-2 text-left">Client Name</th>
+                            <th class="p-2 text-left">Name</th>
                             <th class="p-2 text-left">Status</th>
                             <th class="p-2 text-left">Date</th>
-                            <th class="p-2 text-left">Due Date</th>
+                            <th class="p-2 text-left">Category</th>
                             <th class="p-2 text-left">Amount</th>
                             <th class="p-2 text-left">Action</th>
                         </tr>
                     </thead>
                     <tbody>
+                        {% for voucher in vouchers %}
                         <tr class="border-b border-gray-300">
-                            <td class="p-2">#INV001</td>
-                            <td class="p-2">John Doe</td>
-                            <td class="p-2">Paid</td>
-                            <td class="p-2">2025-01-23</td>
-                            <td class="p-2">2025-01-24</td>
-                            <td class="p-2">$200</td>
+                            <td class="p-2">{{voucher.invoice_number}}</td>
+                            <td class="p-2">{{voucher.account.name}}</td>
+                            <td class="p-2">
+                                <button class="{% if voucher.status == 'Paid' %} text-green-600 {% elif voucher.status == "Pending" %} text-orange-300 {% else %} text-blue-300 {% endif %}">
+                                    {{voucher.status}}
+                                </button>
+                            </td>
+                            <td class="p-2">{{voucher.created_at}}</td>
+                            <td class="p-2">{{voucher.category}}</td>
+                            <td class="p-2">{{voucher.amount}}</td>
                             <td class="p-2 flex gap-2">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M13 3C13.2549 3.00028 13.5 3.09788 13.6854 3.27285C13.8707 3.44782 13.9822 3.68695 13.9972 3.94139C14.0121 4.19584 13.9293 4.44638 13.7657 4.64183C13.6021 4.83729 13.3701 4.9629 13.117 4.993L13 5H5V19H19V11C19.0003 10.7451 19.0979 10.5 19.2728 10.3146C19.4478 10.1293 19.687 10.0178 19.9414 10.0028C20.1958 9.98789 20.4464 10.0707 20.6418 10.2343C20.8373 10.3979 20.9629 10.6299 20.993 10.883L21 11V19C21.0002 19.5046 20.8096 19.9906 20.4665 20.3605C20.1234 20.7305 19.6532 20.9572 19.15 20.995L19 21H5C4.49542 21.0002 4.00943 20.8096 3.63945 20.4665C3.26947 20.1234 3.04284 19.6532 3.005 19.15L3 19V5C2.99984 4.49542 3.19041 4.00943 3.5335 3.63945C3.87659 3.26947 4.34684 3.04284 4.85 3.005L5 3H13ZM19.243 3.343C19.423 3.16365 19.6644 3.05953 19.9184 3.05177C20.1723 3.04402 20.4197 3.13322 20.6103 3.30125C20.8008 3.46928 20.9203 3.70355 20.9444 3.95647C20.9685 4.2094 20.8954 4.46201 20.74 4.663L20.657 4.758L10.757 14.657C10.577 14.8363 10.3356 14.9405 10.0816 14.9482C9.82767 14.956 9.58029 14.8668 9.38972 14.6988C9.19916 14.5307 9.07969 14.2964 9.0556 14.0435C9.03151 13.7906 9.10459 13.538 9.26 13.337L9.343 13.243L19.243 3.343Z" fill="black"/>
-                                </svg> 
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M7 21C6.45 21 5.97933 20.8043 5.588 20.413C5.19667 20.0217 5.00067 19.5507 5 19V6H4V4H9V3H15V4H20V6H19V19C19 19.55 18.8043 20.021 18.413 20.413C18.0217 20.805 17.5507 21.0007 17 21H7ZM17 6H7V19H17V6ZM9 17H11V8H9V17ZM13 17H15V8H13V17Z" fill="black" fill-opacity="0.8"/>
-                                </svg>                                      
+                                {% if voucher.account_type.model == "client" %}
+                                <a href="{% url 'edit_invoice' voucher.id %}">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                        <path d="M13 3C13.2549 3.00028 13.5 3.09788 13.6854 3.27285C13.8707 3.44782 13.9822 3.68695 13.9972 3.94139C14.0121 4.19584 13.9293 4.44638 13.7657 4.64183C13.6021 4.83729 13.3701 4.9629 13.117 4.993L13 5H5V19H19V11C19.0003 10.7451 19.0979 10.5 19.2728 10.3146C19.4478 10.1293 19.687 10.0178 19.9414 10.0028C20.1958 9.98789 20.4464 10.0707 20.6418 10.2343C20.8373 10.3979 20.9629 10.6299 20.993 10.883L21 11V19C21.0002 19.5046 20.8096 19.9906 20.4665 20.3605C20.1234 20.7305 19.6532 20.9572 19.15 20.995L19 21H5C4.49542 21.0002 4.00943 20.8096 3.63945 20.4665C3.26947 20.1234 3.04284 19.6532 3.005 19.15L3 19V5C2.99984 4.49542 3.19041 4.00943 3.5335 3.63945C3.87659 3.26947 4.34684 3.04284 4.85 3.005L5 3H13ZM19.243 3.343C19.423 3.16365 19.6644 3.05953 19.9184 3.05177C20.1723 3.04402 20.4197 3.13322 20.6103 3.30125C20.8008 3.46928 20.9203 3.70355 20.9444 3.95647C20.9685 4.2094 20.8954 4.46201 20.74 4.663L20.657 4.758L10.757 14.657C10.577 14.8363 10.3356 14.9405 10.0816 14.9482C9.82767 14.956 9.58029 14.8668 9.38972 14.6988C9.19916 14.5307 9.07969 14.2964 9.0556 14.0435C9.03151 13.7906 9.10459 13.538 9.26 13.337L9.343 13.243L19.243 3.343Z" fill="black"/>
+                                    </svg> 
+                                </a>
+                                {% else %}
+                                <a href="{% url 'edit_voucher' voucher.id %}">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                        <path d="M13 3C13.2549 3.00028 13.5 3.09788 13.6854 3.27285C13.8707 3.44782 13.9822 3.68695 13.9972 3.94139C14.0121 4.19584 13.9293 4.44638 13.7657 4.64183C13.6021 4.83729 13.3701 4.9629 13.117 4.993L13 5H5V19H19V11C19.0003 10.7451 19.0979 10.5 19.2728 10.3146C19.4478 10.1293 19.687 10.0178 19.9414 10.0028C20.1958 9.98789 20.4464 10.0707 20.6418 10.2343C20.8373 10.3979 20.9629 10.6299 20.993 10.883L21 11V19C21.0002 19.5046 20.8096 19.9906 20.4665 20.3605C20.1234 20.7305 19.6532 20.9572 19.15 20.995L19 21H5C4.49542 21.0002 4.00943 20.8096 3.63945 20.4665C3.26947 20.1234 3.04284 19.6532 3.005 19.15L3 19V5C2.99984 4.49542 3.19041 4.00943 3.5335 3.63945C3.87659 3.26947 4.34684 3.04284 4.85 3.005L5 3H13ZM19.243 3.343C19.423 3.16365 19.6644 3.05953 19.9184 3.05177C20.1723 3.04402 20.4197 3.13322 20.6103 3.30125C20.8008 3.46928 20.9203 3.70355 20.9444 3.95647C20.9685 4.2094 20.8954 4.46201 20.74 4.663L20.657 4.758L10.757 14.657C10.577 14.8363 10.3356 14.9405 10.0816 14.9482C9.82767 14.956 9.58029 14.8668 9.38972 14.6988C9.19916 14.5307 9.07969 14.2964 9.0556 14.0435C9.03151 13.7906 9.10459 13.538 9.26 13.337L9.343 13.243L19.243 3.343Z" fill="black"/>
+                                    </svg> 
+                                </a>
+                                {% endif %}
+                                <button
+                                    onclick="openModal('{% url 'delete_invoice' voucher.id %}')">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                        <path d="M7 21C6.45 21 5.97933 20.8043 5.588 20.413C5.19667 20.0217 5.00067 19.5507 5 19V6H4V4H9V3H15V4H20V6H19V19C19 19.55 18.8043 20.021 18.413 20.413C18.0217 20.805 17.5507 21.0007 17 21H7ZM17 6H7V19H17V6ZM9 17H11V8H9V17ZM13 17H15V8H13V17Z" fill="black" fill-opacity="0.8"/>
+                                    </svg>                                      
+                                </button>
                             </td>
                         </tr>
-                        <tr class="border-b border-gray-300">
-                            <td class="p-2">#INV001</td>
-                            <td class="p-2">John Doe</td>
-                            <td class="p-2">Overdue by 1 day</td>
-                            <td class="p-2">2025-01-25</td>
-                            <td class="p-2">2025-01-24</td>
-                            <td class="p-2">$200</td>
-                            <td class="p-2 flex gap-2">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M13 3C13.2549 3.00028 13.5 3.09788 13.6854 3.27285C13.8707 3.44782 13.9822 3.68695 13.9972 3.94139C14.0121 4.19584 13.9293 4.44638 13.7657 4.64183C13.6021 4.83729 13.3701 4.9629 13.117 4.993L13 5H5V19H19V11C19.0003 10.7451 19.0979 10.5 19.2728 10.3146C19.4478 10.1293 19.687 10.0178 19.9414 10.0028C20.1958 9.98789 20.4464 10.0707 20.6418 10.2343C20.8373 10.3979 20.9629 10.6299 20.993 10.883L21 11V19C21.0002 19.5046 20.8096 19.9906 20.4665 20.3605C20.1234 20.7305 19.6532 20.9572 19.15 20.995L19 21H5C4.49542 21.0002 4.00943 20.8096 3.63945 20.4665C3.26947 20.1234 3.04284 19.6532 3.005 19.15L3 19V5C2.99984 4.49542 3.19041 4.00943 3.5335 3.63945C3.87659 3.26947 4.34684 3.04284 4.85 3.005L5 3H13ZM19.243 3.343C19.423 3.16365 19.6644 3.05953 19.9184 3.05177C20.1723 3.04402 20.4197 3.13322 20.6103 3.30125C20.8008 3.46928 20.9203 3.70355 20.9444 3.95647C20.9685 4.2094 20.8954 4.46201 20.74 4.663L20.657 4.758L10.757 14.657C10.577 14.8363 10.3356 14.9405 10.0816 14.9482C9.82767 14.956 9.58029 14.8668 9.38972 14.6988C9.19916 14.5307 9.07969 14.2964 9.0556 14.0435C9.03151 13.7906 9.10459 13.538 9.26 13.337L9.343 13.243L19.243 3.343Z" fill="black"/>
-                                </svg> 
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M7 21C6.45 21 5.97933 20.8043 5.588 20.413C5.19667 20.0217 5.00067 19.5507 5 19V6H4V4H9V3H15V4H20V6H19V19C19 19.55 18.8043 20.021 18.413 20.413C18.0217 20.805 17.5507 21.0007 17 21H7ZM17 6H7V19H17V6ZM9 17H11V8H9V17ZM13 17H15V8H13V17Z" fill="black" fill-opacity="0.8"/>
-                                </svg>                                      
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center py-3">
+                                No Vouchers yet.
                             </td>
                         </tr>
-                        <tr class="border-b border-gray-300">
-                            <td class="p-2">#INV001</td>
-                            <td class="p-2">John Doe</td>
-                            <td class="p-2">Due in 7 days</td>
-                            <td class="p-2">2025-01-23</td>
-                            <td class="p-2">2025-01-30</td>
-                            <td class="p-2">$200</td>
-                            <td class="p-2 flex gap-2">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M13 3C13.2549 3.00028 13.5 3.09788 13.6854 3.27285C13.8707 3.44782 13.9822 3.68695 13.9972 3.94139C14.0121 4.19584 13.9293 4.44638 13.7657 4.64183C13.6021 4.83729 13.3701 4.9629 13.117 4.993L13 5H5V19H19V11C19.0003 10.7451 19.0979 10.5 19.2728 10.3146C19.4478 10.1293 19.687 10.0178 19.9414 10.0028C20.1958 9.98789 20.4464 10.0707 20.6418 10.2343C20.8373 10.3979 20.9629 10.6299 20.993 10.883L21 11V19C21.0002 19.5046 20.8096 19.9906 20.4665 20.3605C20.1234 20.7305 19.6532 20.9572 19.15 20.995L19 21H5C4.49542 21.0002 4.00943 20.8096 3.63945 20.4665C3.26947 20.1234 3.04284 19.6532 3.005 19.15L3 19V5C2.99984 4.49542 3.19041 4.00943 3.5335 3.63945C3.87659 3.26947 4.34684 3.04284 4.85 3.005L5 3H13ZM19.243 3.343C19.423 3.16365 19.6644 3.05953 19.9184 3.05177C20.1723 3.04402 20.4197 3.13322 20.6103 3.30125C20.8008 3.46928 20.9203 3.70355 20.9444 3.95647C20.9685 4.2094 20.8954 4.46201 20.74 4.663L20.657 4.758L10.757 14.657C10.577 14.8363 10.3356 14.9405 10.0816 14.9482C9.82767 14.956 9.58029 14.8668 9.38972 14.6988C9.19916 14.5307 9.07969 14.2964 9.0556 14.0435C9.03151 13.7906 9.10459 13.538 9.26 13.337L9.343 13.243L19.243 3.343Z" fill="black"/>
-                                </svg> 
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M7 21C6.45 21 5.97933 20.8043 5.588 20.413C5.19667 20.0217 5.00067 19.5507 5 19V6H4V4H9V3H15V4H20V6H19V19C19 19.55 18.8043 20.021 18.413 20.413C18.0217 20.805 17.5507 21.0007 17 21H7ZM17 6H7V19H17V6ZM9 17H11V8H9V17ZM13 17H15V8H13V17Z" fill="black" fill-opacity="0.8"/>
-                                </svg>                                      
-                            </td>
-                        </tr>
-                        <tr class="border-b border-gray-300">
-                            <td class="p-2">#INV001</td>
-                            <td class="p-2">John Doe</td>
-                            <td class="p-2">Paid</td>
-                            <td class="p-2">2025-01-23</td>
-                            <td class="p-2">2025-01-24</td>
-                            <td class="p-2">$200</td>
-                            <td class="p-2 flex gap-2">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M13 3C13.2549 3.00028 13.5 3.09788 13.6854 3.27285C13.8707 3.44782 13.9822 3.68695 13.9972 3.94139C14.0121 4.19584 13.9293 4.44638 13.7657 4.64183C13.6021 4.83729 13.3701 4.9629 13.117 4.993L13 5H5V19H19V11C19.0003 10.7451 19.0979 10.5 19.2728 10.3146C19.4478 10.1293 19.687 10.0178 19.9414 10.0028C20.1958 9.98789 20.4464 10.0707 20.6418 10.2343C20.8373 10.3979 20.9629 10.6299 20.993 10.883L21 11V19C21.0002 19.5046 20.8096 19.9906 20.4665 20.3605C20.1234 20.7305 19.6532 20.9572 19.15 20.995L19 21H5C4.49542 21.0002 4.00943 20.8096 3.63945 20.4665C3.26947 20.1234 3.04284 19.6532 3.005 19.15L3 19V5C2.99984 4.49542 3.19041 4.00943 3.5335 3.63945C3.87659 3.26947 4.34684 3.04284 4.85 3.005L5 3H13ZM19.243 3.343C19.423 3.16365 19.6644 3.05953 19.9184 3.05177C20.1723 3.04402 20.4197 3.13322 20.6103 3.30125C20.8008 3.46928 20.9203 3.70355 20.9444 3.95647C20.9685 4.2094 20.8954 4.46201 20.74 4.663L20.657 4.758L10.757 14.657C10.577 14.8363 10.3356 14.9405 10.0816 14.9482C9.82767 14.956 9.58029 14.8668 9.38972 14.6988C9.19916 14.5307 9.07969 14.2964 9.0556 14.0435C9.03151 13.7906 9.10459 13.538 9.26 13.337L9.343 13.243L19.243 3.343Z" fill="black"/>
-                                </svg> 
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M7 21C6.45 21 5.97933 20.8043 5.588 20.413C5.19667 20.0217 5.00067 19.5507 5 19V6H4V4H9V3H15V4H20V6H19V19C19 19.55 18.8043 20.021 18.413 20.413C18.0217 20.805 17.5507 21.0007 17 21H7ZM17 6H7V19H17V6ZM9 17H11V8H9V17ZM13 17H15V8H13V17Z" fill="black" fill-opacity="0.8"/>
-                                </svg>                                      
-                            </td>
-                        </tr>
-                        <tr class="border-b border-gray-300">
-                            <td class="p-2">#INV001</td>
-                            <td class="p-2">John Doe</td>
-                            <td class="p-2">Paid</td>
-                            <td class="p-2">2025-01-23</td>
-                            <td class="p-2">2025-01-24</td>
-                            <td class="p-2">$200</td>
-                            <td class="p-2 flex gap-2">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M13 3C13.2549 3.00028 13.5 3.09788 13.6854 3.27285C13.8707 3.44782 13.9822 3.68695 13.9972 3.94139C14.0121 4.19584 13.9293 4.44638 13.7657 4.64183C13.6021 4.83729 13.3701 4.9629 13.117 4.993L13 5H5V19H19V11C19.0003 10.7451 19.0979 10.5 19.2728 10.3146C19.4478 10.1293 19.687 10.0178 19.9414 10.0028C20.1958 9.98789 20.4464 10.0707 20.6418 10.2343C20.8373 10.3979 20.9629 10.6299 20.993 10.883L21 11V19C21.0002 19.5046 20.8096 19.9906 20.4665 20.3605C20.1234 20.7305 19.6532 20.9572 19.15 20.995L19 21H5C4.49542 21.0002 4.00943 20.8096 3.63945 20.4665C3.26947 20.1234 3.04284 19.6532 3.005 19.15L3 19V5C2.99984 4.49542 3.19041 4.00943 3.5335 3.63945C3.87659 3.26947 4.34684 3.04284 4.85 3.005L5 3H13ZM19.243 3.343C19.423 3.16365 19.6644 3.05953 19.9184 3.05177C20.1723 3.04402 20.4197 3.13322 20.6103 3.30125C20.8008 3.46928 20.9203 3.70355 20.9444 3.95647C20.9685 4.2094 20.8954 4.46201 20.74 4.663L20.657 4.758L10.757 14.657C10.577 14.8363 10.3356 14.9405 10.0816 14.9482C9.82767 14.956 9.58029 14.8668 9.38972 14.6988C9.19916 14.5307 9.07969 14.2964 9.0556 14.0435C9.03151 13.7906 9.10459 13.538 9.26 13.337L9.343 13.243L19.243 3.343Z" fill="black"/>
-                                </svg> 
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M7 21C6.45 21 5.97933 20.8043 5.588 20.413C5.19667 20.0217 5.00067 19.5507 5 19V6H4V4H9V3H15V4H20V6H19V19C19 19.55 18.8043 20.021 18.413 20.413C18.0217 20.805 17.5507 21.0007 17 21H7ZM17 6H7V19H17V6ZM9 17H11V8H9V17ZM13 17H15V8H13V17Z" fill="black" fill-opacity="0.8"/>
-                                </svg>                                      
-                            </td>
-                        </tr>
+                        {% endfor %}
                     </tbody>
                 </table>           
             </div>
@@ -320,4 +269,169 @@ Dashboard
         </div>
     </div>
 </div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="fixed inset-0 items-center justify-center bg-black bg-opacity-50 hidden z-50">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md mx-auto text-center shadow-lg">
+        <h2 class="text-lg font-semibold mb-4">Are you sure you want to delete this voucher?</h2>
+        <div class="flex justify-center gap-4">
+            <form id="deleteForm" method="post">
+                {% csrf_token %}
+                <button type="submit" class="bg-red-500 text-white px-5 py-2 rounded-md">Yes</button>
+            </form>
+            <button onclick="closeModal()" class="bg-gray-300 px-5 py-2 rounded-md">No</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openModal(deleteUrl) {
+        const modal = document.getElementById('deleteModal');
+        const form = document.getElementById('deleteForm');
+        form.action = deleteUrl;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex')
+    }
+
+    function closeModal() {
+        document.getElementById('deleteModal').classList.add('hidden');
+    }
+</script>
+
+<script>
+    const salesCtx = document.getElementById('salesChart').getContext('2d');
+    let salesChart;
+
+    function loadSalesData(days = 7) {
+        fetch(`/sales/chart-data/?days=${days}`)
+            .then(response => response.json())
+            .then(data => {
+                if (salesChart) salesChart.destroy();
+                const dateRange = `From: ${data.start_date} to ${data.end_date}`;
+
+                salesChart = new Chart(salesCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: [''],
+                        datasets: [
+                        {
+                            label: data.labels[0], // "Income"
+                            data: [data.values[0]],
+                            backgroundColor: '#4ade80',
+                            borderRadius: 8
+                        },
+                        {
+                            label: data.labels[1], // "Expenses"
+                            data: [data.values[1]],
+                            backgroundColor: '#f87171',
+                            borderRadius: 8
+                        }]
+                    },
+                    options: {
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    afterBody: function() {
+                                        return dateRange;
+                                    }
+                                }
+                            },
+                            datalabels: {
+                                color: 'white',
+                                anchor: 'center',
+                                align: 'center',
+                                rotation: -90,
+                                formatter: value => `${value}`
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: val => `${val}`
+                                }
+                            }
+                        }
+                    },
+                    plugins: [ChartDataLabels]
+                });
+            });
+    }
+
+    document.getElementById('sales-interval').addEventListener('change', e => {
+        loadSalesData(e.target.value);
+    });
+
+    loadSalesData();  // initial load
+</script>
+
+
+<script>
+    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+    let revenueChart;
+
+    function loadRevenueData(days = 7) {
+        fetch(`/revenue/chart-data/?days=${days}`)
+            .then(response => response.json())
+            .then(data => {
+                if (revenueChart) revenueChart.destroy();
+                const dateRange = `From: ${data.start_date} to ${data.end_date}`;
+
+                revenueChart = new Chart(revenueCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: [''],
+                        datasets: [
+                        {
+                            label: data.labels[0], // "Income"
+                            data: [data.values[0]],
+                            backgroundColor: '#4ade80',
+                            borderRadius: 8
+                        },
+                        {
+                            label: data.labels[1], // "Expenses"
+                            data: [data.values[1]],
+                            backgroundColor: '#f87171',
+                            borderRadius: 8
+                        }]
+                    },
+                    options: {
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    afterBody: function() {
+                                        return dateRange;
+                                    }
+                                }
+                            },
+                            datalabels: {
+                                color: 'white',
+                                anchor: 'center',
+                                align: 'center',
+                                rotation: -90,
+                                formatter: value => `${value}`
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: val => `${val}`
+                                }
+                            }
+                        }
+                    },
+                    plugins: [ChartDataLabels]
+                });
+            });
+    }
+
+    document.getElementById('revenue-interval').addEventListener('change', e => {
+        loadRevenueData(e.target.value);
+    });
+
+    loadRevenueData();  // initial load
+</script>
+
+
 {% endblock content %}
