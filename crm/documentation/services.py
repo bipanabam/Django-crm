@@ -2,6 +2,8 @@ from .models import Country, CountryWiseClientDocument
 
 from company.services import get_user_branch, get_branches
 
+from sales.services import get_assigned_clients
+
 def get_all_countries(request):
     if request.user.role == 'admin':
         branches = get_branches(request)
@@ -12,9 +14,12 @@ def get_all_countries(request):
 
 def get_client_documents(request):
     branches = get_branches(request)
-    return CountryWiseClientDocument.objects.filter(country__branch__in=branches)
+    documents =  CountryWiseClientDocument.objects.filter(country__branch__in=branches)
+    if request.user.role == 'sales representative':
+        clients = get_assigned_clients(request)
+        documents = documents.filter(client__in=clients)
+    return documents
 
-    
 def document_distinct_by_client(docs):
     applicants = []
     seen_clients = set()

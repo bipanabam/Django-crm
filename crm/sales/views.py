@@ -23,13 +23,16 @@ from company.services import get_user_branch
 def sales_view(request):
     branch = get_user_branch(request)
 
-    if request.user.role == 'admin':
+    if request.user.role == 'sales representative':
         clients = services.get_assigned_clients(request)
     else:
         clients = services.get_all_clients(request)
     sales = clients.filter(status="Pending")
 
-    vouchers = services.get_all_client_vouchers(request)
+    if request.user.role == 'sales representative':
+        vouchers = services.get_assigned_client_vouchers(request)
+    else:
+        vouchers = services.get_all_client_vouchers(request)
 
     assign_client_form = AssignClientForm(branch=branch)
     if request.method == 'POST':
@@ -88,6 +91,7 @@ def inquiry_form_view(request):
                 client.branch = get_user_branch(request)
                 if client.advance_paid > 0:
                     client.status = "Pending"
+                    client.due_amount = client.package_amount
                     client.created_by = request.user
                     client.save()
                     # Create Voucher
@@ -102,7 +106,7 @@ def inquiry_form_view(request):
                         amount = client.advance_paid,
                         narration = "Advance paid while inquiry.",
                         created_by = request.user,
-                        status = "Paid",
+                        status = "Pending",
                     )
                 else:
                     client.created_by = request.user
@@ -111,6 +115,7 @@ def inquiry_form_view(request):
                     document = form.save(commit=False)
                     document.client = client
                     document.save()
+                messages.success(request, 'Client created successfully')
                 return redirect('sales')
         else:
             context['form'] = client_form
@@ -199,7 +204,6 @@ def create_invoice(request):
 def edit_invoice(request, voucher_id):
     branch = services.get_user_branch(request)
     instance = get_object_or_404(Voucher, id=voucher_id, branch=branch)
-    previous_amount = instance.amount
     
     form = InvoiceForm(request=request, instance=instance)
     if request.method == 'POST':
@@ -207,15 +211,6 @@ def edit_invoice(request, voucher_id):
         if form.is_valid():
             with transaction.atomic():
                 voucher = form.save(commit=False)
-                updated_amount = voucher.amount
-                if updated_amount != previous_amount:
-                    #update client 
-                    client = voucher.client
-                    client.due_amount = (client.due_amount + previous_amount ) - updated_amount
-                    client.advance_paid = (client.advance_paid - previous_amount ) + updated_amount
-                    if client.due_amount == 0:
-                        client.status = "Paid"
-                    client.save()
                 voucher.save()
             messages.success(request, 'Invoice updated successfully')
             return redirect('sales')
@@ -234,8 +229,6 @@ def delete_invoice(request, voucher_id):
         # update client
         if voucher.account_type == "client":
             client = voucher.account
-            print(client)
-            client.advance_paid -= voucher.amount
             client.due_amount += voucher.amount
             if client.due_amount > 0:
                 client.status = "Pending"

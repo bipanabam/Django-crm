@@ -11,6 +11,9 @@ def get_all_clients(request):
     if user.role == 'admin':
         branches = get_branches(request)
         return Client.objects.filter(branch__in=branches)
+    elif user.role == 'sales representative': 
+        clients = get_assigned_clients(request)
+        return clients
     else:
         branch = get_user_branch(request)
         return Client.objects.filter(branch=branch)
@@ -62,4 +65,11 @@ def get_all_client_vouchers(request):
         branch = get_user_branch(request)
         vouchers = Voucher.objects.filter(branch=branch, account_type=client_type)
     return vouchers
+
+def get_assigned_client_vouchers(request):
+    client_type = ContentType.objects.get_for_model(Client)
+    assigned_clients = get_assigned_clients(request)
+    vouchers = Voucher.objects.filter(account_id__in=assigned_clients, account_type=client_type)
+    return vouchers
+
     

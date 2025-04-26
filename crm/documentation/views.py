@@ -13,7 +13,7 @@ from .forms import CountryForm, DocumentTypeForm,DocumentFormSet, CountryWiseCli
 from .models import Country, CountryWiseClientDocument, DocumentType
 
 from company.services import get_user_branch
-from .services import document_distinct_by_client
+from .services import document_distinct_by_client, get_client_documents
 
 # Create your views here.
 @login_required
@@ -89,6 +89,8 @@ def delete_country(request, country_id):
         return redirect('country_wise_documents') 
     return redirect('country_wise_documents')
 
+@login_required
+@access_level_required(['Admin', 'Manager', 'Counsellor', 'Sales Representative'])
 def get_document_types(request):
     country_id = request.GET.get('country_id')
     if country_id:
@@ -97,11 +99,11 @@ def get_document_types(request):
     return JsonResponse({'document_types': []})
 
 @login_required
-@access_level_required(['Admin', 'Manager', 'Counsellor'])
+@access_level_required(['Admin', 'Manager', 'Counsellor', 'Sales Representative'])
 def documentation_overview(request):
     branch = get_user_branch(request)
     countrywise_documentation = Country.objects.filter(branch=branch)
-    countrywise_client_document = CountryWiseClientDocument.objects.filter(country__branch=branch)
+    countrywise_client_document = get_client_documents(request)
 
     # client document form
     if request.method == 'POST':
@@ -128,7 +130,7 @@ def documentation_overview(request):
     return render(request, 'documentation/overview.html', context=context)
 
 @login_required
-@access_level_required(['Admin', 'Manager', 'Counsellor'])
+@access_level_required(['Admin', 'Manager', 'Counsellor', 'Sales Representative'])
 def edit_countrywise_client_document(request, country_id, document_id):
     branch = get_user_branch(request)
     country = get_object_or_404(Country, id=country_id, branch=branch)
@@ -156,7 +158,7 @@ def edit_countrywise_client_document(request, country_id, document_id):
     })
 
 @login_required
-@access_level_required(['Admin', 'Manager', 'Counsellor'])
+@access_level_required(['Admin', 'Manager', 'Counsellor', 'Sales Representative'])
 def delete_countrywise_client_document(request, country_id, document_id):
     document = get_object_or_404(CountryWiseClientDocument, id=document_id, country_id=country_id)
     
@@ -168,7 +170,7 @@ def delete_countrywise_client_document(request, country_id, document_id):
     return redirect('documentation_overview')
 
 @login_required
-@access_level_required(['Admin', 'Manager', 'Counsellor'])
+@access_level_required(['Admin', 'Manager', 'Counsellor', 'Sales Representative'])
 def country_wise_applicant_list(request, country_id):
     docs = CountryWiseClientDocument.objects.filter(
         country_id=country_id
@@ -181,7 +183,7 @@ def country_wise_applicant_list(request, country_id):
     return render(request, 'documentation/country_wise_applicant.html', context=context)
 
 @login_required
-@access_level_required(['Admin', 'Manager', 'Counsellor'])
+@access_level_required(['Admin', 'Manager', 'Counsellor', 'Sales Representative'])
 def country_wise_required_documents(request, country_id):
     branch = get_user_branch(request)
     selected_country = Country.objects.get(id=country_id, branch=branch)
@@ -194,7 +196,7 @@ def country_wise_required_documents(request, country_id):
     return render(request, 'documentation/country_wise_required_documents.html', context=context)
 
 @login_required
-@access_level_required(['Admin', 'Manager', 'Counsellor'])
+@access_level_required(['Admin', 'Manager', 'Counsellor', 'Sales Representative'])
 def applicant_document(request, country_id, client_id):
     documents = CountryWiseClientDocument.objects.filter(client_id=client_id, country_id=country_id)
     context = {

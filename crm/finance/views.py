@@ -36,12 +36,12 @@ def approve_voucher(request, voucher_id):
     branch = get_user_branch(request)
     voucher = get_object_or_404(Voucher, id=voucher_id, branch=branch)
 
-    if voucher.account_type == "client":
+    if voucher.account_type.name == "client":
         with transaction.atomic():
             #update client 
             client = voucher.account
-            client.due_amount -= voucher.amount
             client.advance_paid += voucher.amount
+            client.due_amount -= voucher.amount
             if client.due_amount == 0:
                 client.status = "Paid"
             client.save()

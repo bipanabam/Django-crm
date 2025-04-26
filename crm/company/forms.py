@@ -1,7 +1,6 @@
 from django import forms
-from django.contrib.auth.models import Group
 
-from .models import Branch, User, Employee, RoleChoices
+from .models import Branch, User, AccessLevel, Employee, RoleChoices
 
 from .services import get_branches, get_all_access_levels
 
@@ -19,7 +18,7 @@ class UserForm(forms.ModelForm):
     confirm_password = forms.CharField(widget=forms.PasswordInput)
     branch = forms.ModelChoiceField(queryset=Branch.objects.none(), empty_label="Select your Branch", required=False)
     access_level = forms.ModelMultipleChoiceField(
-        queryset=Group.objects.all(),
+        queryset=AccessLevel.objects.all(),
         widget=forms.CheckboxSelectMultiple,
         required=False
     )
@@ -77,7 +76,7 @@ class UserForm(forms.ModelForm):
     
 class UserUpdateForm(forms.ModelForm):
     access_level = forms.ModelMultipleChoiceField(
-        queryset=Group.objects.all(),
+        queryset=AccessLevel.objects.all(),
         widget=forms.CheckboxSelectMultiple,
         required=False
     )

@@ -59,7 +59,7 @@ def dashboard(request):
             'clients': clients,
             'vouchers': vouchers
         }
-        return render(request, 'dashboard/manager_dashboard.html')
+        return render(request, 'dashboard/manager_dashboard.html', context=context)
     elif user.role == "team manager":
         users = get_users(request)
         total_team_members = users.count()

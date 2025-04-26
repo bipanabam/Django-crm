@@ -41,6 +41,12 @@ class Branch(models.Model):
   def __str__(self):
     return f"{self.company.name} - {self.name}"
 
+class AccessLevel(models.Model):
+  name = models.CharField(max_length=100)
+
+  def __str__(self):
+    return self.name
+
 class RoleChoices(models.TextChoices):
   ADMIN = 'admin', 'Admin'
   MANAGER = 'manager', 'Manager'
@@ -55,7 +61,7 @@ class User(AbstractUser):
   email = models.EmailField(unique=True)
   role = models.CharField(max_length=20, choices=RoleChoices, default=RoleChoices.ADMIN)
 
-  access_level = models.ManyToManyField(Group, blank=True, related_name='users')
+  access_level = models.ManyToManyField(AccessLevel, blank=True, related_name='users')
 
   USERNAME_FIELD = 'email'  # Use email as the unique identifier for authentication
   REQUIRED_FIELDS = ['username'] 
