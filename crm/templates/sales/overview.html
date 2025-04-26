@@ -76,7 +76,8 @@ Sales
                             <a href="{% url 'edit_client' client.id %}">
                                 <button class="rounded-md bg-[--primary-color] text-white w-24 h-8">Edit</button>
                             </a>
-                            <button class="rounded-md border border-[--primary-color] bg-gray-50 text-[--primary-color] w-24 h-8">Remove</button>
+                            <button class="rounded-md border border-[--primary-color] bg-gray-50 text-[--primary-color] w-24 h-8"
+                            onclick="openClientModal('{% url 'delete_client' client.id %}')">Remove</button>
                         </div>
                     </td>
                 </tr>
@@ -140,7 +141,7 @@ Sales
                                     </svg> 
                                 </a>
                                 <button
-                                    onclick="openModal('{% url 'delete_invoice' voucher.id %}')">
+                                    onclick="openVoucherModal('{% url 'delete_invoice' voucher.id %}')">
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                                         <path d="M7 21C6.45 21 5.97933 20.8043 5.588 20.413C5.19667 20.0217 5.00067 19.5507 5 19V6H4V4H9V3H15V4H20V6H19V19C19 19.55 18.8043 20.021 18.413 20.413C18.0217 20.805 17.5507 21.0007 17 21H7ZM17 6H7V19H17V6ZM9 17H11V8H9V17ZM13 17H15V8H13V17Z" fill="black" fill-opacity="0.8"/>
                                     </svg>                                      
@@ -205,30 +206,58 @@ Sales
 </div>
 
 <!-- Delete Confirmation Modal -->
-<div id="deleteModal" class="fixed inset-0 items-center justify-center bg-black bg-opacity-50 hidden z-50">
+<div id="voucherDeleteModal" class="fixed inset-0 items-center justify-center bg-black bg-opacity-50 hidden z-50">
     <div class="bg-white rounded-lg p-6 w-full max-w-md mx-auto text-center shadow-lg">
         <h2 class="text-lg font-semibold mb-4">Are you sure you want to delete this voucher?</h2>
         <div class="flex justify-center gap-4">
-            <form id="deleteForm" method="post">
+            <form id="voucherDeleteForm" method="post">
                 {% csrf_token %}
                 <button type="submit" class="bg-red-500 text-white px-5 py-2 rounded-md">Yes</button>
             </form>
-            <button onclick="closeModal()" class="bg-gray-300 px-5 py-2 rounded-md">No</button>
+            <button onclick="closeVoucherModal()" class="bg-gray-300 px-5 py-2 rounded-md">No</button>
+        </div>
+    </div>
+</div>
+
+<div id="clientDeleteModal" class="fixed inset-0 items-center justify-center bg-black bg-opacity-50 hidden z-50">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md mx-auto text-center shadow-lg">
+        <h2 class="text-lg font-semibold mb-4">Are you sure you want to delete this client?</h2>
+        <div class="flex justify-center gap-4">
+            <form id="clientDeleteForm" method="post">
+                {% csrf_token %}
+                <button type="submit" class="bg-red-500 text-white px-5 py-2 rounded-md">Yes</button>
+            </form>
+            <button onclick="closeClientModal()" class="bg-gray-300 px-5 py-2 rounded-md">No</button>
         </div>
     </div>
 </div>
 
 <script>
-    function openModal(deleteUrl) {
-        const modal = document.getElementById('deleteModal');
-        const form = document.getElementById('deleteForm');
+    function openVoucherModal(deleteUrl) {
+        const modal = document.getElementById('voucherDeleteModal');
+        const form = document.getElementById('voucherDeleteForm');
         form.action = deleteUrl;
         modal.classList.remove('hidden');
         modal.classList.add('flex')
     }
 
-    function closeModal() {
-        document.getElementById('deleteModal').classList.add('hidden');
+    function closeVoucherModal() {
+        document.getElementById('voucherDeleteModal').classList.add('hidden');
+    }
+</script>
+
+
+<script>
+    function openClientModal(deleteUrl) {
+        const modal = document.getElementById('clientDeleteModal');
+        const form = document.getElementById('clientDeleteForm');
+        form.action = deleteUrl;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex')
+    }
+
+    function closeClientModal() {
+        document.getElementById('clientDeleteModal').classList.add('hidden');
     }
 </script>
 

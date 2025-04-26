@@ -10,7 +10,8 @@ from .forms import UserLoginForm
 from datetime import datetime, timedelta
 
 from company.services import get_users
-from sales.services import get_all_clients, get_all_vouchers, get_all_client_vouchers
+from sales.services import get_all_clients, get_all_vouchers, get_all_client_vouchers, get_assigned_clients
+from documentation.services import get_client_documents, get_all_countries
 
 # Create your views here.
 @login_required
@@ -41,6 +42,23 @@ def dashboard(request):
         }
         return render(request, 'dashboard/admin_dashboard.html', context=context)
     elif user.role == "manager":
+        clients = get_all_clients(request)
+        total_clients = clients.count()
+        new_clients = new_clients = clients.filter(status__in=["Pending", "In Progress"]).count()
+
+        vouchers = get_all_vouchers(request)
+        total_revenue = vouchers.filter(type='Receipt').aggregate(total=Sum('amount'))['total'] or 0
+        total_expenses = vouchers.filter(type='Payment').aggregate(total=Sum('amount'))['total'] or 0
+        total_profit = total_revenue - total_expenses
+        context = {
+            'total_clients': total_clients,
+            'new_clients': new_clients,
+            'total_revenue': total_revenue,
+            'total_expenses': total_expenses,
+            'total_profit': total_profit,
+            'clients': clients,
+            'vouchers': vouchers
+        }
         return render(request, 'dashboard/manager_dashboard.html')
     elif user.role == "team manager":
         users = get_users(request)
@@ -51,9 +69,32 @@ def dashboard(request):
     elif user.role == "accountant":
         return render(request, 'dashboard/accountant_dashboard.html')
     elif user.role == "counsellor":
-        return render(request, 'dashboard/counsellor_dashboard.html')
+        clients = get_all_clients(request)
+        total_clients = clients.count()
+
+        documents = get_client_documents(request)
+        total_document_uploaded = documents.count()
+
+        countries_recorded = get_all_countries(request)
+        total_countries_recorded = countries_recorded.count()
+
+        context = {
+            'total_clients': total_clients, 
+            'total_document_uploaded': total_document_uploaded,
+            'total_countries_recorded': total_countries_recorded,
+            'documents': documents,
+        }
+        return render(request, 'dashboard/counsellor_dashboard.html', context=context)
     elif user.role == "sales representative":
-        return render(request, 'dashboard/sales_representative_dashboard.html')
+        clients = get_assigned_clients(request)
+        all_clients = get_all_clients(request)
+        total_clients = all_clients.count()
+
+        context = {
+            'clients': clients,
+            'total_clients': total_clients
+        }
+        return render(request, 'dashboard/sales_representative_dashboard.html', context=context)
     else:
         return render(request, 'dashboard/marketing_dashboard.html')
 

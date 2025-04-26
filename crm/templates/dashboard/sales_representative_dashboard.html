@@ -12,7 +12,7 @@ Dashboard
     <div class="grid grid-cols-3 mt-2 gap-7">
         <div class="grid h-[150px]">
             <div class="border rounded-lg bg-white p-6">
-                <p>New Leads</p>
+                <p>Active Leads</p>
                 <p class="font-bold text-4xl text-[--primary-color] mt-2">12</p>
             </div>
         </div>
@@ -24,8 +24,8 @@ Dashboard
         </div>
         <div class="grid h-[150px]">
             <div class="border rounded-lg bg-white p-6">
-                <p>Deal Closed</p>
-                <p class="font-bold text-4xl text-[--primary-color] mt-2">$12</p>
+                <p>Total Client Inquiry</p>
+                <p class="font-bold text-4xl text-[--primary-color] mt-2">{{total_clients}}</p>
             </div>
         </div>
         <div class="grid h-[150px]">
@@ -41,14 +41,6 @@ Dashboard
 <div class="mt-4">
     <div class="flex justify-between items-center mb-2">
         <h1 class="font-semibold text-xl">Client Inquires</h1>
-        <a href="{% url 'inquiry_form' %}">
-            <button class=" h-12 flex justify-center items-center rounded-md px-7 py-1 bg-[--primary-color] font-normal text-white mt-3">
-                <svg width="26" height="26" class="mr-3" viewBox="0 0 26 26" fill="none">
-                    <path d="M11.917 14.0834H5.41699V11.9167H11.917V5.41675H14.0837V11.9167H20.5837V14.0834H14.0837V20.5834H11.917V14.0834Z" fill="white"/>
-                </svg>    
-                New Inquiry            
-            </button>
-        </a>
     </div>
 
     <div class="border rounded-lg bg-white p-6">

@@ -26,6 +26,11 @@ def get_unassigned_clients(branch):
             clients = clients.exclude(id=client.id)
     return clients
 
+def get_assigned_clients(request):
+    branch = get_user_branch(request)
+    clients = Client.objects.filter(branch=branch, assigned_to=request.user).order_by("-created_at")
+    return clients
+
 def get_client_with_remaining_dues(request):
     clients = get_all_clients(request)
     for client in clients:

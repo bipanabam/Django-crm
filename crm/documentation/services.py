@@ -1,4 +1,4 @@
-from .models import Country
+from .models import Country, CountryWiseClientDocument
 
 from company.services import get_user_branch, get_branches
 
@@ -9,6 +9,11 @@ def get_all_countries(request):
     else:
         branch = get_user_branch(request)
         return Country.objects.filter(branch=branch)
+
+def get_client_documents(request):
+    branches = get_branches(request)
+    return CountryWiseClientDocument.objects.filter(country__branch__in=branches)
+
     
 def document_distinct_by_client(docs):
     applicants = []
@@ -18,4 +23,3 @@ def document_distinct_by_client(docs):
             seen_clients.add(doc.client_id)
             applicants.append(doc)
     return applicants
-    

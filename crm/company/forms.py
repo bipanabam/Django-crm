@@ -46,18 +46,18 @@ class UserForm(forms.ModelForm):
         if request:
             if request.user.is_superuser:
                 self.fields['role'].choices = RoleChoices.choices
-
-            current_role = request.user.role
-            if current_role == 'admin':
-                self.fields['role'].choices = [
-                    (key, label) for key, label in RoleChoices.choices if key != 'admin'
-                ]
-            elif current_role == 'manager' or current_role == 'team manager':
-                self.fields['role'].choices = [
-                    (key, label) for key, label in RoleChoices.choices if key not in ['admin', 'manager']
-                ]
             else:
-                self.fields['role'].choices = None
+                current_role = request.user.role
+                if current_role == 'admin':
+                    self.fields['role'].choices = [
+                        (key, label) for key, label in RoleChoices.choices if key != 'admin'
+                    ]
+                elif current_role == 'manager' or current_role == 'team manager':
+                    self.fields['role'].choices = [
+                        (key, label) for key, label in RoleChoices.choices if key not in ['admin', 'manager']
+                    ]
+                else:
+                    self.fields['role'].choices = None
 
     def clean(self):
         cleaned_data = super().clean()
@@ -96,18 +96,18 @@ class UserUpdateForm(forms.ModelForm):
         if request:
             if request.user.is_superuser:
                 self.fields['role'].choices = RoleChoices.choices
-
-            current_role = request.user.role
-            if current_role == 'admin':
-                self.fields['role'].choices = [
-                    (key, label) for key, label in RoleChoices.choices if key != 'admin'
-                ]
-            elif current_role == 'manager' or current_role == 'team manager':
-                self.fields['role'].choices = [
-                    (key, label) for key, label in RoleChoices.choices if key not in ['admin', 'manager']
-                ]
             else:
-                self.fields['role'].choices = None
+                current_role = request.user.role
+                if current_role == 'admin':
+                    self.fields['role'].choices = [
+                        (key, label) for key, label in RoleChoices.choices if key != 'admin'
+                    ]
+                elif current_role == 'manager' or current_role == 'team manager':
+                    self.fields['role'].choices = [
+                        (key, label) for key, label in RoleChoices.choices if key not in ['admin', 'manager']
+                    ]
+                else:
+                    self.fields['role'].choices = None
 
 class EmployeeForm(forms.ModelForm):
     class Meta:

@@ -1,3 +1,4 @@
+from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.db import transaction
@@ -76,10 +77,15 @@ def inquiry_form_view(request):
                 client.branch = get_user_branch(request)
                 if client.advance_paid > 0:
                     client.status = "Pending"
+                    client.created_by = request.user
+                    client.save()
                     # Create Voucher
+                    account_type = ContentType.objects.get_for_model(Client)
+                    account_id = client.id
                     Voucher.objects.create(
                         branch = client.branch,
-                        client=client,
+                        account_type=account_type,
+                        account_id=account_id,
                         type = "Receipt",
                         category = "Sales",
                         amount = client.advance_paid,
@@ -87,9 +93,9 @@ def inquiry_form_view(request):
                         created_by = request.user,
                         status = "Paid",
                     )
-                    
-                client.created_by = request.user
-                client.save()
+                else:
+                    client.created_by = request.user
+                    client.save()
                 for form in document_formset:
                     document = form.save(commit=False)
                     document.client = client
@@ -129,6 +135,17 @@ def edit_client(request, client_id):
         'client': client,
     }
     return render(request, 'sales/edit_client.html', context=context)
+
+@login_required
+def delete_client(request, client_id):
+    branch = get_user_branch(request)
+    client = get_object_or_404(Client, id=client_id, branch=branch)
+    
+    if request.method == 'POST':
+        client.delete()
+        messages.success(request, "Client deleted successfully.")
+        return redirect('sales') 
+    return redirect('sales')
 
 def get_due_amount(request):
     client_id = request.GET.get('client_id')
@@ -199,7 +216,6 @@ def delete_invoice(request, voucher_id):
     
     if request.method == 'POST':
         # update client
-        print(voucher)
         if voucher.account_type == "client":
             client = voucher.account
             print(client)

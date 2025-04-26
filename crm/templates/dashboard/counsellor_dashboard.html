@@ -10,72 +10,96 @@ Dashboard
         <div class="grid h-[150px]">
             <div class="border rounded-lg bg-white p-6">
                 <p>Total Clients</p>
-                <p class="font-bold text-4xl text-[--primary-color] mt-2">12</p>
+                <p class="font-bold text-4xl text-[--primary-color] mt-2">{{total_clients}}</p>
             </div>
         </div>
         <div class="grid h-[150px]">
             <div class="border rounded-lg bg-white p-6">
                 <p>Document Uploaded</p>
-                <p class="font-bold text-4xl text-[--primary-color] mt-2">12</p>
+                <p class="font-bold text-4xl text-[--primary-color] mt-2">{{total_document_uploaded}}</p>
             </div>
         </div>
         <div class="grid h-[150px]">
             <div class="border rounded-lg bg-white p-6">
                 <p>Countries Recorded</p>
-                <p class="font-bold text-4xl text-[--primary-color] mt-2">$12</p>
+                <p class="font-bold text-4xl text-[--primary-color] mt-2">{{total_countries_recorded}}</p>
             </div>
         </div>
     </div>
 </div>
 
 <!--Recent Document Upload-->
-<div class="mt-4">
-    <div class="grid grid-cols-1 lg:grid-cols-2 mt-2 gap-7 h-auto">
-        <div class="grid">
-            <h1 class="font-semibold text-xl mb-5">Recent Document Upload</h1>
-            <div class="border rounded-lg bg-white p-6">
-                <table class="w-full border-collapse">
-                    <thead>
-                        <tr class="border-b border-gray-300 text-gray-400 font-normal">
-                            <th class="p-2 text-left">Client Name</th>
-                            <th class="p-2 text-left">Document Type</th>
-                            <th class="p-2 text-left">Country</th>
-                            <th class="p-2 text-left">Uploaded Date</th>
-                            <th class="p-2 text-center">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for document in countrywise_client_document %}
-                        <tr class="border-b border-gray-300">
-                            <td class="p-2">{{document.client.name}}</td>
-                            <td class="p-2">{{document.document_type}}</td>
-                            <td class="p-2">{{document.country}}</td>
-                            <td class="p-2">{{document.uploaded_date}}</td>
-                            <td class="p-2">
-                                <div class="flex gap-2 items-center justify-center">
-                                    <a href="{% url 'edit_countrywise_client_document' document.country.id document.id %}">
-                                        <button class='rounded-md bg-[--primary-color] text-white w-24 h-8'>Edit</button>
-                                    </a>
-                                    <button
-                                        onclick="openModal('{% url 'delete_countrywise_client_document' document.country.id document.id %}')"
-                                        class='rounded-md border border-[--primary-color] bg-gray-50 text-[--primary-color] w-24 h-8'>
-                                        Remove
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="5" class="text-center py-3">
-                                No Client documents yet.
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+<div class="mt-6">
+    <h1 class="font-semibold text-xl mb-5">Recent Document Upload</h1>
+    <div class="border rounded-xl bg-white p-6">
+        <table class="w-full border-collapse">
+            <thead>
+                <tr class="border-b border-gray-300 text-gray-400 font-normal">
+                    <th class="p-2 text-left">Client Name</th>
+                    <th class="p-2 text-left">Document Type</th>
+                    <th class="p-2 text-left">Country</th>
+                    <th class="p-2 text-left">Uploaded Date</th>
+                    <th class="p-2 text-center">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for document in documents %}
+                <tr class="border-b border-gray-300">
+                    <td class="p-2">{{document.client.name}}</td>
+                    <td class="p-2">{{document.document_type}}</td>
+                    <td class="p-2">{{document.country}}</td>
+                    <td class="p-2">{{document.uploaded_date}}</td>
+                    <td class="p-2">
+                        <div class="flex gap-2 items-center justify-center">
+                            <a href="{% url 'edit_countrywise_client_document' document.country.id document.id %}">
+                                <button class='rounded-md bg-[--primary-color] text-white w-24 h-8'>Edit</button>
+                            </a>
+                            <button
+                                onclick="openModal('{% url 'delete_countrywise_client_document' document.country.id document.id %}')"
+                                class='rounded-md border border-[--primary-color] bg-gray-50 text-[--primary-color] w-24 h-8'>
+                                Remove
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-3">
+                        No Client documents yet.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="fixed inset-0 items-center justify-center bg-black bg-opacity-50 hidden z-50">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md mx-auto text-center shadow-lg">
+        <h2 class="text-lg font-semibold mb-4">Are you sure you want to delete this document?</h2>
+        <div class="flex justify-center gap-4">
+            <form id="deleteForm" method="post">
+                {% csrf_token %}
+                <button type="submit" class="bg-red-500 text-white px-5 py-2 rounded-md">Yes</button>
+            </form>
+            <button onclick="closeModal()" class="bg-gray-300 px-5 py-2 rounded-md">No</button>
         </div>
     </div>
 </div>
+
+<script>
+    function openModal(deleteUrl) {
+        const modal = document.getElementById('deleteModal');
+        const form = document.getElementById('deleteForm');
+        form.action = deleteUrl;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex')
+    }
+
+    function closeModal() {
+        document.getElementById('deleteModal').classList.add('hidden');
+    }
+</script>
 
 {% endblock content %}
