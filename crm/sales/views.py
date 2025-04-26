@@ -8,6 +8,8 @@ from django.forms import inlineformset_factory
 
 from django.utils import timezone
 
+from company.decorators import access_level_required
+
 from .models import ClientDocument, Client, Voucher
 
 from .forms import ClientForm, ClientDocumentForm,ClientDocumentFormset, AssignClientForm, InvoiceForm
@@ -17,26 +19,34 @@ from company.services import get_user_branch
 
 # Create your views here.
 @login_required
+@access_level_required(['Admin', 'Manager', 'Counsellor', 'Sales Representative'])
 def sales_view(request):
-    clients = services.get_all_clients(request)
     branch = get_user_branch(request)
+
+    if request.user.role == 'admin':
+        clients = services.get_assigned_clients(request)
+    else:
+        clients = services.get_all_clients(request)
     sales = clients.filter(status="Pending")
 
     vouchers = services.get_all_client_vouchers(request)
 
     assign_client_form = AssignClientForm(branch=branch)
     if request.method == 'POST':
-        assign_client_form = AssignClientForm(request.POST, branch=branch)
-        if assign_client_form.is_valid():
-            client = assign_client_form.cleaned_data['client']
-            sales_representative = assign_client_form.cleaned_data['sales_representative']
-            client.assigned_to = sales_representative
-            client.assigned_date = timezone.now()
-            client.save()
-            messages.success(request, f'Client {client.name} assigned to {sales_representative.first_name} {sales_representative.last_name} successfully')
-            return redirect('sales')
+        if request.user.role == 'admin' or request.user.role == 'manager':
+            assign_client_form = AssignClientForm(request.POST, branch=branch)
+            if assign_client_form.is_valid():
+                client = assign_client_form.cleaned_data['client']
+                sales_representative = assign_client_form.cleaned_data['sales_representative']
+                client.assigned_to = sales_representative
+                client.assigned_date = timezone.now()
+                client.save()
+                messages.success(request, f'Client {client.name} assigned to {sales_representative.first_name} {sales_representative.last_name} successfully')
+                return redirect('sales')
+            else:
+                print(assign_client_form.errors)
         else:
-            print(assign_client_form.errors)
+            messages.error(request, "You don't have permission to assign clients")
 
     context = {
         'clients': clients, 
@@ -48,6 +58,7 @@ def sales_view(request):
     return render(request, 'sales/overview.html', context=context)
 
 @login_required
+@access_level_required(['Admin', 'Manager', 'Counsellor'])
 def inquiry_form_view(request):
     document_types = [
         'Passport Size Photograph',
@@ -109,6 +120,7 @@ def inquiry_form_view(request):
     return render(request, 'sales/inquiry_form.html', context=context)
 
 @login_required
+@access_level_required(['Admin', 'Manager', 'Counsellor'])
 def edit_client(request, client_id):
     client = services.get_client(request, client_id)
     client_form = ClientForm(instance=client)
@@ -137,6 +149,7 @@ def edit_client(request, client_id):
     return render(request, 'sales/edit_client.html', context=context)
 
 @login_required
+@access_level_required(['Admin', 'Manager', 'Counsellor'])
 def delete_client(request, client_id):
     branch = get_user_branch(request)
     client = get_object_or_404(Client, id=client_id, branch=branch)
@@ -157,6 +170,7 @@ def get_due_amount(request):
         return JsonResponse({'error': 'Client not found'}, status=404)
 
 @login_required
+@access_level_required(['Admin', 'Manager', 'Counsellor', 'Sales Representative'])
 def create_invoice(request):
     branch = services.get_user_branch(request)
     form = InvoiceForm(request=request)
@@ -181,6 +195,7 @@ def create_invoice(request):
 
 
 @login_required
+@access_level_required(['Admin', 'Manager', 'Counsellor', 'Sales Representative'])
 def edit_invoice(request, voucher_id):
     branch = services.get_user_branch(request)
     instance = get_object_or_404(Voucher, id=voucher_id, branch=branch)
@@ -210,6 +225,7 @@ def edit_invoice(request, voucher_id):
     return render(request, 'sales/edit_invoice.html', context=context)
 
 @login_required
+@access_level_required(['Admin', 'Manager', 'Counsellor', 'Sales Representative'])
 def delete_invoice(request, voucher_id):
     branch = get_user_branch(request)
     voucher = get_object_or_404(Voucher, id=voucher_id, branch=branch)

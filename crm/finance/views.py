@@ -4,6 +4,8 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 
+from company.decorators import access_level_required
+
 from sales.services import get_all_clients, get_all_vouchers
 
 from company.services import get_employees, get_user_branch
@@ -15,9 +17,9 @@ from .forms import JournalEntryForm, VoucherForm
 
 # Create your views here.
 @login_required
+@access_level_required(['Admin', 'Manager', 'Accountant'])
 def account_overview(request):
     clients = get_all_clients(request)
-
     vouchers = get_all_vouchers(request)
 
     context = {
@@ -29,6 +31,7 @@ def account_overview(request):
 
 
 @login_required
+@access_level_required(['Admin', 'Manager', 'Accountant'])
 def approve_voucher(request, voucher_id):
     branch = get_user_branch(request)
     voucher = get_object_or_404(Voucher, id=voucher_id, branch=branch)
@@ -68,7 +71,8 @@ def get_accounts_by_type(request):
     print(data)
     return JsonResponse({'accounts': data})
 
-
+@login_required
+@access_level_required(['Admin', 'Manager', 'Accountant'])
 def create_voucher(request):
     if request.method == 'POST':
         form = VoucherForm(request.POST, request=request)
@@ -96,6 +100,8 @@ def create_voucher(request):
     }
     return render(request, 'finance/create_voucher.html', context=context)
 
+@login_required
+@access_level_required(['Admin', 'Manager', 'Accountant'])
 def edit_voucher(request, voucher_id):
     branch = get_user_branch(request)
     instance = get_object_or_404(Voucher, id=voucher_id, branch=branch)
@@ -119,6 +125,8 @@ def edit_voucher(request, voucher_id):
     }
     return render(request, 'finance/edit_voucher.html', context=context)
 
+@login_required
+@access_level_required(['Admin', 'Manager', 'Accountant'])
 def delete_voucher(request, voucher_id):
     branch = get_user_branch(request)
     voucher = get_object_or_404(Voucher, id=voucher_id, branch=branch)

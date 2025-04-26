@@ -41,6 +41,8 @@ Sales
 <div class="mt-4">
     <div class="flex justify-between items-center mb-2">
         <h1 class="font-semibold text-xl">Client Inquires</h1>
+        {% if request.user.role == 'sales representative' %}
+        {% else %}
         <a href="{% url 'inquiry_form' %}">
             <button class=" h-12 flex justify-center items-center rounded-md px-7 py-1 bg-[--primary-color] font-normal text-white mt-3">
                 <svg width="26" height="26" class="mr-3" viewBox="0 0 26 26" fill="none">
@@ -49,6 +51,7 @@ Sales
                 New Inquiry            
             </button>
         </a>
+        {% endif %}
     </div>
 
     <div class="border rounded-lg bg-white p-6">
@@ -95,7 +98,10 @@ Sales
 </div>
 
 <!--Assign Clients-->
+{% if request.user.role == 'sales representative' %}
+{% else %}
 {% include 'sales/assign_client_form.html' %}
+{% endif %}
 
 <!--Invoice Raised-->
 <div class="mt-4">
