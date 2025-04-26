@@ -10,7 +10,7 @@ from .forms import UserLoginForm
 from datetime import datetime, timedelta
 
 from company.services import get_users
-from sales.services import get_all_clients, get_all_vouchers, get_all_client_vouchers, get_assigned_clients
+from sales.services import get_all_clients, get_client_with_remaining_dues,get_all_vouchers, get_all_client_vouchers, get_assigned_clients
 from documentation.services import get_client_documents, get_all_countries
 
 # Create your views here.
@@ -62,12 +62,38 @@ def dashboard(request):
         return render(request, 'dashboard/manager_dashboard.html')
     elif user.role == "team manager":
         users = get_users(request)
+        total_team_members = users.count()
+        total_account_manager = users.filter(role="accountant").count()
+        total_sales_manager = users.filter(role="sales representative").count()
+        total_marketing_manager = users.filter(role="marketing").count()
+        total_document_manager = users.filter(role="counsellor").count()
         context = {
-            'users': users
+            'users': users, 
+            'total_team_members': total_team_members,
+            'total_account_manager': total_account_manager,
+            'total_sales_manager': total_sales_manager,
+            'total_marketing_manager': total_marketing_manager,
+            'total_document_manager': total_document_manager
         }
         return render(request, 'dashboard/team_manager_dashboard.html', context=context)
     elif user.role == "accountant":
-        return render(request, 'dashboard/accountant_dashboard.html')
+        clients = get_all_clients(request)
+        vouchers = get_all_vouchers(request)
+        total_dues = clients.filter(due_amount__gt=0).aggregate(total=Sum('due_amount'))['total'] or 0
+        
+        total_revenue = vouchers.filter(type='Receipt').aggregate(total=Sum('amount'))['total'] or 0
+        total_expenses = vouchers.filter(type='Payment').aggregate(total=Sum('amount'))['total'] or 0
+        total_profit = total_revenue - total_expenses
+
+        context = {
+            'clients': clients,
+            'vouchers': vouchers,
+            'total_revenue': total_revenue,
+            'total_expenses': total_expenses,
+            'total_dues': total_dues,
+            'total_profit': total_profit
+        }
+        return render(request, 'dashboard/accountant_dashboard.html', context=context)
     elif user.role == "counsellor":
         clients = get_all_clients(request)
         total_clients = clients.count()

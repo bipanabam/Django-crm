@@ -1,7 +1,208 @@
 {% extends "base/base.html" %}
+{% load custom_filters %}
+
 {% block head_title %}
-Dashboard
+Accounting
 {% endblock head_title %}
 
 {% block content %}
-{% endblock %}
+<!--Accountant overwiew-->
+<div class="mt-4">
+    <h1 class="font-semibold text-xl mb-5">Accounting Overview</h1>
+    <div class="grid grid-cols-3 mt-2 gap-7">
+        <div class="grid h-[150px]">
+            <div class="border rounded-lg bg-white p-6">
+                <p>Total Revenue</p>
+                <p class="font-bold text-4xl text-[--primary-color] mt-2">${{total_revenue}}</p>
+            </div>
+        </div>
+        <div class="grid h-[150px]">
+            <div class="border rounded-lg bg-white p-6">
+                <p>Pending Dues</p>
+                <p class="font-bold text-4xl text-[--primary-color] mt-2">${{total_dues}}</p>
+            </div>
+        </div>
+        <div class="grid h-[150px]">
+            <div class="border rounded-lg bg-white p-6">
+                <p>Total Expenses</p>
+                <p class="font-bold text-4xl text-[--primary-color] mt-2">${{total_expenses}}</p>
+            </div>
+        </div>
+        <div class="grid h-[150px]">
+            <div class="border rounded-lg bg-white p-6">
+                <p>Net Profit</p>
+                <p class="font-bold text-4xl text-[--primary-color] mt-2">${{total_profit}}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Invoice Raised-->
+<div class="mt-4">
+    <div class="flex justify-between items-center mb-2">
+        <h1 class="font-semibold text-xl">Invoice Raised</h1>
+    </div>
+    <div class="grid grid-cols-1 mt-2 gap-7">
+        <div class="grid">
+            <div class="border rounded-lg bg-white p-6">
+                <table class="w-full border-collapse">
+                    <thead>
+                        <tr class="border-b border-gray-300">
+                            <th class="p-2 text-left">Invoice Number</th>
+                            <th class="p-2 text-left">Name</th>
+                            <th class="p-2 text-left">Status</th>
+                            <th class="p-2 text-left">Date</th>
+                            <th class="p-2 text-left">Category</th>
+                            <th class="p-2 text-left">Total Amount</th>
+                            <th class="p-2 text-left">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for voucher in vouchers %}
+                        <tr class="border-b border-gray-300">
+                            <td class="p-2">#{{voucher.invoice_number}}</td>
+                            <td class="p-2">{{voucher.account.name}}</td>
+                            <td class="p-2">
+                                <button class="{% if voucher.status == 'Paid' %} text-green-600 {% elif voucher.status == "Pending" %} text-orange-300 {% else %} text-blue-300 {% endif %}">
+                                    {{voucher.status}}
+                                </button>
+                            </td>
+                            <td class="p-2">{{voucher.created_at}}</td>
+                            <td class="p-2">{{voucher.category}}</td>
+                            <td class="p-2">{{voucher.amount}}</td>
+                            <td class="p-2 flex gap-2">
+                                <button
+                                    onclick="openVoucherModal('{% url 'delete_invoice' voucher.id %}')">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                        <path d="M7 21C6.45 21 5.97933 20.8043 5.588 20.413C5.19667 20.0217 5.00067 19.5507 5 19V6H4V4H9V3H15V4H20V6H19V19C19 19.55 18.8043 20.021 18.413 20.413C18.0217 20.805 17.5507 21.0007 17 21H7ZM17 6H7V19H17V6ZM9 17H11V8H9V17ZM13 17H15V8H13V17Z" fill="black" fill-opacity="0.8"/>
+                                    </svg>                                      
+                                </button>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center py-3">
+                                No Vouchers yet.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>           
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Generate Financial Report-->
+<div class="mt-4">
+    <h1 class="font-semibold text-xl  mb-2">Generate Financial Report</h1>
+    <div class="grid grid-cols-1 mt-2 gap-7">
+        <div class="grid">
+            <div class="border rounded-lg bg-white p-6">
+                <table class="w-full border-collapse">
+                    <thead>
+                        <tr class="border-b border-gray-300 text-gray-400 ">
+                            <th class="p-2 text-left">Name</th>
+                            <th class="p-2 text-left">Total Amount</th>
+                            <th class="p-2 text-left">Advance Paid</th>
+                            <th class="p-2 text-left">Due Remaining</th>
+                            <th class="p-2 text-center">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for client in clients %}
+                        <tr class="border-b border-gray-300">
+                            <td class="p-2">{{client.name}}</td>
+                            <td class="p-2">{{client.package_amount}}</td>
+                            <td class="p-2">{{client.advance_paid}}</td>
+                            <td class="p-2">{{client.due_amount}}</td>
+                            <td class="p-2">
+                                <div class="flex gap-2 items-center justify-center">
+                                    <button class="rounded-md bg-orange-300 w-6 h-6 flex items-center justify-center">
+                                        {% if client.status == "Paid" %}
+                                        <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+                                            <path d="M15.5001 1.83333L5.50008 11.8333L0.916748 7.24999L2.09175 6.07499L5.50008 9.47499L14.3251 0.658325L15.5001 1.83333Z" fill="white"/>
+                                        </svg>
+                                        {% else %}                                        
+                                        <svg width="16" height="19" viewBox="0 0 16 19" fill="none">
+                                            <path d="M5.5 2.50004V0.833374H10.5V2.50004H5.5ZM7.16667 11.6667H8.83333V6.66671H7.16667V11.6667ZM8 18.3334C6.97222 18.3334 6.00333 18.1356 5.09333 17.74C4.18333 17.3445 3.38833 16.8062 2.70833 16.125C2.02833 15.4439 1.49028 14.6487 1.09417 13.7392C0.698056 12.8298 0.5 11.8612 0.5 10.8334C0.5 9.8056 0.698056 8.83671 1.09417 7.92671C1.49028 7.01671 2.02833 6.22171 2.70833 5.54171C3.38833 4.86171 4.18361 4.32365 5.09417 3.92754C6.00472 3.53143 6.97333 3.33337 8 3.33337C8.86111 3.33337 9.6875 3.47226 10.4792 3.75004C11.2708 4.02782 12.0139 4.4306 12.7083 4.95837L13.875 3.79171L15.0417 4.95837L13.875 6.12504C14.4028 6.81948 14.8056 7.56254 15.0833 8.35421C15.3611 9.14587 15.5 9.97226 15.5 10.8334C15.5 11.8612 15.3019 12.83 14.9058 13.74C14.5097 14.65 13.9717 15.445 13.2917 16.125C12.6117 16.805 11.8164 17.3434 10.9058 17.74C9.99528 18.1367 9.02667 18.3345 8 18.3334ZM8 16.6667C9.61111 16.6667 10.9861 16.0973 12.125 14.9584C13.2639 13.8195 13.8333 12.4445 13.8333 10.8334C13.8333 9.22226 13.2639 7.84726 12.125 6.70837C10.9861 5.56949 9.61111 5.00004 8 5.00004C6.38889 5.00004 5.01389 5.56949 3.875 6.70837C2.73611 7.84726 2.16667 9.22226 2.16667 10.8334C2.16667 12.4445 2.73611 13.8195 3.875 14.9584C5.01389 16.0973 6.38889 16.6667 8 16.6667Z" fill="white"/>
+                                        </svg>     
+                                        {% endif %}                                   
+                                    </button>
+                                    <a href="">
+                                        <button class="rounded-md bg-orange-300 text-white w-28 h-6">Mark as paid</button>                                     
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-3">
+                                Nothing to show yet.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>           
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="voucherDeleteModal" class="fixed inset-0 items-center justify-center bg-black bg-opacity-50 hidden z-50">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md mx-auto text-center shadow-lg">
+        <h2 class="text-lg font-semibold mb-4">Are you sure you want to delete this voucher?</h2>
+        <div class="flex justify-center gap-4">
+            <form id="voucherDeleteForm" method="post">
+                {% csrf_token %}
+                <button type="submit" class="bg-red-500 text-white px-5 py-2 rounded-md">Yes</button>
+            </form>
+            <button onclick="closeVoucherModal()" class="bg-gray-300 px-5 py-2 rounded-md">No</button>
+        </div>
+    </div>
+</div>
+
+<div id="clientDeleteModal" class="fixed inset-0 items-center justify-center bg-black bg-opacity-50 hidden z-50">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md mx-auto text-center shadow-lg">
+        <h2 class="text-lg font-semibold mb-4">Are you sure you want to delete this client?</h2>
+        <div class="flex justify-center gap-4">
+            <form id="clientDeleteForm" method="post">
+                {% csrf_token %}
+                <button type="submit" class="bg-red-500 text-white px-5 py-2 rounded-md">Yes</button>
+            </form>
+            <button onclick="closeClientModal()" class="bg-gray-300 px-5 py-2 rounded-md">No</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openVoucherModal(deleteUrl) {
+        const modal = document.getElementById('voucherDeleteModal');
+        const form = document.getElementById('voucherDeleteForm');
+        form.action = deleteUrl;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex')
+    }
+
+    function closeVoucherModal() {
+        document.getElementById('voucherDeleteModal').classList.add('hidden');
+    }
+</script>
+
+
+<script>
+    function openClientModal(deleteUrl) {
+        const modal = document.getElementById('clientDeleteModal');
+        const form = document.getElementById('clientDeleteForm');
+        form.action = deleteUrl;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex')
+    }
+
+    function closeClientModal() {
+        document.getElementById('clientDeleteModal').classList.add('hidden');
+    }
+</script>
+
+{% endblock content %}
