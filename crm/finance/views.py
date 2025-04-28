@@ -6,8 +6,9 @@ from django.db import transaction
 
 from company.decorators import access_level_required
 
-from sales.services import get_all_clients, get_all_vouchers
+from .services import send_invoice_bill_to_client
 
+from sales.services import get_all_clients, get_all_vouchers
 from company.services import get_employees, get_user_branch
 
 from sales.models import Voucher
@@ -28,32 +29,6 @@ def account_overview(request):
     }
 
     return render(request, 'finance/overview.html', context=context)
-
-
-@login_required
-@access_level_required(['Admin', 'Manager', 'Accountant'])
-def approve_voucher(request, voucher_id):
-    branch = get_user_branch(request)
-    voucher = get_object_or_404(Voucher, id=voucher_id, branch=branch)
-
-    if voucher.account_type.name == "client":
-        with transaction.atomic():
-            #update client 
-            client = voucher.account
-            client.advance_paid += voucher.amount
-            client.due_amount -= voucher.amount
-            if client.due_amount == 0:
-                client.status = "Paid"
-            client.save()
-            voucher.status = "Paid"
-            voucher.save()
-            messages.success(request, 'Voucher marked as paid successfully')
-        return redirect('account_overview')
-    else:
-        voucher.status = "Paid"
-        voucher.save()
-        messages.success(request, 'Voucher marked as paid successfully')
-        return redirect('account_overview')
 
 def get_accounts_by_type(request):
     account_type = request.GET.get('account_type')
@@ -136,3 +111,45 @@ def delete_voucher(request, voucher_id):
         messages.success(request, "Voucher deleted successfully.")
         return redirect('sales') 
     return redirect('sales')
+
+@login_required
+@access_level_required(['Admin', 'Manager', 'Accountant'])
+def invoice_bill_view(request, voucher_id):
+    branch = get_user_branch(request)
+    invoice = Voucher.objects.get(id=voucher_id, branch=branch)
+    context = {
+        'invoice': invoice
+    }
+    return render(request, 'sales/bill/invoice_bill.html', context=context)
+
+@login_required
+@access_level_required(['Admin', 'Manager', 'Accountant'])
+def approve_voucher(request, voucher_id):
+    branch = get_user_branch(request)
+    voucher = get_object_or_404(Voucher, id=voucher_id, branch=branch)
+
+    if voucher.account_type.name == "client":
+        with transaction.atomic():
+            #update client 
+            client = voucher.account
+            client.advance_paid += voucher.amount
+            client.due_amount -= voucher.amount
+            if client.due_amount == 0:
+                client.status = "Paid"
+            client.save()
+            voucher.status = "Paid"
+            voucher.save()
+
+            # Send the invoice bill after transaction
+            try:
+                send_invoice_bill_to_client(client.id, invoice=voucher)
+            except Exception as email_error:
+                print(f"Error sending invoice: {email_error}")
+                messages.error(request, "Voucher marked as paid, but email could not be sent.")
+            messages.success(request, 'Voucher marked as paid successfully')
+        return redirect('account_overview')
+    else:
+        voucher.status = "Paid"
+        voucher.save()
+        messages.success(request, 'Voucher marked as paid successfully')
+        return redirect('account_overview')

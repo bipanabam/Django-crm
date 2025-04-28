@@ -133,7 +133,8 @@ Sales
                     </thead>
                     <tbody>
                         {% for voucher in vouchers %}
-                        <tr class="border-b border-gray-300">
+                        <tr class="border-b border-gray-300"
+                        onclick="window.location='{% url 'invoice_bill' voucher.id %}'">
                             <td class="p-2">#{{voucher.invoice_number}}</td>
                             <td class="p-2">{{voucher.account.name}}</td>
                             <td class="p-2">{{voucher.account.assigned_to}}</td>
