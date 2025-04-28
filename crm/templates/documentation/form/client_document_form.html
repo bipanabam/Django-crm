@@ -18,10 +18,44 @@
                 {% endif %}
 
                 {% for form in formset %}
+                {{ form.id }}
                 <div class="form-row w-full">
                     {% if forloop.first %}
                         <!-- Show all fields for the first form -->
-                        {% for field in form %}
+                        <div class="relative z-0 mb-5 group w-full">
+                            <label for="{{ form.country.id_for_label }}" class="block mb-3 text-xl font-medium">
+                                {{ form.country.label }}
+                            </label>    
+                            {{ form.country|add_class:'country-select block w-full h-14 px-4 py-4 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}                  
+                        </div>
+                        <div class="relative z-0 mb-5 group w-full">
+                            <label for="{{ form.client.id_for_label }}" class="block mb-3 text-xl font-medium">
+                                {{ form.client.label }}
+                            </label>                  
+                            {{ form.client|add_class:'block w-full h-14 px-4 py-4 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
+                        </div>
+                        <div id="client-document-container" class="relative z-0 mb-5 w-full hidden">
+                            <label class="block mb-3 text-xl font-medium">
+                                Client's Documents:
+                            </label>
+                            <div id="client-documents-list" class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                <!-- Client documents will be inserted here -->
+                            </div>
+                        </div>
+                        
+                        <div class="relative z-0 mb-5 group w-full">
+                            <label for="{{ form.document_type.id_for_label }}" class="block mb-3 text-xl font-medium">
+                                {{ form.document_type.label }}
+                            </label>                 
+                            {{ form.document_type|add_class:'block w-full h-14 px-4 py-4 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
+                        </div>
+                        <div class="relative z-0 mb-5 group w-full">
+                            <label for="{{ form.document_file.id_for_label }}" class="block mb-3 text-xl font-medium">
+                                {{ form.document_file.label }}
+                            </label>                 
+                            {{ form.document_file|add_class:'block w-full h-14 px-4 py-4 text-gray-400 bg-gray-50 border border-gray-300 rounded-md focus:border-(--primary-color) focus:ring focus:ring-blue-200 focus:ring-opacity-50' }}
+                        </div>
+                        {% comment %} {% for field in form %}
                             {% if field.name != 'id' and field.name != 'DELETE' %}
                                 <div class="relative z-0 mb-5 group w-full">
                                     <label for="{{ field.id_for_label }}" class="block mb-3 text-xl font-medium">
@@ -34,7 +68,7 @@
                                     {% endif %}
                                 </div>
                             {% endif %}
-                        {% endfor %}
+                        {% endfor %} {% endcomment %}
                     {% else %}
                         <!-- Show only selected fields with delete option -->
                         <div class="relative z-0 mb-5 group w-full">
@@ -55,7 +89,7 @@
                 {% endfor %}
             </div>
             
-            <button type="button" id="add-form-btn" class="flex items-center gap-1 mt-2">
+            <button type="button" id="add-form-btn" class="flex items-center gap-1 mt-2" disabled>
                 <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
                     <path d="M22.1668 15.1667H15.1668V22.1667H12.8335V15.1667H5.8335V12.8333H12.8335V5.83334H15.1668V12.8333H22.1668V15.1667Z" fill="#888888"/>
                 </svg>  
@@ -88,16 +122,69 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        // Attach change event to all country selects
-        document.querySelectorAll(".country-select").forEach(function (countrySelect) {
+        const clientSelect = document.querySelector("[name$='-client']");
+        const clientDocumentContainer = document.getElementById("client-document-container");
+        const clientDocumentsList = document.getElementById("client-documents-list");
+    
+        if (clientSelect) {
+            clientSelect.addEventListener("change", function () {
+                const clientId = this.value;
+    
+                if (clientId) {
+                    fetch(`/documentation/ajax/get-client-documents/?client_id=${clientId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            clientDocumentsList.innerHTML = ""; // Clear previous documents
+    
+                            if (data.documents.length > 0) {
+                                data.documents.forEach(doc => {
+                                    const card = document.createElement("div");
+                                    card.className = "client-document-card bg-white rounded-lg shadow p-4 flex flex-col items-center";
+    
+                                    const title = document.createElement("h3");
+                                    title.className = "text-lg font-semibold mb-2 text-center";
+                                    title.innerText = doc.document_type;
+    
+                                    const image = document.createElement("img");
+                                    image.src = doc.document_file_url;   // Make sure backend returns correct URL
+                                    image.alt = doc.document_type;
+                                    image.className = "w-32 h-32 object-cover rounded-md";
+    
+                                    card.appendChild(title);
+                                    card.appendChild(image);
+                                    clientDocumentsList.appendChild(card);
+                                });
+    
+                                clientDocumentContainer.classList.remove("hidden");
+                            } else {
+                                clientDocumentsList.innerHTML = "<p class='text-center col-span-2'>No documents available.</p>";
+                                clientDocumentContainer.classList.remove("hidden");
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching client documents:', error);
+                        });
+                } else {
+                    clientDocumentsList.innerHTML = "";
+                    clientDocumentContainer.classList.add("hidden");
+                }
+            });
+        }
+    });
+</script>
+    
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // 1. Attach change event to all country selects
+        function attachCountryChangeListener(countrySelect) {
             countrySelect.addEventListener("change", function () {
                 const countryId = this.value;
                 const formRow = this.closest(".form-row");
                 const docTypeSelect = formRow.querySelector("select[name$='-document_type']");
-    
+        
                 // Clear current options
                 docTypeSelect.innerHTML = '<option value="">---------</option>';
-    
+        
                 // Fetch document types for selected country
                 if (countryId) {
                     fetch(`/documentation/ajax/get-document-types/?country_id=${countryId}`)
@@ -109,13 +196,18 @@
                                 option.text = doc.document_title;
                                 docTypeSelect.appendChild(option);
                             });
-                        });
+                            document.getElementById('add-form-btn').disabled = false;
+                    });
                 }
             });
+        }
+    
+        // Attach listener for existing country selects
+        document.querySelectorAll(".country-select").forEach(function (countrySelect) {
+            attachCountryChangeListener(countrySelect);
         });
-    });
-
-    document.addEventListener("DOMContentLoaded", function () {
+    
+        // 2. Handle Add Form Button
         const addFormBtn = document.getElementById("add-form-btn");
         const formsetContainer = document.getElementById("formset-container");
         const totalForms = document.getElementById("id_form-TOTAL_FORMS");
@@ -133,10 +225,10 @@
             totalForms.value = formCount + 1;
 
             // Handle country -> document type fetch
-            const CountrySelect = document.querySelector('.country-select');
+            const firstCountrySelect = document.querySelector('.country-select');
             const docTypeSelect = newForm.querySelector("select[name$='-document_type']");
             // Get values from the first form
-            const selectedCountry = CountrySelect ? CountrySelect.value : "";
+            const selectedCountry = firstCountrySelect ? firstCountrySelect.value : "";
             const selectedClient = document.querySelector("[name$='-client']")?.value || "";
 
             // Fill hidden inputs in new form
@@ -144,25 +236,27 @@
             const clientInput = newForm.querySelector(".hidden-client-input");
             if (countryInput) countryInput.value = selectedCountry;
             if (clientInput) clientInput.value = selectedClient;
-    
-            if (CountrySelect) {
-                const selectedCountryId = CountrySelect.value;
-                if (selectedCountryId) {
-                    fetch(`/documentation/ajax/get-document-types/?country_id=${selectedCountryId}`)
+
+            // --- Auto Fill Document Types if first country is selected ---
+            const newCountrySelect = newForm.querySelector(".country-select");
+            const newDocTypeSelect = newForm.querySelector("select[name$='-document_type']");
+        
+            if (firstCountrySelect && firstCountrySelect.value) {
+                if (newCountrySelect) firstCountrySelect.value = firstCountrySelect.value; // Set selected country
+        
+                fetch(`/documentation/ajax/get-document-types/?country_id=${firstCountrySelect.value}`)
                     .then(response => response.json())
                     .then(data => {
+                        newDocTypeSelect.innerHTML = '<option value="">---------</option>'; // clear
                         data.document_types.forEach(doc => {
                             const option = document.createElement("option");
                             option.value = doc.id;
                             option.text = doc.document_title;
-                            docTypeSelect.appendChild(option);
+                            newDocTypeSelect.appendChild(option);
                         });
                     });
-                } else {
-                    newDocumentTypeSelect.innerHTML = '<option value="">---------</option>';
-                }
             }
-    
+        
             // Remove form button
             const removeBtn = newForm.querySelector(".remove-form");
             removeBtn.addEventListener("click", function () {
@@ -171,4 +265,5 @@
         });
     });
 </script>
+    
     

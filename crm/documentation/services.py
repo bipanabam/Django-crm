@@ -12,7 +12,7 @@ def get_all_countries(request):
         branch = get_user_branch(request)
         return Country.objects.filter(branch=branch)
 
-def get_client_documents(request):
+def get_all_client_documents(request):
     branches = get_branches(request)
     documents =  CountryWiseClientDocument.objects.filter(country__branch__in=branches)
     if request.user.role == 'sales representative':

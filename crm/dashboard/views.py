@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 
 from company.services import get_users
 from sales.services import get_all_clients, get_client_with_remaining_dues,get_all_vouchers, get_all_client_vouchers, get_assigned_clients
-from documentation.services import get_client_documents, get_all_countries
+from documentation.services import get_all_client_documents, get_all_countries
 
 # Create your views here.
 @login_required

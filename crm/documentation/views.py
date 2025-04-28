@@ -12,8 +12,10 @@ from company.decorators import access_level_required
 from .forms import CountryForm, DocumentTypeForm,DocumentFormSet, CountryWiseClientDocumentForm, CountryWiseClientDocumentFormSet, BaseCountryWiseClientDocumentFormSet
 from .models import Country, CountryWiseClientDocument, DocumentType
 
+from sales.models import ClientDocument
+
 from company.services import get_user_branch
-from .services import document_distinct_by_client, get_client_documents
+from .services import document_distinct_by_client, get_all_client_documents
 
 # Create your views here.
 @login_required
@@ -98,12 +100,27 @@ def get_document_types(request):
         return JsonResponse({'document_types': list(document_types)})
     return JsonResponse({'document_types': []})
 
+
+def get_client_documents(request):
+    client_id = request.GET.get('client_id')
+    documents = []
+
+    if client_id:
+        documents_qs = ClientDocument.objects.filter(client_id=client_id)
+        for doc in documents_qs:
+            documents.append({
+                'document_type': doc.document_type,
+                'document_file_url': doc.document.url,
+            })
+
+    return JsonResponse({'documents': documents})
+
 @login_required
 @access_level_required(['Admin', 'Manager', 'Counsellor', 'Sales Representative'])
 def documentation_overview(request):
     branch = get_user_branch(request)
     countrywise_documentation = Country.objects.filter(branch=branch)
-    countrywise_client_document = get_client_documents(request)
+    countrywise_client_document = get_all_client_documents(request)
 
     # client document form
     if request.method == 'POST':

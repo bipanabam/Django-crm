@@ -1,6 +1,17 @@
 {% extends 'base/base.html' %}
 {% load custom_filters %}
 
+{% block style %}
+/* Zoom effect for document images */
+.client-document-card img {
+    transition: transform 0.3s ease;  /* Smooth transition */
+}
+
+.client-document-card:hover img {
+    transform: scale(1.1);  /* Zoom in */
+}
+{% endblock style%}
+
 {% block content %}
 
 <div class="mt-6">
