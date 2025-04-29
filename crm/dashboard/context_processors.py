@@ -7,6 +7,7 @@ def user_branch_data(request):
         if user.is_superuser:
             branches = Branch.objects.all()
             selected_branch = None
+            company = None
         elif user.role == 'admin':
             branches = get_branches(request)
             selected_branch = None

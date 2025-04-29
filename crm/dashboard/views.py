@@ -98,7 +98,7 @@ def dashboard(request):
         clients = get_all_clients(request)
         total_clients = clients.count()
 
-        documents = get_client_documents(request)
+        documents = get_all_client_documents(request)
         total_document_uploaded = documents.count()
 
         countries_recorded = get_all_countries(request)

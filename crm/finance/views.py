@@ -6,7 +6,7 @@ from django.db import transaction
 
 from company.decorators import access_level_required
 
-from .services import send_invoice_bill_to_client
+from .tasks import send_invoice_bill_to_client
 
 from sales.services import get_all_clients, get_all_vouchers
 from company.services import get_employees, get_user_branch
@@ -142,7 +142,7 @@ def approve_voucher(request, voucher_id):
 
             # Send the invoice bill after transaction
             try:
-                send_invoice_bill_to_client(client.id, invoice=voucher)
+                send_invoice_bill_to_client.delay(client.id, voucher.id)
             except Exception as email_error:
                 print(f"Error sending invoice: {email_error}")
                 messages.error(request, "Voucher marked as paid, but email could not be sent.")

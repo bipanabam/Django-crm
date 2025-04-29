@@ -109,7 +109,7 @@
                                 EWAY NO
                             </td>
                             <td class="border border-black px-4 py-2 text-center">
-                                {{ billdetails.eway|default:"-" }}
+                       
                             </td>
                         </tr>
                         <tr class="bg-white">
@@ -117,7 +117,7 @@
                                 VEH NO
                             </td>
                             <td class="border border-black px-4 py-2 text-center">
-                                {{ billdetails.veh|default:"-" }}
+                
                             </td>
                         </tr>
                         <tr class="bg-white">
@@ -125,20 +125,20 @@
                                 DESTINATION
                             </td>
                             <td class="border border-black px-4 py-2 text-center">
-                                {{ billdetails.destination|default:"-" }}
+                    
                             </td>
                         </tr>
             
                         <!-- Supplier PAN and PO No & Date -->
                         <tr class="bg-white">
                             <td class="border border-black font-bold px-4 py-2">
-                                PAN/VAT No: {{ bill.supplier.vat_no }}
+                                PAN/VAT No: 
                             </td>
                             <td class="border border-black font-bold px-4 py-2 text-center">
                                 PO NO & DATE
                             </td>
                             <td class="border border-black px-4 py-2 text-center">
-                                {{ billdetails.po|default:"-" }}
+                            
                             </td>
                         </tr>
             
@@ -155,7 +155,6 @@
                             <th class="border border-black px-3 py-2">VISA TYPE</th>
                             <th class="border border-black px-3 py-2">PREFERRED COUNTRY</th>
                             <th class="border border-black px-3 py-2">PACKAGE AMOUNT $</th>
-                            <th class="border border-black px-3 py-2">PS</th>
                         </tr>
                     </thead>
                     <tbody class="text-gray-700 text-sm">
@@ -165,7 +164,6 @@
                             <td class="border border-black px-3 py-2">{{invoice.account.visa_type}}</td>
                             <td class="border border-black px-3 py-2">{{invoice.account.preferred_country}}</td>
                             <td class="border border-black px-3 py-2">{{invoice.account.package_amount}}</td>
-                            <td class="border border-black px-3 py-2">0</td>
                         </tr>
                     </tbody>
                 </table>
