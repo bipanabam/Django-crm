@@ -1,7 +1,9 @@
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
+from django.db.models.functions import TruncMonth
 from django.db import transaction
+from django.db.models import Sum
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.forms import inlineformset_factory
@@ -19,6 +21,38 @@ from company.services import get_user_branch
 
 # Create your views here.
 @login_required
+def revenue_chart_data_by_year(request):
+    current_year = timezone.now().year
+    previous_year = current_year - 1
+    all_vouchers = services.get_all_vouchers(request)
+
+    def get_monthly_revenue(year, all_vouchers):
+        monthly_totals = [0] * 12
+        vouchers = (
+            all_vouchers.filter(type='Receipt', created_at__date__year=year)
+            .annotate(month=TruncMonth('created_at__date'))
+            .values('month')
+            .annotate(total=Sum('amount'))
+            .order_by('month')
+        )
+        for entry in vouchers:
+            month_index = entry['month'].month - 1
+            monthly_totals[month_index] = float(entry['total'])
+        return monthly_totals
+
+    this_year_data = get_monthly_revenue(current_year, all_vouchers)
+    last_year_data = get_monthly_revenue(previous_year, all_vouchers)
+
+    return JsonResponse({
+        "labels": ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+        "current_year": current_year,
+        "previous_year": previous_year,
+        "this_year_revenue": this_year_data,
+        "last_year_revenue": last_year_data
+    })
+
+@login_required
 @access_level_required(['Admin', 'Manager', 'Counsellor', 'Sales Representative'])
 def sales_view(request):
     branch = get_user_branch(request)
@@ -33,6 +67,10 @@ def sales_view(request):
         vouchers = services.get_assigned_client_vouchers(request)
     else:
         vouchers = services.get_all_client_vouchers(request)
+
+    # revenue
+    all_vouchers = services.get_all_vouchers(request)
+    total_revenue = vouchers.filter(type='Receipt').aggregate(total=Sum('amount'))['total'] or 0
 
     assign_client_form = AssignClientForm(branch=branch)
     if request.method == 'POST':
@@ -56,6 +94,7 @@ def sales_view(request):
         'assign_client_form': assign_client_form,
         'sales': sales,
         'vouchers': vouchers,
+        'total_revenue': total_revenue
     }
 
     return render(request, 'sales/overview.html', context=context)
@@ -90,8 +129,10 @@ def inquiry_form_view(request):
                 client = client_form.save(commit=False)
                 client.branch = get_user_branch(request)
                 if client.advance_paid > 0:
-                    client.status = "Pending"
+                    paid_amount = client.advance_paid
+                    client.advance_paid = 0
                     client.due_amount = client.package_amount
+                    client.status = "Pending"
                     client.created_by = request.user
                     client.save()
                     # Create Voucher
@@ -103,7 +144,7 @@ def inquiry_form_view(request):
                         account_id=account_id,
                         type = "Receipt",
                         category = "Sales",
-                        amount = client.advance_paid,
+                        amount = paid_amount,
                         narration = "Advance paid while inquiry.",
                         created_by = request.user,
                         status = "Pending",

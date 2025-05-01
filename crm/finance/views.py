@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
+from django.db.models import Sum
 
 from company.decorators import access_level_required
 
@@ -23,9 +24,16 @@ def account_overview(request):
     clients = get_all_clients(request)
     vouchers = get_all_vouchers(request)
 
+    total_revenue = vouchers.filter(type='Receipt').aggregate(total=Sum('amount'))['total'] or 0
+    total_expenses = vouchers.filter(type='Payment').aggregate(total=Sum('amount'))['total'] or 0
+    total_profit = total_revenue - total_expenses
+
     context = {
         'clients': clients, 
         'vouchers': vouchers,
+        'total_revenue': total_revenue,
+        'total_expenses': total_expenses,
+        'total_profit': total_profit
     }
 
     return render(request, 'finance/overview.html', context=context)

@@ -31,7 +31,7 @@ Sales
         <div class="grid h-[150px]">
             <div class="border rounded-lg bg-white p-6">
                 <p>Revenue Generated</p>
-                <p class="font-bold text-4xl text-[--primary-color] mt-2">12</p>
+                <p class="font-bold text-4xl text-[--primary-color] mt-2">${{total_revenue}}</p>
             </div>
         </div>
     </div>
@@ -169,6 +169,16 @@ Sales
     </div>
 </div>
 
+<!--Revenue Per Year-->
+<div class="mt-4">
+    <div class="border rounded-lg bg-white p-6">
+        <div class="flex justify-between">
+            <p class='font-bold'>Total Revenue Collected <span class="text-gray-400">(per year)</span></p>
+        </div>
+        <canvas id="revenueChart" class="w-full h-full mt-4"></canvas>
+    </div>
+</div>
+
 <!--Sales Report-->
 <div class="mt-4">
     <h1 class="font-semibold text-xl mb-5">Sales Report</h1>
@@ -266,6 +276,60 @@ Sales
     function closeClientModal() {
         document.getElementById('clientDeleteModal').classList.add('hidden');
     }
+</script>
+
+<script>
+    const ctx = document.getElementById('revenueChart').getContext('2d');
+    let chart;
+
+    function loadRevenueChart() {
+        fetch('/sales/revenue-per-year/chart-data/')
+            .then(response => response.json())
+            .then(data => {
+                if (chart) chart.destroy();
+
+                chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: data.labels,
+                        datasets: [
+                            {
+                                label: `${data.previous_year} Revenue`,
+                                data: data.last_year_revenue,
+                                borderColor: '#60a5fa',
+                                backgroundColor: 'rgba(96, 165, 250, 0.2)',
+                                fill: true,
+                                tension: 0.4
+                            },
+                            {
+                                label: `${data.current_year} Revenue`,
+                                data: data.this_year_revenue,
+                                borderColor: '#10b981',
+                                backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                                fill: true,
+                                tension: 0.4
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: `Monthly Revenue Comparison (${data.previous_year} vs ${data.current_year})`
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            });
+    }
+
+    loadRevenueChart();
 </script>
 
 {% endblock content %}

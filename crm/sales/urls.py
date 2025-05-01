@@ -11,4 +11,6 @@ urlpatterns = [
     path('invoice/edit/<int:voucher_id>/', views.edit_invoice, name="edit_invoice"),
     path('invoice/delete/<int:voucher_id>/', views.delete_invoice, name="delete_invoice"),
     path('ajax/get-due-amount/', views.get_due_amount, name='get_due_amount'),
+
+    path("revenue-per-year/chart-data/", views.revenue_chart_data_by_year, name="revenue_chart_data_by_year"),
 ]

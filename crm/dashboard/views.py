@@ -10,7 +10,7 @@ from .forms import UserLoginForm
 from datetime import datetime, timedelta
 
 from company.services import get_users
-from sales.services import get_all_clients, get_client_with_remaining_dues,get_all_vouchers, get_all_client_vouchers, get_assigned_clients
+from sales.services import get_all_clients, get_client_with_remaining_dues, get_all_vouchers, get_all_client_vouchers, get_assigned_clients, get_assigned_client_vouchers
 from documentation.services import get_all_client_documents, get_all_countries
 
 # Create your views here.
@@ -116,9 +116,13 @@ def dashboard(request):
         all_clients = get_all_clients(request)
         total_clients = all_clients.count()
 
+        vouchers = get_assigned_client_vouchers(request)
+        total_revenue = vouchers.filter(type='Receipt').aggregate(total=Sum('amount'))['total'] or 0
+
         context = {
             'clients': clients,
-            'total_clients': total_clients
+            'total_clients': total_clients,
+            'total_revenue': total_revenue
         }
         return render(request, 'dashboard/sales_representative_dashboard.html', context=context)
     else:
