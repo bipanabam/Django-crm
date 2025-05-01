@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     #third-party app
     'tailwind',
     'theme',
+    'channels',
     #local app
     'company',
     'dashboard',
@@ -136,6 +137,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
@@ -147,7 +149,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'company.User'
 
-LOGIN_REDIRECT_URL = ''
+LOGIN_REDIRECT_URL = '/login'
 
 # tailwind app config
 TAILWIND_APP_NAME = 'theme'
@@ -157,9 +159,24 @@ INTERNAL_IPS = [
 NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
 
 # celery config
-CELERY_BROKER_URL = 'redis://localhost:6379'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_BROKER_URL = 'redis://172.30.40.30:6379'
+CELERY_RESULT_BACKEND = 'redis://172.30.40.30:6379'
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'UTC'
+
+# websocket
+ASGI_APPLICATION = "crm.asgi.application"
+
+# python -m daphne -p 8000 crm.asgi:application [Recommended ASGI Server for django] 
+
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("172.30.40.30", 6379)],
+        },
+    },
+}

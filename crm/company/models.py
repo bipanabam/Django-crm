@@ -63,11 +63,38 @@ class User(AbstractUser):
 
   access_level = models.ManyToManyField(AccessLevel, blank=True, related_name='users')
 
+  online_status = models.CharField(max_length=10, choices=[('online', 'Online'), ('idle', 'Idle'), ('offline', 'Offline')], default='offline')
+  last_seen = models.DateTimeField(null=True, blank=True)
+
   USERNAME_FIELD = 'email'  # Use email as the unique identifier for authentication
   REQUIRED_FIELDS = ['username'] 
 
+  @property
+  def last_active(self):
+    if self.online_status == 'online':
+      return "Active Now"
+    else:
+      from django.utils import timezone
+      now = timezone.now()
+      delta = now - self.last_seen
+      return f"{int(delta.total_seconds() / 60)} mins ago"  # returns minutes as integer
+
   def __str__(self):
       return f"{self.username}"
+
+class UserActivityLog(models.Model):
+  STATUS_CHOICES = [
+      ('online', 'Online'),
+      ('idle', 'Idle'),
+      ('offline', 'Offline'),
+  ]
+
+  user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='activity_logs')
+  status = models.CharField(max_length=10, choices=STATUS_CHOICES)
+  timestamp = models.DateTimeField(auto_now_add=True)
+
+  def __str__(self):
+      return f"{self.user.username} - {self.status} @ {self.timestamp}"
 
 class Employee(models.Model):
   branch = models.ForeignKey(Branch, on_delete=models.CASCADE, related_name='employees')

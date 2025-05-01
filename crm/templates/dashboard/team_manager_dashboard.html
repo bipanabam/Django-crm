@@ -111,8 +111,16 @@ Dashboard
                     <td class="p-2">{{user.first_name}} {{user.last_name}}</td>
                     <td class="p-2">{{user.role}}</td>
                     <td class="p-2">{{user.email}}</td>
-                    <td class="p-2"></td>
                     <td class="p-2">
+                        <button id="status-badge-{{ user.id }}" 
+                        class="rounded-md border w-20 text-white text-sm {% if user.online_status == "online" %}bg-green-600 {% elif user.online_status == "idle" %}bg-yellow-600{% else %}bg-red-600{% endif %}">
+                             {{user.online_status}}
+                        </button>
+                    </td>
+                    <td class="p-2 text-center">
+                        <p class="text-gray-400 text-sm">
+                            {{user.last_active}}
+                        </p>
                     </td>
                 </tr>
                 {% empty %}
@@ -185,6 +193,12 @@ Dashboard
         </div>
     </div>
 </div>
+
+  {% comment %} <!-- Render this inside your table per user -->
+  <span id="status-badge-{{ user.id }}" class="badge bg-secondary">
+    {{ user.userprofile.online_status|default:"offline" }}
+  </span> {% endcomment %}
+  
 
 <script>
     function openModal(deleteUrl) {
