@@ -5,6 +5,8 @@ from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.db.models import Sum
 
+from django.core.paginator import Paginator
+
 from company.decorators import access_level_required
 
 from .tasks import send_invoice_bill_to_client
@@ -24,13 +26,24 @@ def account_overview(request):
     clients = get_all_clients(request)
     vouchers = get_all_vouchers(request)
 
+    # Voucher Pagination
+    paginator = Paginator(vouchers, 5)
+    voucher_page_number = request.GET.get('voucher_page')
+    voucher_page_obj = paginator.get_page(voucher_page_number)
+
+    # Client Pagination
+    client_paginator = Paginator(clients, 5)
+    client_page_number = request.GET.get('client_page')
+    client_page_obj = client_paginator.get_page(client_page_number)
+
     total_revenue = vouchers.filter(type='Receipt').aggregate(total=Sum('amount'))['total'] or 0
     total_expenses = vouchers.filter(type='Payment').aggregate(total=Sum('amount'))['total'] or 0
     total_profit = total_revenue - total_expenses
 
     context = {
         'clients': clients, 
-        'vouchers': vouchers,
+        'voucher_page_obj': voucher_page_obj,
+        'client_page_obj': client_page_obj,
         'total_revenue': total_revenue,
         'total_expenses': total_expenses,
         'total_profit': total_profit

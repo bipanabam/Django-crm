@@ -22,7 +22,7 @@
 
     <script>
         let idleTimeout;
-        let idleDelay = 60000; // 60 seconds
+        let idleDelay = 300000; // 5 mins
         let socket = new WebSocket("ws://" + window.location.host + "/ws/online-users/");
     
         function setIdle() {
