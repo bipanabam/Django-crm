@@ -23,8 +23,8 @@ from .forms import JournalEntryForm, VoucherForm
 @login_required
 @access_level_required(['Admin', 'Manager', 'Accountant'])
 def account_overview(request):
-    clients = get_all_clients(request)
-    vouchers = get_all_vouchers(request)
+    clients = get_all_clients(request).order_by('name')
+    vouchers = get_all_vouchers(request).order_by('-created_at')
 
     # Voucher Pagination
     paginator = Paginator(vouchers, 5)

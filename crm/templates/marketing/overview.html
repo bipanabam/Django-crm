@@ -1,0 +1,122 @@
+{% extends "base/base.html" %}
+{% load custom_filters %}
+
+{% block head_title %}
+Finance
+{% endblock head_title %}
+
+{% block content %}
+
+<!--Demand and Supply Matching-->
+<div class="mt-4">
+    <div class="flex justify-between items-center mb-2">
+        <h1 class="font-semibold text-xl">Demand and Supply Matching</h1>
+        <a href="#">
+            <button class=" h-12 flex justify-center items-center rounded-md px-7 py-1 bg-[--primary-color] font-normal text-white mt-3">
+                <svg width="26" height="26" class="mr-3" viewBox="0 0 26 26" fill="none">
+                    <path d="M11.917 14.0834H5.41699V11.9167H11.917V5.41675H14.0837V11.9167H20.5837V14.0834H14.0837V20.5834H11.917V14.0834Z" fill="white"/>
+                </svg>    
+                Add Demand            
+            </button>
+        </a>
+    </div>
+
+    <div class="border rounded-lg bg-white p-6">
+        <table class="w-full table-auto border-collapse">
+            <thead>
+                <tr class="border-b border-gray-300 text-gray-400 ">
+                    <th class="p-2 text-left w-1/4">Country</th>
+                    <th class="p-2 text-left w-1/4">Job</th>
+                    <th class="p-2 text-left w-1/4">Vacancy</th>
+                    <th class="p-2 text-left w-1/4">Demand</th>
+                    <th class="p-2 text-center w-1/4">Action</th>
+                </tr>
+            </thead>
+            <tbody class="w-full">
+                {% for demand in demands %}
+                <tr class="border-b border-gray-300 w-full">
+                    <td class="p-2">{{ demand.country }}</td>
+                    <td class="p-2">#{{ demand.job }}</td>
+                    <td class="p-2">{{ demand.no_of_vacancy }}</td>
+                    <td class="p-2">{{ demand.demand_urgency }}</td>
+                    <td class="p-2">
+                        <div class="flex gap-2 items-center justify-center">
+                            <a href="#">
+                                <button class="rounded-md bg-[--primary-color] text-white w-24 h-8">View</button>
+                            </a>
+                            <a href="#">
+                                <button class="rounded-md bg-[--primary-color] text-white w-32 h-8">Delete</button>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-3">
+                        No demands yet.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>    
+    </div>
+</div>
+
+<!--Campaign Form-->
+<div class="mt-6">
+    <h1 class="font-semibold text-2xl mb-5">Create New Campaign</h1>
+    <div class="justify-between border rounded-xl bg-white p-6 pb-10">
+       
+    </div>
+</div>
+
+<!--Active Campaign List-->
+<div class="mt-4">
+    <h1 class="font-semibold text-xl mb-5">Active Campaign List</h1>
+    <div class="grid grid-cols-1 mt-2 gap-7">
+        <div class="grid">
+            <div class="border rounded-lg bg-white p-6">
+                <h1 class="font-semibold text-xl mb-5">Team List</h1>
+                <table class="w-full border-collapse">
+                    <thead>
+                        <tr class="border-b border-gray-300 text-gray-400 ">
+                            <th class="p-2 text-left">Campaign Name</th>
+                            <th class="p-2 text-left">Plateform</th>
+                            <th class="p-2 text-left">Budget</th>
+                            <th class="p-2 text-left">Status</th>
+                            <th class="p-2 text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for campaign in campaigns %}
+                        <tr class="border-b border-gray-300">
+                            <td class="p-2">{{campaign.name}}</td>
+                            <td class="p-2">{{campaign.plateform}}</td>
+                            <td class="p-2">{{campaign.budget}}</td>
+                            <td class="p-2">{{campaign.status}}</td>
+                            <td class="p-2">
+                                <div class="flex gap-2 items-center justify-center">
+                                    <a href="#">
+                                        <button class="rounded-md bg-[--primary-color] text-white w-24 h-8">Edit</button>
+                                    </a>
+                                    <a href="#">
+                                        <button class="rounded-md bg-[--primary-color] text-white w-32 h-8">Stop</button>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-3">
+                                No campaigns yet.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>           
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
