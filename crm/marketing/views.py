@@ -36,7 +36,6 @@ def create_demand(request):
             demand.branch = request.user.profile.branch
             demand.created_by = request.user
             demand.save()
-            print(form.cleaned_data)
             messages.success(request, 'Demand created successfully')
             return redirect('marketing')
         else:
@@ -44,6 +43,22 @@ def create_demand(request):
     else:
         form = DemandForm(request=request)
     return render(request, 'marketing/create_demand.html', {'form': form})
+
+def edit_demand(request, demand_id):
+    branch = get_user_branch(request)
+    instance = get_object_or_404(Demand, id=demand_id, branch=branch)
+    if request.method == 'POST':
+        form = DemandForm(request.POST, request=request, instance=instance)
+        if form.is_valid():
+            demand = form.save(commit=False)
+            demand.save()
+            messages.success(request, 'Demand edited successfully')
+            return redirect('marketing')
+        else:
+            return render(request, 'marketing/edit_demand.html', {'form': form})
+    else:
+        form = DemandForm(request=request, instance=instance)
+    return render(request, 'marketing/edit_demand.html', {'form': form})
 
 @login_required
 def delete_demand(request, demand_id):
