@@ -11,7 +11,7 @@ Finance
 <div class="mt-4">
     <div class="flex justify-between items-center mb-2">
         <h1 class="font-semibold text-xl">Demand and Supply Matching</h1>
-        <a href="#">
+        <a href="{% url 'create_demand' %}">
             <button class=" h-12 flex justify-center items-center rounded-md px-7 py-1 bg-[--primary-color] font-normal text-white mt-3">
                 <svg width="26" height="26" class="mr-3" viewBox="0 0 26 26" fill="none">
                     <path d="M11.917 14.0834H5.41699V11.9167H11.917V5.41675H14.0837V11.9167H20.5837V14.0834H14.0837V20.5834H11.917V14.0834Z" fill="white"/>
@@ -33,10 +33,10 @@ Finance
                 </tr>
             </thead>
             <tbody class="w-full">
-                {% for demand in demands %}
+                {% for demand in demand_page_obj %}
                 <tr class="border-b border-gray-300 w-full">
                     <td class="p-2">{{ demand.country }}</td>
-                    <td class="p-2">#{{ demand.job }}</td>
+                    <td class="p-2">{{ demand.job_name }}</td>
                     <td class="p-2">{{ demand.no_of_vacancy }}</td>
                     <td class="p-2">{{ demand.demand_urgency }}</td>
                     <td class="p-2">
@@ -44,9 +44,8 @@ Finance
                             <a href="#">
                                 <button class="rounded-md bg-[--primary-color] text-white w-24 h-8">View</button>
                             </a>
-                            <a href="#">
-                                <button class="rounded-md bg-[--primary-color] text-white w-32 h-8">Delete</button>
-                            </a>
+                            <button class="rounded-md border border-[--primary-color] bg-gray-50 text-[--primary-color] w-24 h-8"
+                            onclick="openDemandModal('{% url 'delete_demand' demand.id %}')">Delete</button>
                         </div>
                     </td>
                 </tr>
@@ -58,7 +57,46 @@ Finance
                 </tr>
                 {% endfor %}
             </tbody>
-        </table>    
+        </table>  
+        
+        <!-- Pagination controls -->
+        <div class="pagination mt-3">
+            <span class="step-links flex flex-row justify-end items-center gap-2 mr-2">
+                {% if demand_page_obj.has_previous %}
+                    <div class="flex justify-center items-center border rounded-md bg-gray-300 w-6 h-6">
+                        <a href="?demand_page={{ demand_page_obj.previous_page_number }}">
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                <path d="M8.98949 9.67167L6.31783 7L8.98949 4.3225L8.16699 3.5L4.66699 7L8.16699 10.5L8.98949 9.67167Z" fill="black"/>
+                            </svg> 
+                        </a>
+                    </div>
+
+                    <div class="flex justify-center items-center border rounded-md bg-gray-300 w-6 h-6">
+                        <a href="?demand_page=1">1</a>
+                    </div>
+                {% endif %}
+
+                <span class="current">
+                    <div class="flex justify-center items-center border rounded-md bg-gray-300 p-2 h-6">
+                        Page {{ demand_page_obj.number }} of {{ demand_page_obj.paginator.num_pages }}.
+                    </div>
+                </span>
+
+                {% if voucher_page_obj.has_next %}      
+                    <div class="flex justify-center items-center border rounded-md bg-gray-300 w-6 h-6">
+                        <a href="?demand_page={{ demand_page_obj.paginator.num_pages }}"> {{ demand_page_obj.paginator.num_pages }}</a>
+                    </div>
+
+                    <div class="flex justify-center items-center border rounded-md bg-gray-300 w-6 h-6">
+                        <a href="?demand_page={{ demand_page_obj.next_page_number }}">
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                <path d="M5.01051 9.67167L7.68217 7L5.01051 4.3225L5.83301 3.5L9.33301 7L5.83301 10.5L5.01051 9.67167Z" fill="black"/>
+                            </svg>      
+                        </a>
+                    </div>
+                {% endif %}
+            </span>
+        </div>
     </div>
 </div>
 
@@ -118,5 +156,34 @@ Finance
         </div>
     </div>
 </div>
+
+<!-- Delete Confirmation Modal -->
+<div id="demandDeleteModal" class="fixed inset-0 items-center justify-center bg-black bg-opacity-50 hidden z-50">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md mx-auto text-center shadow-lg">
+        <h2 class="text-lg font-semibold mb-4">Are you sure you want to delete this demand?</h2>
+        <div class="flex justify-center gap-4">
+            <form id="demandDeleteForm" method="post">
+                {% csrf_token %}
+                <button type="submit" class="bg-red-500 text-white px-5 py-2 rounded-md">Yes</button>
+            </form>
+            <button onclick="closeDemandModal()" class="bg-gray-300 px-5 py-2 rounded-md">No</button>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    function openDemandModal(deleteUrl) {
+        const modal = document.getElementById('demandDeleteModal');
+        const form = document.getElementById('demandDeleteForm');
+        form.action = deleteUrl;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex')
+    }
+
+    function closeDemandModal() {
+        document.getElementById('demandDeleteModal').classList.add('hidden');
+    }
+</script>
 
 {% endblock content %}
