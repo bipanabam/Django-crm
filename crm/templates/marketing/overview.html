@@ -101,12 +101,7 @@ Finance
 </div>
 
 <!--Campaign Form-->
-<div class="mt-6">
-    <h1 class="font-semibold text-2xl mb-5">Create New Campaign</h1>
-    <div class="justify-between border rounded-xl bg-white p-6 pb-10">
-       
-    </div>
-</div>
+{% include 'marketing/form/campaign_form.html' %}
 
 <!--Active Campaign List-->
 <div class="mt-4">
@@ -126,7 +121,7 @@ Finance
                         </tr>
                     </thead>
                     <tbody>
-                        {% for campaign in campaigns %}
+                        {% for campaign in campaign_page_obj %}
                         <tr class="border-b border-gray-300">
                             <td class="p-2">{{campaign.name}}</td>
                             <td class="p-2">{{campaign.plateform}}</td>
@@ -151,7 +146,46 @@ Finance
                         </tr>
                         {% endfor %}
                     </tbody>
-                </table>           
+                </table>    
+                
+                <!-- Pagination controls -->
+                <div class="pagination mt-3">
+                    <span class="step-links flex flex-row justify-end items-center gap-2 mr-2">
+                        {% if campaign_page_obj.has_previous %}
+                            <div class="flex justify-center items-center border rounded-md bg-gray-300 w-6 h-6">
+                                <a href="?campaign_page={{ campaign_page_obj.previous_page_number }}">
+                                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                        <path d="M8.98949 9.67167L6.31783 7L8.98949 4.3225L8.16699 3.5L4.66699 7L8.16699 10.5L8.98949 9.67167Z" fill="black"/>
+                                    </svg> 
+                                </a>
+                            </div>
+
+                            <div class="flex justify-center items-center border rounded-md bg-gray-300 w-6 h-6">
+                                <a href="?campaign_page=1">1</a>
+                            </div>
+                        {% endif %}
+
+                        <span class="current">
+                            <div class="flex justify-center items-center border rounded-md bg-gray-300 p-2 h-6">
+                                Page {{ campaign_page_obj.number }} of {{ campaign_page_obj.paginator.num_pages }}.
+                            </div>
+                        </span>
+
+                        {% if campaign_page_obj.has_next %}      
+                            <div class="flex justify-center items-center border rounded-md bg-gray-300 w-6 h-6">
+                                <a href="?campaign_page={{ campaign_page_obj.paginator.num_pages }}"> {{ campaign_page_obj.paginator.num_pages }}</a>
+                            </div>
+
+                            <div class="flex justify-center items-center border rounded-md bg-gray-300 w-6 h-6">
+                                <a href="?campaign_page={{ campaign_page_obj.next_page_number }}">
+                                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                        <path d="M5.01051 9.67167L7.68217 7L5.01051 4.3225L5.83301 3.5L9.33301 7L5.83301 10.5L5.01051 9.67167Z" fill="black"/>
+                                    </svg>      
+                                </a>
+                            </div>
+                        {% endif %}
+                    </span>
+                </div>
             </div>
         </div>
     </div>

@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Demand, DemandUrgencyChoices
+from .models import Demand, DemandUrgencyChoices, Campaign, AdCreative
 
 from documentation.services import get_all_countries
 
@@ -39,3 +39,13 @@ class DemandForm(forms.ModelForm):
             self.add_error('salary_min', "Minimum salary cannot be greater than maximum salary.")
 
         return cleaned_data
+
+class CampaignForm(forms.ModelForm):
+    class Meta:
+        model = Campaign
+        fields = ['name', 'plateform', 'budget']
+
+class AdCreativeForm(forms.ModelForm):
+    class Meta:
+        model = AdCreative
+        fields = ['message', 'link', 'image']
