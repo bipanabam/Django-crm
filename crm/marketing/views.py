@@ -19,7 +19,7 @@ from .tasks import create_ads_async
 def marketing_overview(request):
     branches = get_branches(request)
     demands = Demand.objects.filter(branch__in=branches)
-    campaigns = Campaign.objects.filter(branch__in=branches)
+    campaigns = Campaign.objects.filter(branch__in=branches).order_by('-created_at')
 
     # Demand Pagination
     demand_paginator = Paginator(demands, 5)

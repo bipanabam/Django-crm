@@ -26,7 +26,7 @@ def create_full_facebook_ad_flow(campaign_id):
             'access_token': ACCESS_TOKEN
         }
         r1 = requests.post(campaign_url, data=campaign_payload).json()
-        campaign.fb_campaign_id = r1.get('id')
+        campaign.campaign_id = r1.get('id')
         campaign.save()
         print(r1)
 
@@ -34,7 +34,7 @@ def create_full_facebook_ad_flow(campaign_id):
         adset_url = f'https://graph.facebook.com/v22.0/{AD_ACCOUNT_ID}/adsets'
         adset_payload = {
             'name': 'My Ad Set',
-            'campaign_id': campaign.fb_campaign_id,
+            'campaign_id': campaign.campaign_id,
             'daily_budget': int(campaign.budget * 100),  # Convert to minor units
             'billing_event': 'IMPRESSIONS',
             'optimization_goal': 'REACH',
@@ -54,7 +54,7 @@ def create_full_facebook_ad_flow(campaign_id):
             optimization_goal='REACH',
             billing_event='IMPRESSIONS',
             bid_strategy='LOWEST_COST_WITHOUT_CAP',
-            fb_adset_id=r2.get('id')
+            adset_id=r2.get('id')
         )
 
         # Upload image to Facebook
@@ -88,7 +88,7 @@ def create_full_facebook_ad_flow(campaign_id):
         }
         r3 = requests.post(creative_url, data=creative_payload).json()
         print(r3)
-        adcreative.fb_creative_id = r3.get('id')
+        adcreative.creative_id = r3.get('id')
         adcreative.image_hash = image_hash
         adcreative.save()
 
@@ -97,7 +97,7 @@ def create_full_facebook_ad_flow(campaign_id):
         ad_payload = {
             'name': 'My Ad',
             'adset_id': adset.fb_adset_id,
-            'creative': json.dumps({'creative_id': adcreative.fb_creative_id}),
+            'creative': json.dumps({'creative_id': adcreative.creative_id}),
             'status': 'PAUSED',
             'access_token': ACCESS_TOKEN
         }
@@ -106,7 +106,7 @@ def create_full_facebook_ad_flow(campaign_id):
         Ad.objects.create(
             campaign=campaign,
             name='My Ad',
-            fb_ad_id=r4.get('id'),
+            ad_id=r4.get('id'),
             status='PAUSED'
         )
         campaign.status = 'Paused'
@@ -116,3 +116,119 @@ def create_full_facebook_ad_flow(campaign_id):
     except Exception as e:
         print(f"[ERROR] Facebook Ad Flow Failed: {e}")
         return False
+
+
+def create_full_instagram_ad_flow(campaign_id):
+    try:
+        campaign = Campaign.objects.get(id=campaign_id)
+        adcreative = AdCreative.objects.get(campaign=campaign)
+
+        # 1. Create Campaign
+        campaign_url = f'https://graph.facebook.com/v22.0/{AD_ACCOUNT_ID}/campaigns'
+        campaign_payload = {
+            'name': campaign.name,
+            "objective": "OUTCOME_LEADS", #OUTCOME_LEADS, OUTCOME_SALES, OUTCOME_ENGAGEMENT, OUTCOME_AWARENESS, OUTCOME_TRAFFIC, OUTCOME_APP_PROMOTION.'
+            "status": "PAUSED",
+            "special_ad_categories": ["NONE"],
+            "access_token": ACCESS_TOKEN
+
+        }
+        r1 = requests.post(campaign_url, data=campaign_payload).json()
+        campaign.campaign_id = r1.get('id')
+        campaign.save()
+        print(r1)
+
+        # 2. Create Ad Set
+        adset_url = f'https://graph.facebook.com/v22.0/{AD_ACCOUNT_ID}/adsets'
+        adset_payload = {
+            'name': 'My Ad Set',
+            'campaign_id': campaign.campaign_id,
+            'daily_budget': int(campaign.budget * 100),  # Convert to minor units
+            'billing_event': 'IMPRESSIONS',
+            'optimization_goal': 'REACH',
+            "bid_strategy": "LOWEST_COST_WITHOUT_CAP", # LOWEST_COST_WITHOUT_CAP, LOWEST_COST_WITH_BID_CAP, COST_CAP, LOWEST_COST_WITH_MIN_ROAS
+            "targeting": json.dumps({
+                "geo_locations": {
+                    "countries": ["US"]
+                },
+                "publisher_platforms": ["instagram"],
+                "instagram_positions": ["stream", "explore", "explore_home", "story",],
+            }),
+            "status": "PAUSED",
+            "access_token": ACCESS_TOKEN
+        }
+
+        r2 = requests.post(adset_url, data=adset_payload).json()
+        print(r2)
+        adset = AdSet.objects.create(
+            campaign=campaign,
+            name='My Ad Set',
+            daily_budget=campaign.budget,
+            optimization_goal='REACH',
+            billing_event='IMPRESSIONS',
+            bid_strategy='LOWEST_COST_WITHOUT_CAP',
+            adset_id=r2.get('id')
+        )
+
+        # Upload image to Facebook
+        image_path = adcreative.image.path
+        upload_url = f"https://graph.facebook.com/v22.0/{AD_ACCOUNT_ID}/adimages"
+
+        with open(image_path, 'rb') as img_file:
+            files = {'filename': img_file}
+            params = {'access_token': ACCESS_TOKEN}
+            response = requests.post(upload_url, files=files, data=params)
+            image_data = response.json()
+
+        # Get the hash
+        image_hash = list(image_data['images'].values())[0]['hash']
+        print("Image hash:", image_hash)
+
+        # 3. Create Ad Creative
+        creative_url = f"https://graph.facebook.com/v22.0/{AD_ACCOUNT_ID}/adcreatives"
+        creative_payload = {
+            'name':'Sample promoted post',
+            'object_story_spec': json.dumps({
+            'page_id': PAGE_ID,
+            "link_data": {
+                'message': adcreative.message,
+                'link': adcreative.link,
+                'image_hash': image_hash,
+                "call_to_action": {
+                "type": "LEARN_MORE"
+                }
+            }
+            }),
+            'access_token':ACCESS_TOKEN,
+        }
+        r3 = requests.post(creative_url, data=creative_payload).json()
+        print(r3)
+        adcreative.creative_id = r3.get('id')
+        adcreative.image_hash = image_hash
+        adcreative.save()
+
+        # 4. Create Ad
+        ad_url = f"https://graph.facebook.com/v22.0/{AD_ACCOUNT_ID}/ads"
+        ad_payload = {
+            'name':'My Ad',
+            'adset_id': adset.adset_id,
+            'creative': json.dumps({'creative_id': adcreative.creative_id}),
+            'status':'PAUSED',
+            'access_token':ACCESS_TOKEN,
+        }
+        r4 = requests.post(ad_url, data=ad_payload).json()
+        print(r4)
+        Ad.objects.create(
+            campaign=campaign,
+            name='My Ad',
+            ad_id=r4.get('id'),
+            status='PAUSED'
+        )
+        campaign.status = 'Paused'
+        campaign.save()
+        return True
+
+    except Exception as e:
+        print(f"[ERROR] Instagram Ad Flow Failed: {e}")
+        return False
+
