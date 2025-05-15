@@ -1,6 +1,10 @@
 from django.shortcuts import render, redirect
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
+from django.views.decorators.http import require_POST
+from django.template.context_processors import csrf
+from django.template.loader import render_to_string
 from django.db.models import Sum
+import json
 
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -23,25 +27,9 @@ def dashboard(request):
     if user.is_superuser:
         return render(request, 'base/dashboard.html')
     if user.role == "admin":
-        clients = get_all_clients(request)
-        total_clients = clients.count()
-        new_clients = new_clients = clients.filter(status__in=["Pending", "In Progress"]).count()
-
-        vouchers = get_all_vouchers(request)
-        total_revenue = vouchers.filter(type='Receipt').aggregate(total=Sum('amount'))['total'] or 0
-        total_expenses = vouchers.filter(type='Payment').aggregate(total=Sum('amount'))['total'] or 0
-        total_profit = total_revenue - total_expenses
-        context = {
-            'total_clients': total_clients,
-            'new_clients': new_clients,
-            'total_revenue': total_revenue,
-            'total_expenses': total_expenses,
-            'total_profit': total_profit,
-            'clients': clients,
-            'vouchers': vouchers
-        }
-        return render(request, 'dashboard/admin_dashboard.html', context=context)
+        return render(request, 'dashboard/admin_dashboard.html',  context=get_dashboard_context(request))
     elif user.role == "manager":
+        users = get_users(request)
         clients = get_all_clients(request)
         total_clients = clients.count()
         new_clients = new_clients = clients.filter(status__in=["Pending", "In Progress"]).count()
@@ -57,7 +45,8 @@ def dashboard(request):
             'total_expenses': total_expenses,
             'total_profit': total_profit,
             'clients': clients,
-            'vouchers': vouchers
+            'vouchers': vouchers,
+            'users': users
         }
         return render(request, 'dashboard/manager_dashboard.html', context=context)
     elif user.role == "team manager":
@@ -155,11 +144,15 @@ def sales_chart_data(request):
     days = int(request.GET.get('days', 7))
     end_date = datetime.today()
     start_date = end_date - timedelta(days=days - 1)
+    branch_id = request.GET.get('branch_id')
 
     sales = get_all_vouchers(request).filter(
         category='Sales',
         created_at__date__range=[start_date, end_date]
     )
+
+    if branch_id and branch_id != 'all':
+        sales = sales.filter(branch_id=branch_id)
     
     total_income = sales.filter(type='Receipt').aggregate(total=Sum('amount'))['total'] or 0
     total_expense = sales.filter(type='Payment').aggregate(total=Sum('amount'))['total'] or 0
@@ -175,11 +168,15 @@ def revenue_chart_data(request):
     days = int(request.GET.get('days', 7))
     end_date = datetime.today()
     start_date = end_date - timedelta(days=days - 1)
+    branch_id = request.GET.get('branch_id')
 
     revenues = get_all_vouchers(request).filter(
         created_at__date__range=[start_date, end_date]
     )
     
+    if branch_id and branch_id != 'all':
+        revenues = revenues.filter(branch_id=branch_id)
+
     total_income = revenues.filter(type='Receipt').aggregate(total=Sum('amount'))['total'] or 0
     total_expense = revenues.filter(type='Payment').aggregate(total=Sum('amount'))['total'] or 0
 
@@ -190,3 +187,43 @@ def revenue_chart_data(request):
         "end_date": end_date.strftime("%Y-%m-%d"),
     })
 
+
+def admin_dashboard_partial(request):
+    # HTMX partial load
+    branch_id = request.POST.get('branch_id')
+    request.session['branch_id'] = branch_id
+    context = get_dashboard_context(request)
+    html = render_to_string('dashboard/_partials/_dashboard_content.html', context, request=request)
+    return HttpResponse(html)
+
+def get_dashboard_context(request):
+    branch_id = request.session.get('branch_id')
+
+    if not branch_id or branch_id == 'all':
+        users = get_users(request)
+        clients = get_all_clients(request)
+        vouchers = get_all_vouchers(request)
+    else:
+        users = get_users(request).filter(profile__branch_id=branch_id)
+        clients = get_all_clients(request).filter(branch_id=branch_id)
+        vouchers = get_all_vouchers(request).filter(branch_id=branch_id)
+
+    total_clients = clients.count()
+    new_clients = clients.filter(status__in=["Pending", "In Progress"]).count()
+    total_revenue = vouchers.filter(type='Receipt').aggregate(total=Sum('amount'))['total'] or 0
+    total_expenses = vouchers.filter(type='Payment').aggregate(total=Sum('amount'))['total'] or 0
+    total_profit = total_revenue - total_expenses
+
+    new_sales = vouchers.filter(category='Sales', created_at__gte=datetime.now()-timedelta(days=7)).count()
+
+    return {
+        'total_clients': total_clients,
+        'new_clients': new_clients,
+        'new_sales': new_sales,
+        'total_revenue': total_revenue,
+        'total_expenses': total_expenses,
+        'total_profit': total_profit,
+        'clients': clients,
+        'vouchers': vouchers,
+        'users': users,
+    }

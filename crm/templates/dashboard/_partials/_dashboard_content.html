@@ -1,9 +1,4 @@
-{% extends "base/base.html" %}
-{% block head_title %}
-Dashboard
-{% endblock head_title %}
 
-{% block content %}
 <div class="mt-4">
     <h1 class="font-semibold text-xl mb-5">Dashboard</h1>
     <div class="grid grid-cols-3 mt-2 gap-7">
@@ -28,7 +23,7 @@ Dashboard
         <div class="grid h-[150px]">
             <div class="border rounded-lg bg-white p-6">
                 <p>New Sales</p>
-                <p class="font-bold text-4xl text-[--primary-color] mt-2">12</p>
+                <p class="font-bold text-4xl text-[--primary-color] mt-2">{{new_sales}}</p>
             </div>
         </div>
         <div class="grid h-[150px]">
@@ -70,7 +65,7 @@ Dashboard
                     <select id="revenue-interval" class="rounded-lg border-gray-300">
                         <option value="7">Last 7 days</option>
                         <option value="30">Last month</option>
-                        <option value="35">Last year</option>
+                        <option value="365">Last year</option>
                     </select>
                 </div>
                 <canvas id="revenueChart" class="w-full h-full mt-4"></canvas>
@@ -300,6 +295,19 @@ Dashboard
                 <p class="font-semibold">Documents</p>     
             </a>                    
         </div>
+        <div class='flex flex-col items-center border rounded-md bg-gray-100 p-2 w-28 h-28'>
+            <a href="{% url 'branches' %}">
+                <svg width="17" height="17" viewBox="0 0 17 17" fill="none">
+                    <path d="M8.25 0V8.25V16.5M0 8.25H16.5" stroke="black" stroke-width="3"/>
+                </svg>                    
+                <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                    <path d="M5 19.1667C5 17.9167 6.66583 14.5833 10.8842 13.6908C15.15 12.7883 19.04 9.0475 20 7.5C20.96 9.0475 24.8508 12.7883 29.115 13.6908C33.3333 14.5833 35.01 17.9167 35 19.1667" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M23.3333 7.50008C23.3333 9.34103 21.8409 10.8334 20 10.8334C18.159 10.8334 16.6666 9.34103 16.6666 7.50008C16.6666 5.65913 18.159 4.16675 20 4.16675C21.8409 4.16675 23.3333 5.65913 23.3333 7.50008Z" fill="black"/>
+                    <path d="M20 7.5V19.1667M4.16663 27.5H9.16663M4.16663 34.1667H9.16663M30.8333 27.5H35.8333M30.8333 34.1667H35.8333M17.5 27.5H22.5M17.5 34.1667H22.5" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>   
+                <p class="font-semibold">Branch</p>       
+            </a>                   
+        </div>
     </div>
 </div>
 
@@ -316,155 +324,3 @@ Dashboard
         </div>
     </div>
 </div>
-
-<script>
-    function openModal(deleteUrl) {
-        const modal = document.getElementById('deleteModal');
-        const form = document.getElementById('deleteForm');
-        form.action = deleteUrl;
-        modal.classList.remove('hidden');
-        modal.classList.add('flex')
-    }
-
-    function closeModal() {
-        document.getElementById('deleteModal').classList.add('hidden');
-    }
-</script>
-
-<script>
-    const salesCtx = document.getElementById('salesChart').getContext('2d');
-    let salesChart;
-
-    function loadSalesData(days = 7) {
-        fetch(`/sales/chart-data/?days=${days}`)
-            .then(response => response.json())
-            .then(data => {
-                if (salesChart) salesChart.destroy();
-                const dateRange = `From: ${data.start_date} to ${data.end_date}`;
-
-                salesChart = new Chart(salesCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: [''],
-                        datasets: [
-                        {
-                            label: data.labels[0], // "Income"
-                            data: [data.values[0]],
-                            backgroundColor: '#4ade80',
-                            borderRadius: 8
-                        },
-                        {
-                            label: data.labels[1], // "Expenses"
-                            data: [data.values[1]],
-                            backgroundColor: '#f87171',
-                            borderRadius: 8
-                        }]
-                    },
-                    options: {
-                        plugins: {
-                            tooltip: {
-                                callbacks: {
-                                    afterBody: function() {
-                                        return dateRange;
-                                    }
-                                }
-                            },
-                            datalabels: {
-                                color: 'white',
-                                anchor: 'center',
-                                align: 'center',
-                                rotation: -90,
-                                formatter: value => `${value}`
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    callback: val => `${val}`
-                                }
-                            }
-                        }
-                    },
-                    plugins: [ChartDataLabels]
-                });
-            });
-    }
-
-    document.getElementById('sales-interval').addEventListener('change', e => {
-        loadSalesData(e.target.value);
-    });
-
-    loadSalesData();  // initial load
-</script>
-
-
-<script>
-    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-    let revenueChart;
-
-    function loadRevenueData(days = 7) {
-        fetch(`/revenue/chart-data/?days=${days}`)
-            .then(response => response.json())
-            .then(data => {
-                if (revenueChart) revenueChart.destroy();
-                const dateRange = `From: ${data.start_date} to ${data.end_date}`;
-
-                revenueChart = new Chart(revenueCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: [''],
-                        datasets: [
-                        {
-                            label: data.labels[0], // "Income"
-                            data: [data.values[0]],
-                            backgroundColor: '#4ade80',
-                            borderRadius: 8
-                        },
-                        {
-                            label: data.labels[1], // "Expenses"
-                            data: [data.values[1]],
-                            backgroundColor: '#f87171',
-                            borderRadius: 8
-                        }]
-                    },
-                    options: {
-                        plugins: {
-                            tooltip: {
-                                callbacks: {
-                                    afterBody: function() {
-                                        return dateRange;
-                                    }
-                                }
-                            },
-                            datalabels: {
-                                color: 'white',
-                                anchor: 'center',
-                                align: 'center',
-                                rotation: -90,
-                                formatter: value => `${value}`
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    callback: val => `${val}`
-                                }
-                            }
-                        }
-                    },
-                    plugins: [ChartDataLabels]
-                });
-            });
-    }
-
-    document.getElementById('revenue-interval').addEventListener('change', e => {
-        loadRevenueData(e.target.value);
-    });
-
-    loadRevenueData();  // initial load
-</script>
-
-
-{% endblock content %}

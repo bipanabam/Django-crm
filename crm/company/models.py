@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User, AbstractUser, Group
+from django.utils import timezone
 
 # Create your models here.
 class Company(models.Model):
@@ -71,13 +72,67 @@ class User(AbstractUser):
 
   @property
   def last_active(self):
-    if self.online_status == 'online':
-      return "Active Now"
-    else:
-      from django.utils import timezone
+      if self.online_status == 'online':
+          return "Active Now"
+      
       now = timezone.now()
       delta = now - self.last_seen
-      return f"{int(delta.total_seconds() / 60)} mins ago"  # returns minutes as integer
+
+      days = delta.days
+      seconds = delta.seconds
+      hours = seconds // 3600
+      minutes = (seconds % 3600) // 60
+
+      parts = []
+      if days > 0:
+          parts.append(f"{days} day{'s' if days > 1 else ''}")
+      if hours > 0:
+          parts.append(f"{hours} hour{'s' if hours > 1 else ''}")
+      if minutes > 0:
+          parts.append(f"{minutes} min{'s' if minutes > 1 else ''}")
+
+      if not parts:
+          return "Just now"
+      
+      return "Last active " + ' '.join(parts) + " ago"
+
+@property
+def last_active(self):
+  if self.online_status == 'online':
+      return "Active Now"
+  
+  now = timezone.now()
+  delta = now - self.last_seen
+
+  days = delta.days
+  seconds = delta.seconds
+  hours = seconds // 3600
+  minutes = (seconds % 3600) // 60
+
+  parts = []
+  if days > 0:
+      parts.append(f"{days} day{'s' if days > 1 else ''}")
+  if hours > 0:
+      parts.append(f"{hours} hour{'s' if hours > 1 else ''}")
+  if minutes > 0:
+      parts.append(f"{minutes} min{'s' if minutes > 1 else ''}")
+
+  if not parts:
+      return "Just now"
+  
+  return f"{parts} ago"
+
+
+  # @property
+  # def last_active(self):
+  #   if self.online_status == 'online':
+  #     return "Active Now"
+  #   else:
+  #     from django.utils import timezone
+  #     now = timezone.now()
+  #     delta = now - self.last_seen
+  #     total_seconds = delta.total_seconds()
+  #     return f"{int(delta.total_seconds() / 60)} mins ago"  # returns minutes as integer
 
   def __str__(self):
       return f"{self.username}"

@@ -4,284 +4,9 @@ Dashboard
 {% endblock head_title %}
 
 {% block content %}
-<div class="mt-4">
-    <h1 class="font-semibold text-xl mb-5">Dashboard</h1>
-    <div class="grid grid-cols-3 mt-2 gap-7">
-        <div class="grid h-[150px]">
-            <div class="border rounded-lg bg-white p-6">
-                <p>Total Clients</p>
-                <p class="font-bold text-4xl text-[--primary-color] mt-2">{{total_clients}}</p>
-            </div>
-        </div>
-        <div class="grid h-[150px]">
-            <div class="border rounded-lg bg-white p-6">
-                <p>New Clients</p>
-                <p class="font-bold text-4xl text-[--primary-color] mt-2">{{new_clients}}</p>
-            </div>
-        </div>
-        <div class="grid h-[150px]">
-            <div class="border rounded-lg bg-white p-6">
-                <p>Total Revenue</p>
-                <p class="font-bold text-4xl text-[--primary-color] mt-2">${{total_revenue}}</p>
-            </div>
-        </div>
-        <div class="grid h-[150px]">
-            <div class="border rounded-lg bg-white p-6">
-                <p>New Sales</p>
-                <p class="font-bold text-4xl text-[--primary-color] mt-2">12</p>
-            </div>
-        </div>
-        <div class="grid h-[150px]">
-            <div class="border rounded-lg bg-white p-6">
-                <p>Total Profit</p>
-                <p class="font-bold text-4xl text-[--primary-color] mt-2">${{total_profit}}</p>
-            </div>
-        </div>
-        <div class="grid h-[150px]">
-            <div class="border rounded-lg bg-white p-6">
-                <p>Total Expenses</p>
-                <p class="font-bold text-4xl text-[--primary-color] mt-2">${{total_expenses}}</p>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!--Sales-->
-<div class="mt-4">
-    <h1 class="font-semibold text-xl mb-5">Sales Performance</h1>
-    <div class="grid grid-cols-2 mt-2 gap-7">
-        <div class="grid">
-            <div class="border rounded-lg bg-white p-6">
-                <div class="flex justify-between">
-                    <p class='font-bold'>Sales Statistics</p>
-                    <select id="sales-interval" class="rounded-lg border-gray-300">
-                        <option value="7">Last 7 days</option>
-                        <option value="30">Last month</option>
-                    </select>
-                </div>
-                <canvas id="salesChart" class="w-full h-full mt-4"></canvas>
-            </div>
-        </div>
-        <div class="grid">
-            <div class="border rounded-lg bg-white p-6">
-                <div class="flex justify-between">
-                    <p class='font-bold'>Revenue Statistics</p>
-                    <select id="revenue-interval" class="rounded-lg border-gray-300">
-                        <option value="7">Last 7 days</option>
-                        <option value="30">Last month</option>
-                    </select>
-                </div>
-                <canvas id="revenueChart" class="w-full h-full mt-4"></canvas>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!--Recent Clients-->
-<div class="mt-4">
-    <div class="grid grid-cols-1 lg:grid-cols-2 mt-2 gap-7 h-auto">
-        <div class="grid">
-            <h1 class="font-semibold text-xl mb-5">Recent Clients</h1>
-            <div class="border rounded-lg bg-white p-6">
-                <table class="w-full border-collapse">
-                    <thead>
-                        <tr class="border-b border-gray-300">
-                            <th class="p-2 text-left">Client Name</th>
-                            <th class="p-2 text-left">Visa Type</th>
-                            <th class="p-2 text-left">Preferred Country</th>
-                            <th class="p-2 text-left">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for client in clients %}
-                        <tr class="border-b border-gray-300">
-                            <td class="p-2">{{client.name}}</td>
-                            <td class="p-2">{{client.visa_type}}</td>
-                            <td class="p-2">{{client.preferred_country}}</td>
-                            <td class="p-2">
-                                <button class="rounded-md border{% if client.status == 'Paid' %} border-green-300 bg-green-300 {% elif client.status == "Pending" %} border-orange-300 bg-orange-300{% else %} border-blue-300  bg-blue-300 {% endif %} w-20 h-8 text-white">
-                                    {{client.status}}
-                                </button>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="4" class="text-center py-3">
-                                No Clients yet.
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>                
-            </div>
-        </div>
-        <div class="grid">
-            <h1 class="font-semibold text-xl mb-5">Recent Activities</h1>
-            <div class="border rounded-lg bg-white p-6">
-                <ul>
-                    <li>
-                        <p>John Doe has just made payment of $5000<p>
-                        <span class="text-sm text-gray-400">7 mins ago</span>
-                        <hr>
-                    </li>
-                    <li>
-                        <p>John Doe Scheduled a meeting for next week.<p>
-                        <span class="text-sm text-gray-400">10 mins ago</span>
-                        <hr>
-                    </li>
-                    <li>
-                        <p>John Doe added a new note to the account.<p>
-                        <span class="text-sm text-gray-400">2 hours ago</span>
-                        <hr>
-                    </li>
-                    <li>
-                        <p>John Doe has just made payment of $5000<p>
-                        <span class="text-sm text-gray-400">1 days ago</span>
-                        <hr>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!--Invoice Raised-->
-<div class="mt-4">
-    <h1 class="font-semibold text-xl mb-5">Invoice Raised</h1>
-    <div class="grid grid-cols-1 mt-2 gap-7">
-        <div class="grid">
-            <div class="border rounded-lg bg-white p-6">
-                <table class="w-full border-collapse">
-                    <thead>
-                        <tr class="border-b border-gray-300">
-                            <th class="p-2 text-left">Invoice Number</th>
-                            <th class="p-2 text-left">Name</th>
-                            <th class="p-2 text-left">Status</th>
-                            <th class="p-2 text-left">Date</th>
-                            <th class="p-2 text-left">Category</th>
-                            <th class="p-2 text-left">Amount</th>
-                            <th class="p-2 text-left">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for voucher in vouchers %}
-                        <tr class="border-b border-gray-300">
-                            <td class="p-2">{{voucher.invoice_number}}</td>
-                            <td class="p-2">{{voucher.account.name}}</td>
-                            <td class="p-2">
-                                <button class="{% if voucher.status == 'Paid' %} text-green-600 {% elif voucher.status == "Pending" %} text-orange-300 {% else %} text-blue-300 {% endif %}">
-                                    {{voucher.status}}
-                                </button>
-                            </td>
-                            <td class="p-2">{{voucher.created_at}}</td>
-                            <td class="p-2">{{voucher.category}}</td>
-                            <td class="p-2">{{voucher.amount}}</td>
-                            <td class="p-2 flex gap-2">
-                                {% if voucher.account_type.model == "client" %}
-                                <a href="{% url 'edit_invoice' voucher.id %}">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                        <path d="M13 3C13.2549 3.00028 13.5 3.09788 13.6854 3.27285C13.8707 3.44782 13.9822 3.68695 13.9972 3.94139C14.0121 4.19584 13.9293 4.44638 13.7657 4.64183C13.6021 4.83729 13.3701 4.9629 13.117 4.993L13 5H5V19H19V11C19.0003 10.7451 19.0979 10.5 19.2728 10.3146C19.4478 10.1293 19.687 10.0178 19.9414 10.0028C20.1958 9.98789 20.4464 10.0707 20.6418 10.2343C20.8373 10.3979 20.9629 10.6299 20.993 10.883L21 11V19C21.0002 19.5046 20.8096 19.9906 20.4665 20.3605C20.1234 20.7305 19.6532 20.9572 19.15 20.995L19 21H5C4.49542 21.0002 4.00943 20.8096 3.63945 20.4665C3.26947 20.1234 3.04284 19.6532 3.005 19.15L3 19V5C2.99984 4.49542 3.19041 4.00943 3.5335 3.63945C3.87659 3.26947 4.34684 3.04284 4.85 3.005L5 3H13ZM19.243 3.343C19.423 3.16365 19.6644 3.05953 19.9184 3.05177C20.1723 3.04402 20.4197 3.13322 20.6103 3.30125C20.8008 3.46928 20.9203 3.70355 20.9444 3.95647C20.9685 4.2094 20.8954 4.46201 20.74 4.663L20.657 4.758L10.757 14.657C10.577 14.8363 10.3356 14.9405 10.0816 14.9482C9.82767 14.956 9.58029 14.8668 9.38972 14.6988C9.19916 14.5307 9.07969 14.2964 9.0556 14.0435C9.03151 13.7906 9.10459 13.538 9.26 13.337L9.343 13.243L19.243 3.343Z" fill="black"/>
-                                    </svg> 
-                                </a>
-                                {% else %}
-                                <a href="{% url 'edit_voucher' voucher.id %}">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                        <path d="M13 3C13.2549 3.00028 13.5 3.09788 13.6854 3.27285C13.8707 3.44782 13.9822 3.68695 13.9972 3.94139C14.0121 4.19584 13.9293 4.44638 13.7657 4.64183C13.6021 4.83729 13.3701 4.9629 13.117 4.993L13 5H5V19H19V11C19.0003 10.7451 19.0979 10.5 19.2728 10.3146C19.4478 10.1293 19.687 10.0178 19.9414 10.0028C20.1958 9.98789 20.4464 10.0707 20.6418 10.2343C20.8373 10.3979 20.9629 10.6299 20.993 10.883L21 11V19C21.0002 19.5046 20.8096 19.9906 20.4665 20.3605C20.1234 20.7305 19.6532 20.9572 19.15 20.995L19 21H5C4.49542 21.0002 4.00943 20.8096 3.63945 20.4665C3.26947 20.1234 3.04284 19.6532 3.005 19.15L3 19V5C2.99984 4.49542 3.19041 4.00943 3.5335 3.63945C3.87659 3.26947 4.34684 3.04284 4.85 3.005L5 3H13ZM19.243 3.343C19.423 3.16365 19.6644 3.05953 19.9184 3.05177C20.1723 3.04402 20.4197 3.13322 20.6103 3.30125C20.8008 3.46928 20.9203 3.70355 20.9444 3.95647C20.9685 4.2094 20.8954 4.46201 20.74 4.663L20.657 4.758L10.757 14.657C10.577 14.8363 10.3356 14.9405 10.0816 14.9482C9.82767 14.956 9.58029 14.8668 9.38972 14.6988C9.19916 14.5307 9.07969 14.2964 9.0556 14.0435C9.03151 13.7906 9.10459 13.538 9.26 13.337L9.343 13.243L19.243 3.343Z" fill="black"/>
-                                    </svg> 
-                                </a>
-                                {% endif %}
-                                <button
-                                    onclick="openModal('{% url 'delete_invoice' voucher.id %}')">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                        <path d="M7 21C6.45 21 5.97933 20.8043 5.588 20.413C5.19667 20.0217 5.00067 19.5507 5 19V6H4V4H9V3H15V4H20V6H19V19C19 19.55 18.8043 20.021 18.413 20.413C18.0217 20.805 17.5507 21.0007 17 21H7ZM17 6H7V19H17V6ZM9 17H11V8H9V17ZM13 17H15V8H13V17Z" fill="black" fill-opacity="0.8"/>
-                                    </svg>                                      
-                                </button>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="7" class="text-center py-3">
-                                No Vouchers yet.
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>           
-            </div>
-        </div>
-    </div>
-</div>
-
-<!--Quick links-->
-<div class="mt-4">
-    <h1 class="font-semibold text-xl mb-5">Quick Links</h1>
-    <div class="flex items-center justify-between border rounded-lg bg-white p-6">
-        <div class='flex flex-col items-center border rounded-md bg-gray-100 p-2 w-28 h-28'>
-            <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M8.25 0V8.25V16.5M0 8.25H16.5" stroke="black" stroke-width="3"/>
-            </svg>                    
-            <svg width="39" height="39" viewBox="0 0 39 39" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <g clip-path="url(#clip0_76_2488)">
-                <path d="M39 29.9546V39H29.25V34.125H24.375V29.25H19.5V25.3081C18.5605 25.8032 17.5767 26.1777 16.5483 26.4316C15.52 26.6855 14.4727 26.8125 13.4062 26.8125C12.1748 26.8125 10.9878 26.6538 9.84521 26.3364C8.70264 26.019 7.63623 25.5684 6.646 24.9844C5.65576 24.4004 4.75439 23.7021 3.94189 22.8896C3.12939 22.0771 2.4248 21.1694 1.82812 20.1665C1.23145 19.1636 0.780762 18.0972 0.476074 16.9673C0.171387 15.8374 0.0126953 14.6504 0 13.4062C0 12.1748 0.158691 10.9878 0.476074 9.84521C0.793457 8.70264 1.24414 7.63623 1.82812 6.646C2.41211 5.65576 3.11035 4.75439 3.92285 3.94189C4.73535 3.12939 5.64307 2.4248 6.646 1.82812C7.64893 1.23145 8.71533 0.780762 9.84521 0.476074C10.9751 0.171387 12.1621 0.0126953 13.4062 0C14.6377 0 15.8247 0.158691 16.9673 0.476074C18.1099 0.793457 19.1763 1.24414 20.1665 1.82812C21.1567 2.41211 22.0581 3.11035 22.8706 3.92285C23.6831 4.73535 24.3877 5.64307 24.9844 6.646C25.5811 7.64893 26.0317 8.71533 26.3364 9.84521C26.6411 10.9751 26.7998 12.1621 26.8125 13.4062C26.8125 14.0537 26.7617 14.6948 26.6602 15.3296C26.5586 15.9644 26.4126 16.5864 26.2222 17.1958L39 29.9546ZM36.5625 30.9829L23.4229 17.8433C23.7021 17.1196 23.9307 16.396 24.1084 15.6724C24.2861 14.9487 24.375 14.1934 24.375 13.4062C24.375 11.8955 24.0894 10.4736 23.5181 9.14062C22.9468 7.80762 22.1597 6.646 21.1567 5.65576C20.1538 4.66553 18.9922 3.88477 17.6719 3.31348C16.3516 2.74219 14.9297 2.4502 13.4062 2.4375C11.8955 2.4375 10.4736 2.72314 9.14062 3.29443C7.80762 3.86572 6.646 4.65283 5.65576 5.65576C4.66553 6.65869 3.88477 7.82031 3.31348 9.14062C2.74219 10.4609 2.4502 11.8828 2.4375 13.4062C2.4375 14.917 2.72314 16.3389 3.29443 17.6719C3.86572 19.0049 4.65283 20.1665 5.65576 21.1567C6.65869 22.147 7.82031 22.9277 9.14062 23.499C10.4609 24.0703 11.8828 24.3623 13.4062 24.375C14.6377 24.375 15.8438 24.1655 17.0244 23.7466C18.2051 23.3276 19.2778 22.7246 20.2427 21.9375H21.9375V26.8125H26.8125V31.6875H31.6875V36.5625H36.5625V30.9829ZM9.75 7.3125C10.0928 7.3125 10.4102 7.37598 10.7021 7.50293C10.9941 7.62988 11.248 7.80127 11.4639 8.01709C11.6797 8.23291 11.8574 8.49316 11.9971 8.79785C12.1367 9.10254 12.2002 9.41992 12.1875 9.75C12.1875 10.0928 12.124 10.4102 11.9971 10.7021C11.8701 10.9941 11.6987 11.248 11.4829 11.4639C11.2671 11.6797 11.0068 11.8574 10.7021 11.9971C10.3975 12.1367 10.0801 12.2002 9.75 12.1875C9.40723 12.1875 9.08984 12.124 8.79785 11.9971C8.50586 11.8701 8.25195 11.6987 8.03613 11.4829C7.82031 11.2671 7.64258 11.0068 7.50293 10.7021C7.36328 10.3975 7.2998 10.0801 7.3125 9.75C7.3125 9.40723 7.37598 9.08984 7.50293 8.79785C7.62988 8.50586 7.80127 8.25195 8.01709 8.03613C8.23291 7.82031 8.49316 7.64258 8.79785 7.50293C9.10254 7.36328 9.41992 7.2998 9.75 7.3125Z" fill="black"/>
-                </g>
-                <defs>
-                <clipPath id="clip0_76_2488">
-                <rect width="39" height="39" fill="white"/>
-                </clipPath>
-                </defs>
-            </svg>  
-            <p class="font-semibold">Access Level</p>                             
-        </div>
-        <div class='flex flex-col items-center border rounded-md bg-gray-100 p-2 w-28 h-28'>
-            <svg width="17" height="17" viewBox="0 0 17 17" fill="none" >
-                <path d="M8.25 0V8.25V16.5M0 8.25H16.5" stroke="black" stroke-width="3"/>
-            </svg>                    
-            <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-                <path d="M10 31.6665V16.6665C10 14.0143 11.0536 11.4708 12.929 9.59544C14.8043 7.72007 17.3479 6.6665 20 6.6665C22.6522 6.6665 25.1957 7.72007 27.0711 9.59544C28.9465 11.4708 30 14.0143 30 16.6665V31.6665M10 31.6665H30M10 31.6665H6.66669M30 31.6665H33.3334M18.3334 36.6665H21.6667" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M20 6.66659C20.9205 6.66659 21.6667 5.92039 21.6667 4.99992C21.6667 4.07944 20.9205 3.33325 20 3.33325C19.0796 3.33325 18.3334 4.07944 18.3334 4.99992C18.3334 5.92039 19.0796 6.66659 20 6.66659Z" stroke="black" stroke-width="2"/>
-            </svg>       
-            <p class="font-semibold">Notification</p>                       
-        </div>
-        <div class='flex flex-col items-center border rounded-md bg-gray-100 p-2 w-28 h-28'>
-            <a href="{% url 'country_wise_documents' %}">
-                <svg width="17" height="17" viewBox="0 0 17 17" fill="none" >
-                    <path d="M8.25 0V8.25V16.5M0 8.25H16.5" stroke="black" stroke-width="3"/>
-                </svg>                    
-                <svg width="40" height="40" viewBox="0 0 40 40" fill="none" >
-                    <path d="M26.6667 4.58325H13.3333C10.1117 4.58325 7.5 7.19492 7.5 10.4166V29.5833C7.5 32.8049 10.1117 35.4166 13.3333 35.4166H26.6667C29.8883 35.4166 32.5 32.8049 32.5 29.5833V10.4166C32.5 7.19492 29.8883 4.58325 26.6667 4.58325Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M14.1667 11.2583H25.8334M14.1667 17.925H25.8334M14.1667 24.5916H20" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>     
-                <p class="font-semibold">Documents</p>     
-            </a>                    
-        </div>
-        <div class='flex flex-col items-center border rounded-md bg-gray-100 p-2 w-28 h-28'>
-            <a href="{% url 'branches' %}">
-                <svg width="17" height="17" viewBox="0 0 17 17" fill="none">
-                    <path d="M8.25 0V8.25V16.5M0 8.25H16.5" stroke="black" stroke-width="3"/>
-                </svg>                    
-                <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-                    <path d="M5 19.1667C5 17.9167 6.66583 14.5833 10.8842 13.6908C15.15 12.7883 19.04 9.0475 20 7.5C20.96 9.0475 24.8508 12.7883 29.115 13.6908C33.3333 14.5833 35.01 17.9167 35 19.1667" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M23.3333 7.50008C23.3333 9.34103 21.8409 10.8334 20 10.8334C18.159 10.8334 16.6666 9.34103 16.6666 7.50008C16.6666 5.65913 18.159 4.16675 20 4.16675C21.8409 4.16675 23.3333 5.65913 23.3333 7.50008Z" fill="black"/>
-                    <path d="M20 7.5V19.1667M4.16663 27.5H9.16663M4.16663 34.1667H9.16663M30.8333 27.5H35.8333M30.8333 34.1667H35.8333M17.5 27.5H22.5M17.5 34.1667H22.5" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>   
-                <p class="font-semibold">Branch</p>       
-            </a>                   
-        </div>
-    </div>
-</div>
-
-<!-- Delete Confirmation Modal -->
-<div id="deleteModal" class="fixed inset-0 items-center justify-center bg-black bg-opacity-50 hidden z-50">
-    <div class="bg-white rounded-lg p-6 w-full max-w-md mx-auto text-center shadow-lg">
-        <h2 class="text-lg font-semibold mb-4">Are you sure you want to delete this voucher?</h2>
-        <div class="flex justify-center gap-4">
-            <form id="deleteForm" method="post">
-                {% csrf_token %}
-                <button type="submit" class="bg-red-500 text-white px-5 py-2 rounded-md">Yes</button>
-            </form>
-            <button onclick="closeModal()" class="bg-gray-300 px-5 py-2 rounded-md">No</button>
-        </div>
-    </div>
+<div id="dashboard-content">
+    {% include "dashboard/_partials/_dashboard_content.html" %}
 </div>
 
 <script>
@@ -299,11 +24,16 @@ Dashboard
 </script>
 
 <script>
-    const salesCtx = document.getElementById('salesChart').getContext('2d');
     let salesChart;
 
     function loadSalesData(days = 7) {
-        fetch(`/sales/chart-data/?days=${days}`)
+        const branchId = document.getElementById('branch-select')?.value || '';
+        const salesCanvas = document.getElementById('salesChart');
+        if (!salesCanvas) return;  // Skip if not yet in DOM
+
+        const salesCtx = salesCanvas.getContext('2d');
+
+        fetch(`/sales/chart-data/?days=${days}&branch_id=${branchId}`)
             .then(response => response.json())
             .then(data => {
                 if (salesChart) salesChart.destroy();
@@ -314,18 +44,19 @@ Dashboard
                     data: {
                         labels: [''],
                         datasets: [
-                        {
-                            label: data.labels[0], // "Income"
-                            data: [data.values[0]],
-                            backgroundColor: '#4ade80',
-                            borderRadius: 8
-                        },
-                        {
-                            label: data.labels[1], // "Expenses"
-                            data: [data.values[1]],
-                            backgroundColor: '#f87171',
-                            borderRadius: 8
-                        }]
+                            {
+                                label: data.labels[0],
+                                data: [data.values[0]],
+                                backgroundColor: '#4ade80',
+                                borderRadius: 8
+                            },
+                            {
+                                label: data.labels[1],
+                                data: [data.values[1]],
+                                backgroundColor: '#f87171',
+                                borderRadius: 8
+                            }
+                        ]
                     },
                     options: {
                         plugins: {
@@ -358,20 +89,29 @@ Dashboard
             });
     }
 
-    document.getElementById('sales-interval').addEventListener('change', e => {
-        loadSalesData(e.target.value);
-    });
+    document.addEventListener("DOMContentLoaded", () => {
+        const salesInterval = document.getElementById('sales-interval');
+        if (salesInterval) {
+            salesInterval.addEventListener('change', e => {
+                loadSalesData(e.target.value);
+            });
+        }
 
-    loadSalesData();  // initial load
+        loadSalesData();
+    });
 </script>
 
-
 <script>
-    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
     let revenueChart;
 
     function loadRevenueData(days = 7) {
-        fetch(`/revenue/chart-data/?days=${days}`)
+        const branchId = document.getElementById('branch-select')?.value || '';
+        const revenueCanvas = document.getElementById('revenueChart');
+        if (!revenueCanvas) return;
+
+        const revenueCtx = revenueCanvas.getContext('2d');
+
+        fetch(`/revenue/chart-data/?days=${days}&branch_id=${branchId}`)
             .then(response => response.json())
             .then(data => {
                 if (revenueChart) revenueChart.destroy();
@@ -382,18 +122,19 @@ Dashboard
                     data: {
                         labels: [''],
                         datasets: [
-                        {
-                            label: data.labels[0], // "Income"
-                            data: [data.values[0]],
-                            backgroundColor: '#4ade80',
-                            borderRadius: 8
-                        },
-                        {
-                            label: data.labels[1], // "Expenses"
-                            data: [data.values[1]],
-                            backgroundColor: '#f87171',
-                            borderRadius: 8
-                        }]
+                            {
+                                label: data.labels[0],
+                                data: [data.values[0]],
+                                backgroundColor: '#4ade80',
+                                borderRadius: 8
+                            },
+                            {
+                                label: data.labels[1],
+                                data: [data.values[1]],
+                                backgroundColor: '#f87171',
+                                borderRadius: 8
+                            }
+                        ]
                     },
                     options: {
                         plugins: {
@@ -426,11 +167,47 @@ Dashboard
             });
     }
 
-    document.getElementById('revenue-interval').addEventListener('change', e => {
-        loadRevenueData(e.target.value);
-    });
+    document.addEventListener("DOMContentLoaded", () => {
+        const revenueInterval = document.getElementById('revenue-interval');
+        if (revenueInterval) {
+            revenueInterval.addEventListener('change', e => {
+                loadRevenueData(e.target.value);
+            });
+        }
 
-    loadRevenueData();  // initial load
+        loadRevenueData();
+    });
+</script>
+
+<script>
+    document.body.addEventListener('htmx:afterSwap', (event) => {
+        if (event.target.id === 'dashboard-content') {
+            loadSalesData();
+            loadRevenueData();
+
+            // re-attach change events if necessary
+            const salesInterval = document.getElementById('sales-interval');
+            if (salesInterval) {
+                salesInterval.addEventListener('change', e => {
+                    loadSalesData(e.target.value);
+                });
+            }
+
+            const revenueInterval = document.getElementById('revenue-interval');
+            if (revenueInterval) {
+                revenueInterval.addEventListener('change', e => {
+                    loadRevenueData(e.target.value);
+                });
+            }
+        }
+    });
+</script>
+
+<script>
+    document.getElementById('branch-select').addEventListener('change', () => {
+        loadSalesData();
+        loadRevenueData();
+    });
 </script>
 
 {% endblock content %}

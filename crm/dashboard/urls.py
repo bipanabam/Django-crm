@@ -8,5 +8,6 @@ urlpatterns = [
 
     path("sales/chart-data/", views.sales_chart_data, name="sales_chart_data"),
     path("revenue/chart-data/", views.revenue_chart_data, name="revenue_chart_data"),
+    path('dashboard/partial/', views.admin_dashboard_partial, name='admin_dashboard_partial'),
 
 ]

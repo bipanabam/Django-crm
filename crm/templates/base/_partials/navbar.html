@@ -2,18 +2,26 @@
 <nav class="w-full flex items-center justify-between gap-7 mt-4">
     <!--Branch filter-->
     <div class="w-8/12">
-        <select class="w-full h-[59px] rounded-lg border-gray-300" {% if not is_admin %}disabled{% endif %}>
+        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+
+       <select id="branch-select"
+        name="branch_id"
+        class="w-full h-[59px] rounded-lg border-gray-300"
+        hx-post="{% url 'admin_dashboard_partial' %}"
+        hx-target="#dashboard-content"
+        hx-trigger="change"
+        hx-include="[name=branch_id], [name=csrfmiddlewaretoken]"
+            {% if not is_admin %}disabled{% endif %}>
             {% if is_admin %}
-                <option value="">All Branch</option>
+                <option value="all">All Branch</option>
                 {% for branch in branches %}
-                    <option value="{{ branch.id }}" {% if branch.id == selected_branch.id %}selected{% endif %}>
-                        {{ branch.name }}
-                    </option>
+                    <option value="{{ branch.id }}">{{ branch.name }}</option>
                 {% endfor %}
             {% else %}
                 <option value="{{ selected_branch.id }}" selected>{{ selected_branch.name }}</option>
             {% endif %}
         </select>
+
     </div>
     <!-- Notifications -->
     <div class="w-[59px] h-[59px] flex justify-center items-center border rounded-lg bg-white">
