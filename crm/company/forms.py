@@ -143,7 +143,7 @@ class UserSettingForm(forms.ModelForm):
 class EmployeeForm(forms.ModelForm):
     class Meta:
         model = Employee
-        fields = ['name', 'date_of_birth', 'gender', 'blood_type', 'marital_status', 'citizenship_number', 'pan_number', 'current_address', 'permanent_address', 'email', 'phone_number', 'mobile_number', 'emergency_contact_name', 'emergency_contact_number', 'emergency_contact_relationship', 'emergency_contact_email', 'photo', 'signature']
+        fields = ['name', 'date_of_birth', 'gender', 'blood_type', 'marital_status', 'citizenship_number', 'pan_number', 'current_address', 'permanent_address', 'email', 'phone_number', 'mobile_number', 'emergency_contact_name', 'emergency_contact_number', 'emergency_contact_relationship', 'emergency_contact_email', 'profile_pic', 'signature']
         labels = {
             'date_of_birth': 'Date of Birth [AD]',
             'gender': 'Gender',
@@ -160,7 +160,7 @@ class EmployeeForm(forms.ModelForm):
             'emergency_contact_number': 'Contact Number',
             'emergency_contact_relationship': 'Relation',
             'emergency_contact_email': 'Email (Optional)',
-            'photo': 'Photo',
+            'profile_pic': 'Photo',
             'signature': 'Signature',
         }
         widgets = {

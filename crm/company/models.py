@@ -195,7 +195,7 @@ class Employee(models.Model):
   emergency_contact_relationship = models.CharField(max_length=50, choices=CONTACT_RELATION_CHOICES, null=True, blank=True)
   emergency_contact_email = models.EmailField(null=True, blank=True)
 
-  photo = models.ImageField(upload_to='employee_photos/', null=True, blank=True)
+  profile_pic = models.ImageField(upload_to='employee_photos/', null=True, blank=True)
   signature = models.ImageField(upload_to='employee_signatures/', null=True, blank=True)
 
   created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
