@@ -139,13 +139,65 @@ class UserActivityLog(models.Model):
   def __str__(self):
       return f"{self.user.username} - {self.status} @ {self.timestamp}"
 
+GENDER_CHOICES = [
+  ('Male', 'Male'),
+  ('Female', 'Female'),
+  ('Other', 'Other'),
+]
+BLOOD_TYPE_CHOICES = [
+  ('A+', 'A+'),
+  ('B+', 'B+'),
+  ('AB+', 'AB+'),
+  ('O+', 'O+'),
+  ('A-', 'A-'),
+  ('B-', 'B-'),
+  ('AB-', 'AB-'),
+  ('O-', 'O-'),
+]
+MARITAL_STATUS_CHOICES = [
+  ('Single', 'Single'),
+  ('Married', 'Married'),
+  ('Divorced', 'Divorced'),
+  ('Widowed', 'Widowed'),   
+]
+CONTACT_RELATION_CHOICES = [
+  ('Father', 'Father'),
+  ('Mother', 'Mother'),
+  ('Spouse', 'Spouse'),
+  ('Son', 'Son'),
+  ('Daughter', 'Daughter'),
+  ('Brother', 'Brother'),
+  ('Sister', 'Sister'),
+  ('Other', 'Other'),
+]
+
 class Employee(models.Model):
   branch = models.ForeignKey(Branch, on_delete=models.CASCADE, related_name='employees')
   user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
   name = models.CharField(max_length=50, null=True, blank=True)
+  date_of_birth = models.DateField(null=True, blank=True)
+  gender = models.CharField(max_length=10, choices=GENDER_CHOICES)
+  blood_type = models.CharField(max_length=10, choices=BLOOD_TYPE_CHOICES)
+  marital_status = models.CharField(max_length=20, choices=MARITAL_STATUS_CHOICES, null=True, blank=True)
+  citizenship_number = models.CharField(max_length=20, null=True, blank=True)
+  pan_number = models.CharField(max_length=20, null=True, blank=True)
+
+  current_address = models.CharField(max_length=255, null=True, blank=True)
+  permanent_address = models.CharField(max_length=255, null=True, blank=True)
+
   email = models.EmailField(null=True, blank=True)
   phone_number = models.CharField(max_length=14, null=True, blank=True)
-  role = models.CharField(max_length=15, null=True, blank=True)
+  mobile_number = models.CharField(max_length=14, null=True, blank=True)
+
+  # Extra 
+  emergency_contact_name = models.CharField(max_length=50, null=True, blank=True)
+  emergency_contact_number = models.CharField(max_length=14, null=True, blank=True)
+  emergency_contact_relationship = models.CharField(max_length=50, choices=CONTACT_RELATION_CHOICES, null=True, blank=True)
+  emergency_contact_email = models.EmailField(null=True, blank=True)
+
+  photo = models.ImageField(upload_to='employee_photos/', null=True, blank=True)
+  signature = models.ImageField(upload_to='employee_signatures/', null=True, blank=True)
+
   created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now=True)

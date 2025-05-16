@@ -143,4 +143,26 @@ class UserSettingForm(forms.ModelForm):
 class EmployeeForm(forms.ModelForm):
     class Meta:
         model = Employee
-        fields = ['name', 'email', 'phone_number', 'role',]
+        fields = ['name', 'date_of_birth', 'gender', 'blood_type', 'marital_status', 'citizenship_number', 'pan_number', 'current_address', 'permanent_address', 'email', 'phone_number', 'mobile_number', 'emergency_contact_name', 'emergency_contact_number', 'emergency_contact_relationship', 'emergency_contact_email', 'photo', 'signature']
+        labels = {
+            'date_of_birth': 'Date of Birth [AD]',
+            'gender': 'Gender',
+            'blood_type': 'Blood Group',
+            'marital_status': 'Marital Status',
+            'citizenship_number': 'Citizenship Number',
+            'pan_number': 'PAN Number',
+            'current_address': 'Current Address',
+            'permanent_address': 'Permanent Address',
+            'email': 'Email',
+            'phone_number': 'Contact Number (Home)',
+            'mobile_number': 'Mobile Number',
+            'emergency_contact_name': 'Emergency Contact Name',
+            'emergency_contact_number': 'Contact Number',
+            'emergency_contact_relationship': 'Relation',
+            'emergency_contact_email': 'Email (Optional)',
+            'photo': 'Photo',
+            'signature': 'Signature',
+        }
+        widgets = {
+            'date_of_birth': forms.DateInput(attrs={'type': 'date'}),
+        }

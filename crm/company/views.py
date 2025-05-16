@@ -113,7 +113,7 @@ def edit_userprofile(request, employee_id):
     employee = Employee.objects.get(id=employee_id)
 
     if request.method == 'POST':
-        form = EmployeeForm(request.POST, instance=employee)
+        form = EmployeeForm(request.POST, request.FILES,instance=employee)
         if form.is_valid():
             form.save()
             messages.success(request, 'Member details updated successfully')
