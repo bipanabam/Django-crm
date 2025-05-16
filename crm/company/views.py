@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from .decorators import access_level_required
 
 from .models import Branch, User, Employee
-from .forms import BranchForm, UserForm, UserUpdateForm, EmployeeForm
+from .forms import BranchForm, UserForm, UserUpdateForm, UserSettingForm, EmployeeForm
 from . import services
 
 # Create your views here.
@@ -137,3 +137,32 @@ def delete_user(request, user_id):
     else:
         messages.error(request, 'User not found.')
     return redirect('team_member') 
+
+@login_required
+def user_settings(request, user_id):
+    user = User.objects.get(id=user_id)
+
+    if request.method == 'POST':
+        form = UserSettingForm(request.POST, instance=user)
+        if form.is_valid():
+            user = form.save(commit=False)
+            print(request.POST)
+
+            # If the password is provided, we need to hash it before saving the user
+            new_password = request.POST['new_password']
+            confirm_new_password = request.POST['confirm_new_password']
+
+            if new_password and confirm_new_password and new_password == confirm_new_password:
+                user.set_password(new_password)
+                user.save()
+                messages.success(request, 'Password changed successfully. Please login again.')
+                return redirect('login')
+            user.save()
+            messages.success(request, 'Member details updated successfully')
+            return redirect('dashboard')
+    else:
+        form = UserSettingForm(instance=user)
+    context = {
+        'form': form    
+    }
+    return render(request, 'team_member/settings.html', context=context)

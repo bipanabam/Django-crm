@@ -108,6 +108,38 @@ class UserUpdateForm(forms.ModelForm):
                 else:
                     self.fields['role'].choices = None
 
+class UserSettingForm(forms.ModelForm):
+    new_password = forms.CharField(widget=forms.PasswordInput, required=False)
+    confirm_new_password = forms.CharField(widget=forms.PasswordInput, required=False)
+
+    class Meta:
+        model = User
+        fields = ['username','email', 'first_name', 'last_name', 'new_password', 'confirm_new_password']
+        widgets = {
+            'new_password': forms.PasswordInput(),
+            'confirm_new_password': forms.PasswordInput(),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['new_password'].widget.attrs['placeholder'] = 'Enter new Password'
+        self.fields['confirm_new_password'].widget.attrs['placeholder'] = 'Confirm new Password'
+
+    def clean(self):
+        cleaned_data = super().clean()
+        new_password = cleaned_data.get("new_password")
+        confirm_new_password = cleaned_data.get("confirm_new_password")
+
+        if not new_password and not confirm_new_password:
+            return cleaned_data
+
+        if new_password and not confirm_new_password:
+            self.add_error('confirm_new_password', "Please confirm your new password.")
+
+        if new_password and confirm_new_password and new_password != confirm_new_password:
+            self.add_error('confirm_new_password', "Passwords do not match")
+        return cleaned_data
+
 class EmployeeForm(forms.ModelForm):
     class Meta:
         model = Employee

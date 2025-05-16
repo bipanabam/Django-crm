@@ -122,18 +122,6 @@ def last_active(self):
   
   return f"{parts} ago"
 
-
-  # @property
-  # def last_active(self):
-  #   if self.online_status == 'online':
-  #     return "Active Now"
-  #   else:
-  #     from django.utils import timezone
-  #     now = timezone.now()
-  #     delta = now - self.last_seen
-  #     total_seconds = delta.total_seconds()
-  #     return f"{int(delta.total_seconds() / 60)} mins ago"  # returns minutes as integer
-
   def __str__(self):
       return f"{self.username}"
 
